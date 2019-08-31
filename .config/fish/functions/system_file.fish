@@ -12,6 +12,6 @@ function system_file
     mkdir -p $out_dir/$file_dir
     s cp $file_path $out_dir/$file_dir
 
-    commit_file $out_dir
+    commit_repo $out_dir
 
 end
