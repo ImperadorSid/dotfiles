@@ -2,7 +2,6 @@
 function system_file
     set file_path $argv[1]
     set file_dir (dirname $file_path)
-    set cur_dir $PWD
 
     set out_dir ~/Downloads/Linux/Linux/system-files
 
