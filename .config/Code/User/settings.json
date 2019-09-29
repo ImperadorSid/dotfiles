@@ -33,5 +33,6 @@
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.startupEditor": "none",
     "php.executablePath": "php",
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "editor.fontSize": 12
 }
