@@ -8,4 +8,4 @@ alias jn 'jupyter notebook'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
-alias c clear
+alias c 'clear; clear'
