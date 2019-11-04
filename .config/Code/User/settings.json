@@ -32,7 +32,6 @@
     "markdown.preview.fontFamily": "'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif",
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.startupEditor": "none",
-    "php.executablePath": "php",
     "editor.tabSize": 2,
     "editor.fontSize": 12
 }
