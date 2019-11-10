@@ -3,9 +3,10 @@ set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/tools
 set -x PYTHONPATH ~/.python-scripts
 
 alias a 's apt'
+alias c 'clear; clear'
 alias g git
 alias jn 'jupyter notebook'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
-alias c 'clear; clear'
+alias x 'xclip -selection clipboard'
