@@ -14,4 +14,5 @@ set smarttab
 set softtabstop=2
 set ruler
 set backspace=2
+set autochdir
 
