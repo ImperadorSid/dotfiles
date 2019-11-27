@@ -7,7 +7,6 @@
     "files.autoSave": "onFocusChange",
     "editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
     "editor.cursorStyle": "line-thin",
-    "editor.matchBrackets": false,
     "editor.smoothScrolling": true,
     "editor.cursorBlinking": "expand",
     "editor.cursorSmoothCaretAnimation": true,
