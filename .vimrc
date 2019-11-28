@@ -4,5 +4,3 @@ set noswapfile
 set number
 set smartindent
 set softtabstop=2
-set syntax
-
