@@ -9,4 +9,5 @@ alias jn 'jupyter notebook'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
+alias v 'vim'
 alias x 'xclip -selection clipboard'
