@@ -6,7 +6,7 @@ function user_file
     set out_dir ~/Downloads/Linux/Linux/user-files
 
     mkdir -p ~/$file_dir
-    vim ~/$file_path
+    v ~/$file_path
 
     mkdir -p $out_dir/$file_dir
     cp ~/$file_path $out_dir/$file_dir
