@@ -5,7 +5,7 @@ set -x PYTHONPATH ~/.python-scripts
 alias a 's apt'
 alias c 'clear; clear'
 alias g git
-alias jn 'jupyter notebook'
+alias jn 'jupyter-notebook'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
