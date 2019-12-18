@@ -1,9 +1,9 @@
 #!/usr/bin/env fish
-function user_file
+function dotfile
     set file_path $argv[1]
     set file_dir (dirname $file_path)
 	
-    set out_dir ~/Downloads/Linux/Linux/user-files
+    set out_dir ~/Downloads/Linux/Linux/dotfiles
 
     mkdir -p ~/$file_dir
     v ~/$file_path
