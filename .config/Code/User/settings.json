@@ -1,7 +1,7 @@
 {
     "workbench.activityBar.visible": false,
     "window.menuBarVisibility": "toggle",
-    "workbench.statusBar.visible": false,
+    "workbench.statusBar.visible": true,
     "editor.minimap.enabled": false,
     "breadcrumbs.enabled": false,
     "files.autoSave": "onFocusChange",
