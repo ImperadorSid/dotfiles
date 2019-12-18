@@ -32,5 +32,6 @@
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.startupEditor": "none",
     "editor.tabSize": 2,
-    "editor.fontSize": 12
+    "editor.fontSize": 12,
+    "git.autofetch": true
 }
