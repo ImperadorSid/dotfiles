@@ -3,7 +3,7 @@ function dotfile
     set file_path $argv[1]
     set file_dir (dirname $file_path)
 	
-    set out_dir ~/Downloads/Linux/Linux/dotfiles
+    set out_dir $dotfiles
 
     mkdir -p ~/$file_dir
     v ~/$file_path

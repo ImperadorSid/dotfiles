@@ -3,7 +3,7 @@ function system_file
     set file_path $argv[1]
     set file_dir (dirname $file_path)
 
-    set out_dir ~/Downloads/Linux/Linux/system-files
+    set out_dir $system_files
 
     s mkdir -p $file_dir
     sv $file_path
