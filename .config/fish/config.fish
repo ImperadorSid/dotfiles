@@ -3,6 +3,7 @@ set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/tools
 
 set -x dotfiles ~/Downloads/Linux/Linux/dotfiles
 set -x system_files ~/Downloads/Linux/Linux/system-files
+set -x setup_files ~/Downloads/Linux/Linux/setup
 
 alias a 'apt'
 alias c 'clear; clear'
