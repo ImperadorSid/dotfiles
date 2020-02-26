@@ -1,4 +1,4 @@
-{
+    {
     "workbench.activityBar.visible": false,
     "window.menuBarVisibility": "toggle",
     "workbench.statusBar.visible": true,
@@ -35,5 +35,6 @@
     "editor.fontSize": 12,
     "git.autofetch": true,
     "python.pythonPath": "/home/impsid/.anaconda3/bin/python",
-    "git.confirmSync": false
+    "git.confirmSync": false,
+    "python.dataScience.askForKernelRestart": false
 }
