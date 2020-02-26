@@ -34,5 +34,6 @@
     "editor.tabSize": 2,
     "editor.fontSize": 12,
     "git.autofetch": true,
-    "python.pythonPath": "/home/impsid/.anaconda3/bin/python"
+    "python.pythonPath": "/home/impsid/.anaconda3/bin/python",
+    "git.confirmSync": false
 }
