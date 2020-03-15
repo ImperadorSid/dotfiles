@@ -3,12 +3,12 @@ set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/cmdli
 
 set -x dotfiles ~/Downloads/Linux/System/Linux/dotfiles
 set -x system_files ~/Downloads/Linux/System/Linux/system-files
-set -x setup_files ~/Downloads/Linux/System/Linux/setup
 
 alias a 'apt'
 alias c 'clear; clear'
 alias g git
-alias jn 'jupyter-notebook'
+alias jl 'jupyter lab'
+alias jn 'jupyter notebook'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
