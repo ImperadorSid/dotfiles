@@ -1,0 +1,16 @@
+{
+    // Terminal
+    // @jupyterlab/terminal-extension:plugin
+    // Terminal settings.
+    // *************************************
+
+    // Theme
+    // The theme for the terminal.
+    "theme": "light",
+    
+    "fontFamily": "Fira Code",
+        
+    "scrollback": 1000000,
+        
+    "shutdownOnClose": true,
+}

@@ -1,0 +1,18 @@
+{
+    shortcuts: [
+        {
+            "command": "docmanager:rename",
+            "keys": [
+                "F2"
+            ],
+            "selector": "body"
+        }, 
+        {
+            "command": "editmenu:clear-current",
+            "keys": [
+                "Delete"
+            ],
+            "selector": "[data-jp-undoer]"
+        },
+    ]
+}

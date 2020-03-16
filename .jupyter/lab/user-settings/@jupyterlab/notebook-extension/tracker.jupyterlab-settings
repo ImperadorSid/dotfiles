@@ -1,0 +1,20 @@
+{
+    "codeCellConfig": {
+        "fontFamily": "Fira Code",
+        "tabSize": 2,
+        "codeFolding": true
+    },
+        
+    "kernelShutdown": true,
+
+    "markdownCellConfig": {
+        "autoClosingBrackets": true,
+        "fontFamily": "Fira Code",
+        "tabSize": 2,
+    },
+        
+    "rawCellConfig": {
+        "autoClosingBrackets": true,
+        "fontFamily": "Fira Code",
+    },
+}
