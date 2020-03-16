@@ -9,10 +9,12 @@ alias c 'clear; clear'
 alias g git
 alias jl 'jupyter lab'
 alias jn 'jupyter notebook'
-alias l  'less'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
 alias sv 's vim'
 alias v 'vim'
 alias x 'xclip -selection clipboard'
+
+abbr l ' | less
+'
