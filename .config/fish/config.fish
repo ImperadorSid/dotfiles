@@ -9,6 +9,7 @@ alias c 'clear; clear'
 alias g git
 alias jl 'jupyter lab'
 alias jn 'jupyter notebook'
+alias l  'less'
 alias p ipython
 alias s sudo
 alias sc 's systemctl'
