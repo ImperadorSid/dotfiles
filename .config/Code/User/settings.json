@@ -36,5 +36,6 @@
     "git.autofetch": true,
     "python.pythonPath": "/home/impsid/.anaconda3/bin/python",
     "git.confirmSync": false,
-    "python.dataScience.askForKernelRestart": false
+    "python.dataScience.askForKernelRestart": false,
+    "git.enableSmartCommit": true
 }
