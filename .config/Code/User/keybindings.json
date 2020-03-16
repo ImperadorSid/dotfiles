@@ -59,5 +59,21 @@
   {
     "key": "ctrl+q",
     "command": "-workbench.action.quit"
+  },
+  {
+    "key": "ctrl+i c",
+    "command": "git.commit"
+  },
+  {
+    "key": "ctrl+i p",
+    "command": "git.push"
+  },
+  {
+    "key": "ctrl+i s",
+    "command": "git.sync"
+  },
+  {
+    "key": "ctrl+i shift+p",
+    "command": "git.pull"
   }
 ]
