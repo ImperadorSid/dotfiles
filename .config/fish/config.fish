@@ -1,5 +1,5 @@
 #!/usr/bin/env fish
-set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/cmdline-tools/latest/bin ~/.android-dev/sdk/platform-tools ~/.android-dev/sdk/emulator/ ~/.nodejs/bin $PATH
+set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/cmdline-tools/latest/bin ~/.android-dev/sdk/platform-tools ~/.android-dev/sdk/emulator/ $PATH
 
 set -x dotfiles ~/Downloads/Linux/System/Linux/dotfiles
 set -x system_files ~/Downloads/Linux/System/Linux/system-files
