@@ -69,11 +69,15 @@
     "command": "git.push"
   },
   {
-    "key": "ctrl+i s",
+    "key": "ctrl+i shift+s",
     "command": "git.sync"
   },
   {
     "key": "ctrl+i shift+p",
     "command": "git.pull"
+  },
+  {
+    "key": "ctrl+i s",
+    "command": "git.stageAll"
   }
 ]
