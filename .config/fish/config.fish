@@ -6,11 +6,12 @@ set -x system_files ~/Downloads/Linux/System/Linux/system-files
 
 alias a 'apt'
 alias c 'clear; clear'
-alias g git
+alias g 'git'
 alias jl 'jupyter lab'
 alias jn 'jupyter notebook'
-alias p ipython
-alias s sudo
+alias n 'node'
+alias p 'ipython'
+alias s 'sudo'
 alias sc 's systemctl'
 alias sv 's vim'
 alias v 'vim'
