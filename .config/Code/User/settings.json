@@ -21,6 +21,7 @@
     "git.autofetch": true,
     "git.confirmSync": false,
     "git.enableSmartCommit": true,
+    "liveServer.settings.donotShowInfoMsg": true,
     "markdown.preview.fontFamily": "'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif",
     "material-icon-theme.folders.color": "#17917a",
     "python.dataScience.askForKernelRestart": false,
