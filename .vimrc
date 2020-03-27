@@ -15,6 +15,7 @@ set number
 set smartcase
 set smartindent
 set tabstop=2
+set term=xterm
 set wildmode=list:full
 
 " Load and source .vimrc
@@ -27,6 +28,3 @@ map <Down> <Nop>
 map <Left> <Nop>
 map <Right> <Nop>
 
-" Dracula theme
-packadd! dracula
-colorscheme dracula
