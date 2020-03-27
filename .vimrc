@@ -4,7 +4,7 @@ let g:loaded_matchparen=1
 " Options
 set autochdir
 set autoindent
-set background=dark
+" set background=dark
 set clipboard=unnamedplus
 set expandtab
 set hidden
