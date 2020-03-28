@@ -34,3 +34,4 @@ map <Right> <Nop>
 " Dracula theme
 packadd! dracula
 colorscheme dracula
+
