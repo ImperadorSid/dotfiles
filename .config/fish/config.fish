@@ -18,4 +18,5 @@ alias sv 's vim'
 alias v 'vim'
 alias x 'xclip -selection clipboard'
 
+abbr e ' | egrep '
 abbr l ' | less -N'
