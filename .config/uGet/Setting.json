@@ -1,0 +1,54 @@
+{
+	"Window": {
+		"Toolbar": true,
+		"width": 900,
+		"height": 470,
+		"x": 510,
+		"y": 305
+	},
+	"DownloadColumn": {
+		"complete": true,
+		"total": true,
+		"percent": true,
+		"elapsed": true,
+		"left": true,
+		"speed": true,
+		"completed": true,
+		"UploadSpeed": true,
+		"SortType": 1,
+		"Width": {
+			"name": 227,
+			"complete": 75,
+			"total": 70,
+			"percent": 217,
+			"elapsed": 65,
+			"left": 65,
+			"speed": 80,
+			"UploadSpeed": 81
+		}
+	},
+	"UserInterface": {
+		"DeleteConfirmation": true,
+		"ShowTrayIcon": true,
+		"CloseToTray": true,
+		"SoundNotification": true,
+		"ApplyRecently": true,
+		"ApplyRecent": true
+	},
+	"Clipboard": {
+		"pattern": "BIN|ZIP|GZ|7Z|XZ|Z|TAR|TGZ|BZ2|LZH|A[0-9]?|RAR|R[0-9][0-9]|ISO|RPM|DEB|EXE|MSI|APK|3GP|AAC|FLAC|M4A|M4P|MP3|OGG|WAV|WMA|MP4|MKV|WEBM|OGV|AVI|MOV|WMV|FLV|F4V|MPG|MPEG|RMVB|IMG",
+		"monitor": true,
+		"Website": true,
+		"MediaWebsite": true
+	},
+	"PluginMedia": {
+		"match_mode": 3,
+		"quality": 3
+	},
+	"FolderHistory": [
+		"\/home\/impsid\/Downloads"
+	],
+	"AutoSave": 1,
+	"AutoSaveInterval": 3
+}
+
