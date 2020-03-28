@@ -13,6 +13,7 @@ set ignorecase
 set incsearch
 set noswapfile
 set number
+set shiftwidth=2
 set smartcase
 set smartindent
 set tabstop=2
