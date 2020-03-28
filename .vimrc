@@ -22,6 +22,7 @@ set wildmode=list:full
 " Load and source .vimrc
 map <Leader>, :edit ~/.vimrc<CR>
 map <Leader><lt> :source ~/.vimrc<CR>
+map <Leader>s :set list!<CR>
 
 " Disable arrow keys
 map <Up> <Nop>
