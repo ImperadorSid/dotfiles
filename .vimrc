@@ -4,6 +4,7 @@ let g:loaded_matchparen=1
 " Options
 set autochdir
 set autoindent
+set autoread
 set clipboard=unnamedplus
 set expandtab
 set hidden
