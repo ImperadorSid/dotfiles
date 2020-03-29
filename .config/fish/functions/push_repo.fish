@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function push_repo
   set target_dir $argv[1]
 

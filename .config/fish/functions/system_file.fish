@@ -1,5 +1,6 @@
 #!/usr/bin/env fish
 function system_file
+
     set file_path $argv[1]
     set file_dir (dirname $file_path)
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env fish
+
 set -l foreground f8f8f2
 set -l selection  44475a
 set -l comment    6272a4

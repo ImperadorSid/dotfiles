@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function dotfile
     set file_path $argv[1]
     set file_dir (dirname $file_path)
