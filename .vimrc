@@ -16,13 +16,15 @@ set number
 set shiftwidth=2
 set smartcase
 set smartindent
+set splitbelow
+set splitright
 set tabpagemax=100
 set tabstop=2
 set termguicolors
 set wildmode=list:full
 
 " Load and source .vimrc
-map <Leader>, :edit ~/.vimrc<CR>
+map <Leader>, :tabedit ~/.vimrc<CR>
 map <Leader><lt> :source ~/.vimrc<CR>
 map <Leader>s :set list!<CR>
 
