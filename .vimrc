@@ -16,6 +16,7 @@ set number
 set shiftwidth=2
 set smartcase
 set smartindent
+set tabpagemax=100
 set tabstop=2
 set termguicolors
 set wildmode=list:full
