@@ -30,4 +30,4 @@ alias x 'xclip -selection clipboard'
 # Abbreviations
 abbr e  ' | egrep '
 abbr l  ' | less -N'
-abbr se 'sed -n \'s///p\''
+abbr se 'sed -nr \'s///p\''
