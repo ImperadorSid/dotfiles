@@ -28,5 +28,6 @@ alias v 'vim'
 alias x 'xclip -selection clipboard'
 
 # Abbreviations
-abbr e ' | egrep '
-abbr l ' | less -N'
+abbr e  ' | egrep '
+abbr l  ' | less -N'
+abbr se 'sed -n \'s///p\''
