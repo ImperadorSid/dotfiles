@@ -5,7 +5,7 @@
     "editor.cursorBlinking": "phase",
     "editor.cursorSmoothCaretAnimation": true,
     "editor.cursorStyle": "line-thin",
-    "editor.fontFamily": "Fira Code",
+    "editor.fontFamily": "FiraCode Nerd Font",
     "editor.fontLigatures": true,
     "editor.minimap.enabled": false,
     "editor.smoothScrolling": true,
@@ -42,5 +42,7 @@
     "workbench.startupEditor": "none",
     "zenMode.centerLayout": false,
     "zenMode.hideLineNumbers": false,
+    "python.jediEnabled": false,
+    "editor.fontSize": 20,
 }
 
