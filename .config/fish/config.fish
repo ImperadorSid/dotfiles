@@ -4,8 +4,8 @@
 set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/cmdline-tools/latest/bin ~/.android-dev/sdk/platform-tools ~/.android-dev/sdk/emulator/ $PATH
 
 # System configuraton folders
-set -x dotfiles ~/Downloads/Linux/System/Linux/dotfiles
-set -x system_files ~/Downloads/Linux/System/Linux/system-files
+set -x dotfiles ~/Downloads/Linux/System/Repositories/ImperadorSid#dotfiles
+set -x system_files ~/Downloads/Linux/System/Repositories/ImperadorSid#system-files
 
 # Theme options
 set -g theme_display_date no
