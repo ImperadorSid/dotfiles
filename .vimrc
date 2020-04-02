@@ -13,6 +13,7 @@ set ignorecase
 set incsearch
 set noswapfile
 set number
+set shell=sh
 set shiftwidth=2
 set smartcase
 set smartindent
@@ -25,10 +26,7 @@ set wildmode=list:full
 
 " Fish scripts
 filetype plugin indent on
-autocmd FileType fish compiler fish | setlocal textwidth=70 | setlocal foldmethod=expr
-if &shell =~# 'fish$'
-  set shell=sh
-endif
+autocmd FileType fish compiler fish | setlocal textwidth=80 | setlocal foldmethod=expr
 
 " Load and source .vimrc
 map <Leader>, :tabedit ~/.vimrc<CR>
