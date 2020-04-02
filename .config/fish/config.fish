@@ -9,8 +9,7 @@ set -x system_files ~/Downloads/Linux/System/Linux/system-files
 
 # Theme options
 set -g theme_display_date no
-set -g theme_display_nvm yes
-set -g theme_display_sudo_user yes
+set -g theme_nerd_fonts yes
 set -g theme_color_scheme dracula
 
 # Alias
@@ -32,3 +31,6 @@ alias x  'xclip -selection clipboard'
 
 # Abbreviations
 abbr se 'sed -nr \'s|||p\''
+
+# Change default mode
+fish_vi_key_bindings
