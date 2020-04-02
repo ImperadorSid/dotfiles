@@ -41,6 +41,11 @@
 		"Website": true,
 		"MediaWebsite": true
 	},
+  "PluginOrder": 1,
+  "PluginAria2": {
+		"launch": true,
+		"shutdown": true
+  },
 	"PluginMedia": {
 		"match_mode": 3,
 		"quality": 5,
