@@ -42,6 +42,6 @@
     "workbench.startupEditor": "none",
     "zenMode.centerLayout": false,
     "zenMode.hideLineNumbers": false,
-    "python.jediEnabled": false
+    "python.jediEnabled": true
 }
 
