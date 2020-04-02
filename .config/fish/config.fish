@@ -14,7 +14,7 @@ set -g theme_color_scheme dracula
 
 # Alias
 alias a  'apt'
-alias ar 'aria2c'
+alias a2 'aria2c'
 alias c  'clear; clear'
 alias e  'egrep'
 alias g  'git'
