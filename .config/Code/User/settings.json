@@ -42,7 +42,6 @@
     "workbench.startupEditor": "none",
     "zenMode.centerLayout": false,
     "zenMode.hideLineNumbers": false,
-    "python.jediEnabled": false,
-    "editor.fontSize": 20,
+    "python.jediEnabled": false
 }
 
