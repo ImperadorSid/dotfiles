@@ -1,7 +1,7 @@
 " Disable match parenthesis hightlighting
 let g:loaded_matchparen=1
 
-" Options
+" Set options
 set autochdir
 set autoindent
 set autoread
@@ -22,6 +22,13 @@ set tabpagemax=100
 set tabstop=2
 set termguicolors
 set wildmode=list:full
+
+" Fish scripts
+filetype plugin indent on
+autocmd FileType fish compiler fish | setlocal textwidth=70 | setlocal foldmethod=expr
+if &shell =~# 'fish$'
+  set shell=sh
+endif
 
 " Load and source .vimrc
 map <Leader>, :tabedit ~/.vimrc<CR>
