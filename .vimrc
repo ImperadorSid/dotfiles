@@ -1,6 +1,6 @@
 " GENERAL OPTIONS
 " Let
-let g:loaded_matchparen=1
+let g:loaded_matchparen=0
 
 " Set
 set autochdir
@@ -48,9 +48,12 @@ packadd! dracula
 colorscheme dracula
 
 " jiangmiao/auto-pairs
-let g:AutoPairsShortcutToggle='<Esc>p'
+let g:AutoPairsShortcutBackInsert='<Esc>b'
 let g:AutoPairsShortcutFastWrap='<Esc>e'
 let g:AutoPairsShortcutJump='<Esc>n'
-let g:AutoPairsShortcutBackInsert='<Esc>b'
+let g:AutoPairsShortcutToggle='<Esc>p'
 
 " vim-airline/vim-airline
+let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#formatter='unique_tail'
+let g:airline_powerline_fonts=1
