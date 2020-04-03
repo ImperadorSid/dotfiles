@@ -29,6 +29,12 @@ set wildmode=list:full
 filetype plugin indent on
 autocmd FileType fish compiler fish | setlocal textwidth=80 | setlocal foldmethod=expr
 
+" AutoPairs
+let g:AutoPairsShortcutToggle='<Esc>p'
+let g:AutoPairsShortcutFastWrap='<Esc>e'
+let g:AutoPairsShortcutJump='<Esc>n'
+let g:AutoPairsShortcutBackInsert='<Esc>b'
+
 " Load and source .vimrc
 map <Leader>, :tabedit ~/.vimrc<CR>
 map <Leader><lt> :source ~/.vimrc<CR>
