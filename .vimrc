@@ -1,6 +1,6 @@
-" GENERAL OPTIONS
+" OPTIONS
 " Let
-let g:loaded_matchparen=0
+let g:loaded_matchparen=1
 
 " Set
 set autochdir
@@ -13,6 +13,7 @@ set hidden
 set hlsearch
 set ignorecase
 set incsearch
+set noesckeys
 set noswapfile
 set number
 set shell=sh
@@ -23,6 +24,7 @@ set splitbelow
 set splitright
 set tabpagemax=100
 set tabstop=2
+set timeoutlen=300
 set termguicolors
 set wildmode=list:full
 
@@ -57,3 +59,4 @@ let g:AutoPairsShortcutToggle='<Esc>p'
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline_powerline_fonts=1
+
