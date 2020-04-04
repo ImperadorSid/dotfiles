@@ -24,6 +24,7 @@ set noswapfile
 set number
 set shell=sh
 set shiftwidth=2
+set shortmess+=F
 set smartcase
 set smartindent
 set splitbelow
