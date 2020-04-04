@@ -18,6 +18,7 @@ set hidden
 set hlsearch
 set ignorecase
 set incsearch
+set noshowcmd
 set noshowmode
 set noswapfile
 set number
