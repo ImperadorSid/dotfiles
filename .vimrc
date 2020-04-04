@@ -29,14 +29,14 @@ set splitbelow
 set splitright
 set tabpagemax=100
 set tabstop=2
-set timeoutlen=300
+set timeoutlen=200
 set termguicolors
 set wildmode=list:full
 
 " MAPPINGS
 " Source .vimrc
 map <Leader>, :tabedit ~/.vimrc<CR>
-map <Leader><lt> :source ~/.vimrc<CR>
+map <Leader>. :source ~/.vimrc<CR>
 map <Leader>s :set list!<CR>
 
 " Disable arrow keys
