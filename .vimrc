@@ -13,7 +13,7 @@ set hidden
 set hlsearch
 set ignorecase
 set incsearch
-set noesckeys
+set noshowmode
 set noswapfile
 set number
 set shell=sh
