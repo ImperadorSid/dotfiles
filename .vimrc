@@ -27,6 +27,7 @@ set shell=sh
 set shiftwidth=2
 set shortmess=flmrwxoOsWF
 set smartcase
+set softtabstop=2
 set splitbelow
 set splitright
 set tabpagemax=100
