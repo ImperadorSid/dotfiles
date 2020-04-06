@@ -27,6 +27,7 @@ alias p  'ipython'
 alias s  'sudo'
 alias sc 's systemctl'
 alias sv 's vim'
+alias t  'tree -C'
 alias v  'vim'
 alias x  'xclip -selection clipboard'
 
