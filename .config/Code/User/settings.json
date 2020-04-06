@@ -5,9 +5,9 @@
     "editor.cursorBlinking": "phase",
     "editor.cursorSmoothCaretAnimation": true,
     "editor.cursorStyle": "line-thin",
-    "editor.fontFamily": "JetBrains Mono",
-    "editor.fontSize": 17.3,
+    "editor.fontFamily": "JetBrainsMono Nerd Font",
     "editor.fontLigatures": true,
+    "editor.fontSize": 16.74,
     "editor.minimap.enabled": false,
     "editor.smoothScrolling": true,
     "editor.tabSize": 2,
@@ -27,6 +27,7 @@
     "markdown.preview.fontFamily": "Ubuntu",
     "material-icon-theme.folders.color": "#17917a",
     "python.dataScience.askForKernelRestart": false,
+    "python.jediEnabled": true,
     "python.pythonPath": "~/.local/anaconda3/bin/python",
     "search.showLineNumbers": true,
     "search.smartCase": true,
@@ -42,7 +43,6 @@
     "workbench.iconTheme": "material-icon-theme",
     "workbench.startupEditor": "none",
     "zenMode.centerLayout": false,
-    "zenMode.hideLineNumbers": false,
-    "python.jediEnabled": true
+    "zenMode.hideLineNumbers": false
 }
 
