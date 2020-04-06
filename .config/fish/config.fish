@@ -17,7 +17,7 @@ set -g theme_color_scheme dracula
 alias a  'apt'
 alias a2 'aria2c'
 alias c  'clear; clear'
-alias e  'egrep'
+alias e  'grep -E'
 alias g  'git'
 alias j  'jupyter lab'
 alias l  'less -N'
