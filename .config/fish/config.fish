@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 # PATH variable
-set -x PATH ~/.anaconda3/bin ~/.android-dev/flutter/bin ~/.android-dev/sdk/cmdline-tools/latest/bin ~/.android-dev/sdk/platform-tools ~/.android-dev/sdk/emulator/ $PATH
+set -x PATH ~/.local/anaconda3/bin ~/.local/flutter/bin ~/.local/android-sdk/cmdline-tools/latest/bin ~/.local/android-sdk/platform-tools ~/.local/android-sdk/emulator/ $PATH
 
 # System configuraton folders
 set -x repositories ~/Downloads/Linux/System/Repositories
