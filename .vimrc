@@ -30,7 +30,6 @@ set smartcase
 set softtabstop=2
 set splitbelow
 set splitright
-set t_RV=
 set tabpagemax=100
 set timeoutlen=200
 set termguicolors
