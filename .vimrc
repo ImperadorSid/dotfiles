@@ -30,9 +30,10 @@ set smartcase
 set softtabstop=2
 set splitbelow
 set splitright
+set t_RV=
 set tabpagemax=100
-set timeoutlen=200
 set termguicolors
+set timeoutlen=200
 set wildmode=list:full
 
 " MAPPINGS
@@ -61,6 +62,9 @@ let g:AutoPairsShortcutBackInsert='<Esc>b'
 let g:AutoPairsShortcutFastWrap='<Esc>e'
 let g:AutoPairsShortcutJump='<Esc>n'
 let g:AutoPairsShortcutToggle='<Esc>p'
+
+" ryanoasis/vim-devicons
+let g:webdevicons_enable_airline_statusline=0
 
 " vim-airline/vim-airline
 let g:airline#extensions#tabline#enabled=1
