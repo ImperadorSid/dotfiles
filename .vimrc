@@ -40,7 +40,10 @@ set wildmode=list:full
 " Source .vimrc
 map <Leader>, :tabedit ~/.vimrc<CR>
 map <Leader>. :source ~/.vimrc<CR>
+
+" Useful actions
 map <Leader>s :set list!<CR>
+map <Leader>t :%s/ \+$//<CR>
 
 " Disable arrow keys
 map <Up> <Nop>
