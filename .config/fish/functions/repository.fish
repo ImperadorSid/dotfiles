@@ -1,15 +1,20 @@
 #!/usr/bin/env fish
 
 function repository -d "Local repositories management tool"
-  set -g repo $argv
-
-  # Check of arguments
-  if test (count $repo) -eq 0;
-    echo 'No repository specified'
+  if test (count $args) -gt 2
+    echo 'Too many arguments. Expected 0-2 arguments'
     return 1
   end
-  if test (count $repo) -gt 1
-    echo 'Too many arguments. Expected only one'
+
+  if test "$argv[1]" = '-e'
+    set -g repo $argv[2]
+  else
+    set -g repo $argv[1]
+  end
+
+  # Check arguments
+  if test (string length -q $repo) -eq 0;
+    echo 'No repository specified'
     return 1
   end
   if not test -f $repositories/$repo
@@ -18,7 +23,7 @@ function repository -d "Local repositories management tool"
   end
 
   # Create useful variables
-  set repo_data (string split '@' $repo)
+  ssdasdaet repo_data (string split '@' $repo)
   set -g repo_type $repo_data[1]
   set -g repo_user $repo_data[2]
   set -g repo_name $repo_data[3]
@@ -35,12 +40,19 @@ function repository -d "Local repositories management tool"
       echo 'Backup option'
   end
 
-  switch $status
+  __repository_errors $status
+  return $status
+end
+# Print errors
+function __repository_errors
+  switch $argv
     case 1
       echo 'Syntax error found during read of targets files'
+    case 2
+      echo 'Connection error'
     end
+ return $argv
 end
-
 # Manage "archive" option
 function __repository_archive
   set targets (sed -nr 's|^## (.+)|\1|p' $repositories/$repo)
@@ -55,14 +67,16 @@ function __repository_archive
   set files $targets[(seq 2 2 $targets_count)]
   set releases_count (count $releases)
 
-  echo "Getting files from repository \"$repo_user\":"
-
+  # Create directory if not exists
   set destination_folder "$repositories/$repo_user@$repo_name"
   if not test -d $destination_folder
-    echo "Creating directory <repository-root/>$repo_user@$repo_name..."
+    echo "Creating directory <repository-root>/$repo_user@$repo_name..."
     mkdir $repositories/$repo_user@$repo_name
   end
 
+  echo "Getting files from repository \"$repo_user\":"
+
+  # Download the target files
   set uri_prefix "https://github.com/$repo_user/$repo_name/releases"
   set download_count 0
   for i in (seq $releases_count)
@@ -75,20 +89,30 @@ function __repository_archive
     for f in (string split '/' $files[$i])
       echo "Downloading from release \"$releases[$i]\": $f..."
       set download_count (math "$download_count + 1")
-      a2 -d $destination_folder -q --allow-overwrite $uri_prefix/$uri_release/$f
+      set uri $uri_prefix/$uri_release/$f
+
+      a2 -d $destination_folder -q --allow-overwrite $uri
+      if test $status -ne 0
+        echo "Error while retrieving file from <$uri>"
+        return 2
+      end
     end
   end
+  echo "$download_count file(s) downloaded."
 
-  echo "$download_count files downloaded."
+  # Execute install script
   echo "Executing install script..."
+  set actual_folder (pwd)
   cd $destination_folder
   eval ../$repo
-  echo 'Finished'
 
+  # Erase variables and return to previous folder
+  cd $actual_folder
   set -e repo
   set -e repo_name
   set -e repo_type
   set -e repo_user
+  echo 'Finished'
 
 end
 
