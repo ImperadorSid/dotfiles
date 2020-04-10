@@ -37,9 +37,9 @@ set wildmode=list:full
 
 " MAPPINGS
 " Source .vimrc
-let vimrc = "~/.vim/vimrc"
-map <Leader>, :tabedit vimrc<CR>
-map <Leader>. :source vimrc<CR>
+let vimrc_path = "~/.vim/vimrc"
+map <Leader>, :execute 'tabedit' vimrc_path<CR>
+map <Leader>. :execute 'source' vimrc_path<CR>
 
 " Useful actions
 map <Leader>s :set list!<CR>
