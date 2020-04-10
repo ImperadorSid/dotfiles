@@ -1,4 +1,4 @@
-" OPTIONS
+"OPTIONS
 " Let
 let g:loaded_matchparen=1
 let g:netrw_banner=0
@@ -30,16 +30,16 @@ set smartcase
 set softtabstop=2
 set splitbelow
 set splitright
-set t_RV=
 set tabpagemax=100
 set termguicolors
-set timeoutlen=200
+set timeoutlen=150
 set wildmode=list:full
 
 " MAPPINGS
 " Source .vimrc
-map <Leader>, :tabedit ~/.vimrc<CR>
-map <Leader>. :source ~/.vimrc<CR>
+let vimrc = "~/.vim/vimrc"
+map <Leader>, :tabedit vimrc<CR>
+map <Leader>. :source vimrc<CR>
 
 " Useful actions
 map <Leader>s :set list!<CR>
