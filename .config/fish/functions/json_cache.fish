@@ -11,6 +11,7 @@ function json_cache
 
   if set -q _flag_f
     if not __json_cache_check_uri $argv; return 2; end
+    if not __json_cache_check_content_type $argv; return 4; end
     if not __json_cache_download_json $argv; return 3; end
 
   else if set -q _flag_c
@@ -18,15 +19,17 @@ function json_cache
 
   else
     if not __json_cache_check_uri $argv; return 2; end
+    if not __json_cache_check_content_type $argv; return 4; end
 
   end
 
   set -e cache_dir
   set -e index_file
+  return 0
 end
 
 function __json_cache_check_uri
-  if string match -qrv '.+\..+' $argv
+  if string match -qrv '.+\..+' "$argv"
     echo "The argument '$argv' doesn't meet the requirements for URIs"
     return 1
   end
@@ -43,9 +46,9 @@ end
 
 function __json_cache_download_json
   set fixed_uri (__json_cache_add_uri_prefix $argv)
-  set next_slot (jq '. | length' $index_file)
+  set next_slot (jq 'length' $index_file)
 
-  if not a2 -q --allow-overwrite -d $cache_dir -o $next_slot.json $fixed_uri
+  if not curl -sLo $cache_dir/$next_slot.json $fixed_uri
     echo 'Download failed'
     return 1
   end
@@ -63,4 +66,14 @@ function __json_cache_reset_cache
   echo '[]' > $index_file
   echo 'Cache directory reseted'
 end
+
+function __json_cache_check_content_type
+  set content_type (curl -LIsw '%{content_type}' -o /dev/null $argv | sed -nr 's/(.*)(;.*|$)/\1/p')
+  if test "$content_type" != 'application/json'
+    echo 'This URI doesn\'t link to a JSON file'
+    echo "Content-Type: '$content_type'"
+    return 1
+  end
+  return 0
+end 
 
