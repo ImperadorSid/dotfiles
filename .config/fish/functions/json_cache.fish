@@ -6,34 +6,23 @@ function json_cache
   if test $status -ne 0; return 1; end
 
   # Set variables
-  set cache_dir ~/.cache/fish_json
-  set index_file $cache_dir/index.json
+  set -g cache_dir ~/.cache/fish_json
+  set -g index_file $cache_dir/index.json
 
   if set -q _flag_f
     if not __json_cache_check_uri $argv; return 2; end
-    echo 'Flag F'
-
-    if not curl -s $argv
-      echo 'Download failed'
-      return 3
-    end
+    if not __json_cache_download_json $argv; return 3; end
 
   else if set -q _flag_c
-    rm $cache_dir/*
-    echo '[]' > $index_file
-
-    echo 'Cache directory reseted'
+    __json_cache_reset_cache
 
   else
     if not __json_cache_check_uri $argv; return 2; end
-    set next_slot (jq '. | length' $index_file)
 
-    if not a2 -q --allow-overwrite -d $cache_dir -o $next_slot.json (__json_cache_add_uri_prefix $argv)
-      echo 'Download failed'
-      return 3
-    end
-    jq '.' $cache_dir/$next_slot.json
   end
+
+  set -e cache_dir
+  set -e index_file
 end
 
 function __json_cache_check_uri
@@ -50,5 +39,28 @@ function __json_cache_add_uri_prefix
   else
     echo "$argv"
   end
+end
+
+function __json_cache_download_json
+  set fixed_uri (__json_cache_add_uri_prefix $argv)
+  set next_slot (jq '. | length' $index_file)
+
+  if not a2 -q --allow-overwrite -d $cache_dir -o $next_slot.json $fixed_uri
+    echo 'Download failed'
+    return 1
+  end
+  
+  set tmp_file /tmp/json-cache-(date +%N)
+  jq ". + [\"$fixed_uri\"]" $index_file > $tmp_file
+  mv $tmp_file $index_file
+
+  jq '.' $cache_dir/$next_slot.json
+  return 0
+end
+
+function __json_cache_reset_cache
+  rm $cache_dir/*
+  echo '[]' > $index_file
+  echo 'Cache directory reseted'
 end
 
