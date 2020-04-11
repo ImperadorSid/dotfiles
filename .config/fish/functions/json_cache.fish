@@ -9,22 +9,36 @@ function json_cache
   set -g cache_dir ~/.cache/fish_json
   set -g index_file $cache_dir/index.json
 
-  if set -q _flag_f
-    if not __json_cache_check_uri $argv; return 2; end
-    if not __json_cache_check_content_type $argv; return 4; end
-    if not __json_cache_download_json $argv; return 3; end
-
-  else if set -q _flag_c
+  if set -q _flag_clean
     __json_cache_reset_cache
-
   else
     if not __json_cache_check_uri $argv; return 2; end
-    if not __json_cache_check_content_type $argv; return 4; end
+    set -g prefixed_uri (__json_cache_add_uri_prefix $argv)
 
+    set search_result (jq "indices(\"$prefixed_uri\")[0]" $index_file)
+
+    if test $search_result != 'null'
+      if set -q _flag_force
+        if not __json_cache_check_content_type; return 3; end
+        if not __json_cache_download_json $search_result; return 4; end
+      end
+
+      jq . $cache_dir/$search_result.json
+    else
+      set new_entry_id (jq 'length' $index_file)
+      
+      if not __json_cache_check_content_type; return 3; end
+      if not __json_cache_download_json $new_entry_id; return 4; end
+
+      __json_cache_new_entry
+
+      jq . $cache_dir/$new_entry_id.json
+    end
   end
 
   set -e cache_dir
   set -e index_file
+  set -e prefixed_uri
   return 0
 end
 
@@ -45,30 +59,24 @@ function __json_cache_add_uri_prefix
 end
 
 function __json_cache_download_json
-  set fixed_uri (__json_cache_add_uri_prefix $argv)
-  set next_slot (jq 'length' $index_file)
-
-  if not curl -sLo $cache_dir/$next_slot.json $fixed_uri
+  set file_id $argv
+  if not curl -sLo $cache_dir/$file_id.json $prefixed_uri
     echo 'Download failed'
     return 1
   end
-  
-  set tmp_file /tmp/json-cache-(date +%N)
-  jq ". + [\"$fixed_uri\"]" $index_file > $tmp_file
-  mv $tmp_file $index_file
-
-  jq '.' $cache_dir/$next_slot.json
   return 0
 end
 
 function __json_cache_reset_cache
-  rm $cache_dir/*
+  rm -r $cache_dir
+  mkdir -p $cache_dir
   echo '[]' > $index_file
-  echo 'Cache directory reseted'
+
+  echo 'Cache directory cleared'
 end
 
 function __json_cache_check_content_type
-  set content_type (curl -LIsw '%{content_type}' -o /dev/null $argv | sed -nr 's/(.*)(;.*|$)/\1/p')
+  set content_type (curl -LIsw '%{content_type}' -o /dev/null $prefixed_uri | sed -nr 's/(.*)(;.*|$)/\1/p')
   if test "$content_type" != 'application/json'
     echo 'This URI doesn\'t link to a JSON file'
     echo "Content-Type: '$content_type'"
@@ -76,4 +84,10 @@ function __json_cache_check_content_type
   end
   return 0
 end 
+
+function __json_cache_new_entry
+  set tmp_file /tmp/json-cache-(date +%N)
+  jq ". + [\"$prefixed_uri\"]" $index_file > $tmp_file
+  mv $tmp_file $index_file
+end
 
