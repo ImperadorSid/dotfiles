@@ -28,6 +28,6 @@ alias r  'c; exec fish'
 alias sc 's systemctl'
 alias t  'tree -C'
 alias v  'vim'
-alias V  's vim'
+alias V  'sudo vim'
 alias x  'xclip -selection clipboard'
 
