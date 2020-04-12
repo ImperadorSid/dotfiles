@@ -1,4 +1,6 @@
-function tasks -d "Manage tasks"
+#!/usr/bin/env fish
+
+function tasks -d "Manage personal tasks"
   set -g tasks_file ~/Documents/Books/Others/tasks.json
   if not __tasks_check_file; return 1; end
 
@@ -12,25 +14,31 @@ function tasks -d "Manage tasks"
 
   if set -q _flag_edit; set -g selected_operation 'edit'; end
   if set -q _flag_delete; set -g selected_operation 'delete'; end
-  
-  __tasks_print_all
-  if set -q _flag_priority
-    __tasks_print_category
-  end
-    
+
+
   #set -e tasks_file
-  #set -e selected_priority
-  return
+  set -e selected_priority
+  set -e selected_operation
+  return 0
 end
 
-function __tasks_print_all
-  set tasks_count (jq '.tasks | length' $tasks_file)
+function __tasks_print
+  if not count $argv > /dev/null
+    set filter '[.tasks[]]'
+    echo "All tasks"
+  else
+    set filter "[.tasks[] | select(.priority == \"$argv\")]"
+    echo "Tasks with $argv priority"
+  end
+
+  set tasks_count (jq "$filter | length" $tasks_file)
+
 
   for i in (seq 0 (math "$tasks_count - 1"))
-    set id (__tasks_get_task $i "id")
-    set task (__tasks_get_task $i "task")
-    set date (__tasks_get_task $i "date")
-    set priority (__tasks_get_task $i "priority")
+    set id (jq -r "$filter [$i].id" $tasks_file)
+    set task (jq -r "$filter [$i].task" $tasks_file)
+    set date (jq -r "$filter [$i].date" $tasks_file)
+    set priority (jq -r "$filter [$i].priority" $tasks_file)
 
     switch $priority
       case 'low'
@@ -44,18 +52,7 @@ function __tasks_print_all
     printf '%s%3d | %s | %s\n%s' (set_color $task_color) $id $date $task (set_color normal)
   end
 
-  echo -e "\n  TOTAL: $tasks_count tarefas"
-end
-
-function __tasks_print_category
-
-end
-
-function __tasks_get_task
-  set order $argv[1]
-  set field $argv[2]
-
-  jq -r ".tasks[$order].$field" $tasks_file
+  echo -e "  TOTAL: $tasks_count tasks\n"
 end
 
 function __tasks_check_file
