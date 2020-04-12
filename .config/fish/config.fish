@@ -1,7 +1,6 @@
 #!/usr/bin/env fish
 
 # PATH variable
-set -x TERM screen-256color
 set -x PATH ~/.local/anaconda3/bin ~/.local/bin $PATH
 
 # System configuraton folders
