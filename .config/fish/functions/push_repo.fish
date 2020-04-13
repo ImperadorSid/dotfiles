@@ -10,6 +10,8 @@ function push_repo
           end
           commit_repo $target_dir
       end
-      g -C $target_dir push
+      echo -n 'Pushing... '
+      g -C $target_dir push -q
+      echo 'complete'
   end
 end
