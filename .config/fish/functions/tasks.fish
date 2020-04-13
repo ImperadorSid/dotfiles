@@ -1,13 +1,12 @@
 #!/usr/bin/env fish
 
 function tasks -d "Manage personal tasks"
-  set -g tasks_file ~/Documents/Books/Tasks/tasks.json
-  if not __tasks_check_file; return 1; end
-  if not __tasks_check_json_formatting; return 3; end  
+  if not __tasks_check_file; __tasks_unset_variables; return 1; end
+  if not __tasks_check_json_formatting; __tasks_unset_variables; return 3; end  
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
   argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
-  if test $status -ne 0; return 2; end
+  if test $status -ne 0; __tasks_unset_variables; return 2; end
 
   if set -q _flag_low; set -g selected_priority 'low'; end
   if set -q _flag_normal; set -g selected_priority 'normal'; end
@@ -16,25 +15,26 @@ function tasks -d "Manage personal tasks"
   if set -q _flag_edit; set -g selected_operation 'edit'; end
   if set -q _flag_delete; set -g selected_operation 'delete'; end
 
+  set -g tmp_file /tmp/(date +%N)
+
   if set -q selected_operation
     switch $selected_operation
       case 'edit'
         echo 'Edit'
       case 'delete'
         if set -q selected_priority
-          echo "Delete all $selected_priority priority tasks"
+          __tasks_delete 'priority' \"$selected_priority\"
         else if count $argv > /dev/null
-          echo "Delete tasks with ids $argv"
-          __tasks_delete_by_id $argv
+          __tasks_delete 'id' $argv[1]
         else
-          __tasks_delete_all
+          if not __tasks_delete_all; __tasks_unset_variables; return 4; end
         end
     end
   else if set -q selected_priority
     if not count $argv > /dev/null
       __tasks_print $selected_priority
     else
-      __tasks_create "$argv" $selected_priority
+      if not __tasks_create "$argv" $selected_priority; __tasks_unset_variables; return 5; end
     end
   else if set -q _flag_priority
     __tasks_print 'low'
@@ -48,9 +48,7 @@ function tasks -d "Manage personal tasks"
     end
   end
 
-  #set -e tasks_file
-  set -e selected_priority
-  set -e selected_operation
+  __tasks_unset_variables
   return 0
 end
 
@@ -66,7 +64,7 @@ function __tasks_print
   set tasks_count (jq "$filter | length" $tasks_file)
 
   if test $tasks_count -eq 0
-    echo "NO TASKS"
+    echo -e 'NO TASKS\n'
     return
   end
 
@@ -102,13 +100,14 @@ function __tasks_check_file
 end
 
 function __tasks_create
-  set index (jq .next_index $tasks_file)
+  set index (jq '.next_index' $tasks_file)
   set date (date '+%d/%m %H:%M')
-  set tmp_file /tmp/(date +%N)
+  set capital_task (string_capitalize $argv[1])
+  set prefix_abbreviation (string sub -l 1 (string_capitalize $argv[2]))
 
   jq ".tasks += [{
         id: $index,
-        task: \"$argv[1]\",
+        task: \"$capital_task\",
         priority: \"$argv[2]\",
         date: \"$date\"
       }]" $tasks_file > $tmp_file
@@ -117,11 +116,15 @@ function __tasks_create
   jq ".next_index += 1" $tasks_file > $tmp_file
   mv $tmp_file $tasks_file
 
-  __tasks_commit_changes "Create task \"$argv[1]\" with id $index"
+  if not __tasks_commit_changes "Create task \"[$prefix_abbreviation] $capital_task\" with id $index"
+    return 1
+  end
+  echo 'Task created'
+  return 0
 end
 
 function __tasks_check_json_formatting
-  if not jq . $tasks_file > /dev/null 2> /dev/null
+  if not jq '.' $tasks_file > /dev/null 2> /dev/null
     echo 'The tasks file has JSON formatting errors.'
     echo "Please check this file: $tasks_file"
     return 1
@@ -130,14 +133,41 @@ function __tasks_check_json_formatting
 end
 
 function __tasks_delete_all
-  echo '{"next_index": 0, "tasks": []}' | jq . > $tasks_file
+  echo '{"next_index": 0, "tasks": []}' | jq '.' > $tasks_file
 
-  __tasks_commit_changes 'Delete all tasks'
+  if not __tasks_commit_changes 'Delete all tasks'
+    return 1
+  end
   echo 'All tasks deleted'
+  return 0
 end
 
 function __tasks_commit_changes
   g -C (dirname $tasks_file) add -A
   g -C (dirname $tasks_file) commit -qm $argv
+
+  return $status
+end
+
+function __tasks_unset_variables
+  set -e selected_priority
+  set -e selected_operation
+  set -e tmp_file
+end
+
+function __tasks_delete
+  set key $argv[1]
+  set value $argv[2]
+  set filter ".tasks[] | select(.$key == $value)"
+  set affected_tasks (jq "[$filter] | length" $tasks_file)
+
+  jq "del($filter)" $tasks_file > $tmp_file
+  mv $tmp_file $tasks_file
+
+  if not __tasks_commit_changes "Delete tasks with a condition '$key' equals to '$value'"
+    return 1
+  end
+  echo "$affected_tasks task(s) deleted"
+  return 0
 end
 
