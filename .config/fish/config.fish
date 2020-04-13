@@ -8,6 +8,9 @@ set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/ImperadorSid@dotfiles
 set -x system_files $repositories/ImperadorSid@system-files
 
+# Tasks file
+set -x tasks_file ~/Documents/Books/Tasks/tasks.json
+
 # Theme options
 set -g theme_display_date no
 set -g theme_nerd_fonts yes
