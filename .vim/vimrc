@@ -23,6 +23,7 @@ set noshowcmd
 set noshowmode
 set noswapfile
 set number
+set scrolloff=5
 set shell=sh
 set shiftwidth=2
 set shortmess=flmrwxoOsWF
