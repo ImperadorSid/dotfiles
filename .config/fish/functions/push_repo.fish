@@ -3,6 +3,7 @@
 function push_repo
   set target_dir $argv[1]
 
+  echo -n 'Pushing... '
   if not g -C $target_dir push
       if not g -C $target_dir pull
           for f in (g -C $target_dir diff --name-only --diff-filter=U)
@@ -10,8 +11,7 @@ function push_repo
           end
           commit_repo $target_dir
       end
-      echo -n 'Pushing... '
       g -C $target_dir push -q
-      echo 'complete'
   end
+  echo 'complete'
 end
