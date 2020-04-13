@@ -6,7 +6,7 @@ function commit_repo
     read -p 'set_color green; echo -n \'Commit message\'; set_color normal; echo \': \'' msg
     if test -n $msg
         g -C $out_dir add .
-        g -C $out_dir commit -m $msg
+        g -C $out_dir commit -qm $msg
 
     end
 
