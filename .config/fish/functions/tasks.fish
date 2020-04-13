@@ -6,7 +6,7 @@ function tasks -d "Manage personal tasks"
   if not __tasks_check_json_formatting; return 3; end  
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
-  argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' -x 'p,y' -x 'r,p,l,n,h,e,d' $options -- $argv
+  argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
   if test $status -ne 0; return 2; end
 
   if set -q _flag_low; set -g selected_priority 'low'; end
@@ -21,7 +21,14 @@ function tasks -d "Manage personal tasks"
       case 'edit'
         echo 'Edit'
       case 'delete'
-        G
+        if set -q selected_priority
+          echo "Delete all $selected_priority priority tasks"
+        else if count $argv > /dev/null
+          echo "Delete tasks with ids $argv"
+          __tasks_delete_by_id $argv
+        else
+          __tasks_delete_all
+        end
     end
   else if set -q selected_priority
     if not count $argv > /dev/null
@@ -109,6 +116,8 @@ function __tasks_create
 
   jq ".next_index += 1" $tasks_file > $tmp_file
   mv $tmp_file $tasks_file
+
+  __tasks_commit_changes "Create task \"$argv[1]\" with id $index"
 end
 
 function __tasks_check_json_formatting
@@ -120,12 +129,15 @@ function __tasks_check_json_formatting
   return 0
 end
 
-functon __tasks_delete_all
+function __tasks_delete_all
   echo '{"next_index": 0, "tasks": []}' | jq . > $tasks_file
+
+  __tasks_commit_changes 'Delete all tasks'
+  echo 'All tasks deleted'
 end
 
-function __tasks__commit_changes
-  g -C $tasks_file add -A
-  g -C $tasks_file commit -m $argv
+function __tasks_commit_changes
+  g -C (dirname $tasks_file) add -A
+  g -C (dirname $tasks_file) commit -qm $argv
 end
 
