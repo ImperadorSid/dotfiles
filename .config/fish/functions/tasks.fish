@@ -40,7 +40,9 @@ function tasks -d "Manage personal tasks"
     if not count $argv > /dev/null
       __tasks_print $selected_priority
     else
-      if not __tasks_create "$argv[1]" $selected_priority; __tasks_unset_variables; return 5; end
+      for t in $argv
+        if not __tasks_create "$t" $selected_priority; __tasks_unset_variables; return 5; end
+      end
     end
   else if set -q _flag_priority
     __tasks_print 'low'
@@ -50,7 +52,9 @@ function tasks -d "Manage personal tasks"
     if not count $argv > /dev/null
       __tasks_print
     else
-      if not __tasks_create "$argv[1]" 'normal'; __tasks_unset_variables; return 5; end
+      for t in $argv
+        if not __tasks_create "$t" 'normal'; __tasks_unset_variables; return 5; end
+      end
     end
   end
 
@@ -132,7 +136,7 @@ function __tasks_edit
   if not __tasks_inplace_write $operations; return 1; end
 
   set new_date (date '+%d/%m %H:%M')
-  if not __tasks_inplace_write "$filter.date = \"$new_date\""; return 1; end
+  __tasks_inplace_write "$filter.date = \"$new_date\"" > /dev/null
 
   __tasks_commit_changes "Edit task #$id" "Task #$id edited"
   return $status
