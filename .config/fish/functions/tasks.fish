@@ -66,7 +66,7 @@ function __tasks_create
   set index (jq '.next_index' $tasks_file)
   set date (date '+%d/%m %H:%M')
   set capital_task (string_capitalize $argv[1])
-  set prefix_abbreviation (string sub -l 1 (string_capitalize $argv[2]))
+  set priority_upper (string upper $argv[2])
 
   if not __tasks_inplace_write ".tasks += [{
     id: $index,
@@ -76,7 +76,7 @@ function __tasks_create
   }]"; return 1; end
   if not __tasks_inplace_write ".next_index += 1"; return 1; end
 
-  __tasks_commit_changes "Create task \"[$prefix_abbreviation] $capital_task\" with id $index" "Task \"$capital_task\" created. ID: $index"
+  __tasks_commit_changes "Create task \"[$priority_upper] $capital_task\" with id $index" "Task \"$capital_task\" created\nID: $index\nPriority: $priority_upper"
   return $status
 end
 
@@ -157,7 +157,8 @@ end
 
 function __tasks_delete
   set key $argv[1]
-  set value $argv[2] set filter ".tasks[] | select(.$key == $value)"
+  set value $argv[2]
+  set filter ".tasks[] | select(.$key == $value)"
 
   if test $key = 'id'
     set version_control_message "Delete task #$value"
@@ -192,11 +193,16 @@ function __tasks_check_file
 end
 
 function __tasks_check_json_formatting
-  if not jq '.' $tasks_file > /dev/null 2> /dev/null
-    echo 'The tasks file has JSON formatting errors.'
-    echo "Please check this file: $tasks_file"
+  if test -s $tasks_file
+    echo 'The tasks file is a empty file'
     return 1
   end
+
+  if not jq '.' $tasks_file > /dev/null 2> /dev/null
+    echo 'The tasks file has JSON formatting errors'
+    return 1
+  end
+
   return 0
 end
 
