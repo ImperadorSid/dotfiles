@@ -1,12 +1,12 @@
 #!/usr/bin/env fish
 
 function tasks -d "Manage personal tasks"
-  if not __tasks_check_file; __tasks_unset_variables; return 1; end
-  if not __tasks_check_json_formatting; __tasks_unset_variables; return 3; end  
+  if not __tasks_check_file; return 1; end
+  if not __tasks_check_json_formatting; return 3; end  
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
   argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
-  if test $status -ne 0; __tasks_unset_variables; return 2; end
+  if test $status -ne 0; return 2; end
 
   if set -q _flag_low; set -g selected_priority 'low'; end
   if set -q _flag_normal; set -g selected_priority 'normal'; end
@@ -20,12 +20,18 @@ function tasks -d "Manage personal tasks"
   if set -q selected_operation
     switch $selected_operation
       case 'edit'
-        echo 'Edit'
+        if not count $argv > /dev/null
+          v $tasks_file
+        else
+          set -g selected_task "(.tasks[] | select(.id == $argv[1]))"
+          if not __tasks_check_id; __tasks_unset_variables; return 6; end
+          if not __tasks_edit; __tasks_unset_variables; return 8; end
+        end
       case 'delete'
         if set -q selected_priority
-          __tasks_delete 'priority' \"$selected_priority\"
+          if not __tasks_delete 'priority' \"$selected_priority\"; __tasks_unset_variables; return 7; end
         else if count $argv > /dev/null
-          __tasks_delete 'id' $argv[1]
+          if not __tasks_delete 'id' $argv[1]; __tasks_unset_variables; return 7; end
         else
           if not __tasks_delete_all; __tasks_unset_variables; return 4; end
         end
@@ -44,7 +50,7 @@ function tasks -d "Manage personal tasks"
     if not count $argv > /dev/null
       __tasks_print
     else
-      __tasks_create "$argv" 'normal'
+      if not __tasks_create "$argv" 'normal'; __tasks_unset_variables; return 5; end
     end
   end
 
@@ -152,6 +158,7 @@ end
 function __tasks_unset_variables
   set -e selected_priority
   set -e selected_operation
+  set -e selected_task
   set -e tmp_file
 end
 
@@ -169,5 +176,21 @@ function __tasks_delete
   end
   echo "$affected_tasks task(s) deleted"
   return 0
+end
+
+function __tasks_check_id
+  set target (jq "$selected_task | has(\"task\")" $tasks_file)
+  if test "$target" != 'true'
+    set id (echo $selected_task | sed -nr 's/.*== ([[:digit:]]+).*/\1/p')
+    echo "Task #$id doesn't exist"
+    return 1
+  end
+  return 0
+end
+
+function __tasks_edit
+  set new_date (date '+%d/%m %H:%M')
+  set operation "$selected_task = \"$new_date\""
+  echo $operation
 end
 
