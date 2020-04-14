@@ -15,8 +15,6 @@ function tasks -d "Manage personal tasks"
   if set -q _flag_edit; set -g selected_operation 'edit'; end
   if set -q _flag_delete; set -g selected_operation 'delete'; end
 
-  set -g tmp_file /tmp/(date +%N)
-
   if set -q selected_operation
     switch $selected_operation
       case 'edit'
@@ -59,6 +57,24 @@ function tasks -d "Manage personal tasks"
   return 0
 end
 
+function __tasks_create
+  set index (jq '.next_index' $tasks_file)
+  set date (date '+%d/%m %H:%M')
+  set capital_task (string_capitalize $argv[1])
+  set prefix_abbreviation (string sub -l 1 (string_capitalize $argv[2]))
+
+  __tasks_inplace_write ".tasks += [{
+    id: $index,
+    task: \"$capital_task\",
+    priority: \"$argv[2]\",
+    date: \"$date\"
+  }]"
+  __tasks_inplace_write ".next_index += 1"
+
+  __tasks_commit_changes "Create task \"[$prefix_abbreviation] $capital_task\" with id $index" "Task \"$capital_task\" created. ID: $index"
+  return $status
+end
+
 function __tasks_print
   if not count $argv > /dev/null
     set filter '[.tasks[]]'
@@ -97,97 +113,6 @@ function __tasks_print
   echo -e "  TOTAL: $tasks_count tasks\n"
 end
 
-function __tasks_check_file
-  if test ! -f $tasks_file
-    echo "Tasks file ($tasks_file) doesn't exist"
-    set -e tasks_file
-    return 1
-  end
-  return 0
-end
-
-function __tasks_create
-  set index (jq '.next_index' $tasks_file)
-  set date (date '+%d/%m %H:%M')
-  set capital_task (string_capitalize $argv[1])
-  set prefix_abbreviation (string sub -l 1 (string_capitalize $argv[2]))
-
-  jq ".tasks += [{
-        id: $index,
-        task: \"$capital_task\",
-        priority: \"$argv[2]\",
-        date: \"$date\"
-      }]" $tasks_file > $tmp_file
-  mv $tmp_file $tasks_file
-
-  jq ".next_index += 1" $tasks_file > $tmp_file
-  mv $tmp_file $tasks_file
-
-  if not __tasks_commit_changes "Create task \"[$prefix_abbreviation] $capital_task\" with id $index"
-    return 1
-  end
-  echo "Task \"$capital_task\" created. ID: $index"
-  return 0
-end
-
-function __tasks_check_json_formatting
-  if not jq '.' $tasks_file > /dev/null 2> /dev/null
-    echo 'The tasks file has JSON formatting errors.'
-    echo "Please check this file: $tasks_file"
-    return 1
-  end
-  return 0
-end
-
-function __tasks_delete_all
-  echo '{"next_index": 0, "tasks": []}' | jq '.' > $tasks_file
-
-  if not __tasks_commit_changes 'Delete all tasks'
-    return 1
-  end
-  echo 'All tasks deleted'
-  return 0
-end
-
-function __tasks_commit_changes
-  g -C (dirname $tasks_file) add -A
-  g -C (dirname $tasks_file) commit -qm $argv
-
-  return $status
-end
-
-function __tasks_unset_variables
-  set -e selected_priority
-  set -e selected_operation
-  set -e selected_task
-  set -e tmp_file
-end
-
-function __tasks_delete
-  set key $argv[1]
-  set value $argv[2]
-  set filter ".tasks[] | select(.$key == $value)"
-  set affected_tasks (jq "[$filter] | length" $tasks_file)
-
-  jq "del($filter)" $tasks_file > $tmp_file
-  mv $tmp_file $tasks_file
-
-  if not __tasks_commit_changes "Delete tasks with a condition '$key' equals to '$value'"
-    return 1
-  end
-  echo "$affected_tasks task(s) deleted"
-  return 0
-end
-
-function __tasks_check_id
-  set target (jq "$selected_task | has(\"task\")" $tasks_file)
-  if test "$target" != 'true'
-    echo "Task #$selected_task_id doesn't exist"
-    return 1
-  end
-  return 0
-end
-
 function __tasks_edit
   set new_date (date '+%d/%m %H:%M')
   set operations "$selected_task.date = \"$new_date\""
@@ -200,13 +125,85 @@ function __tasks_edit
     set operations $operations "| $selected_task.task = \"$argv\""
   end
 
-  jq "$operations" $tasks_file > $tmp_file
-  mv $tmp_file $tasks_file
+  __tasks_inplace_write $operations
 
-  if not __tasks_commit_changes "Edit task #$selected_task_id"
+  __tasks_commit_changes "Edit task #$selected_task_id" "Task #$selected_task_id edited"
+  return $status
+end
+
+function __tasks_delete
+  set key $argv[1]
+  set value $argv[2]
+  set filter ".tasks[] | select(.$key == $value)"
+  set affected_tasks (jq "[$filter] | length" $tasks_file)
+
+  __tasks_inplace_write "del($filter)"
+
+  __tasks_commit_changes "Delete tasks with a condition '$key' equals to '$value'" "$affected_tasks task(s) deleted"
+  return $status
+end
+
+function __tasks_delete_all
+  echo '{"next_index": 0, "tasks": []}' | jq '.' > $tasks_file
+
+  __tasks_commit_changes 'Delete all tasks' 'All tasks deleted'
+  return $status
+end
+
+function __tasks_check_file
+  if test ! -f $tasks_file
+    echo "Tasks file ($tasks_file) doesn't exist"
+    set -e tasks_file
     return 1
   end
-  echo "Task #$selected_task_id edited"
   return 0
+end
+
+function __tasks_check_json_formatting
+  if not jq '.' $tasks_file > /dev/null 2> /dev/null
+    echo 'The tasks file has JSON formatting errors.'
+    echo "Please check this file: $tasks_file"
+    return 1
+  end
+  return 0
+end
+
+function __tasks_check_id
+  set target (jq "$selected_task | has(\"task\")" $tasks_file)
+  if test "$target" != 'true'
+    echo "Task #$selected_task_id doesn't exist"
+    return 1
+  end
+  return 0
+end
+
+function __tasks_inplace_write
+  set filter $argv
+  set tmp_file /tmp/(date +%N)
+
+  echo "Filter applied: $filter"
+  read
+  jq "$filter" $tasks_file > $tmp_file
+  mv $tmp_file $tasks_file
+end
+
+function __tasks_commit_changes
+  set commit_message $argv[1]
+  set success_message $argv[2]
+  
+  g -C (dirname $tasks_file) add -A
+  g -C (dirname $tasks_file) commit -qm $commit_message
+
+  if test $status -eq 0
+    echo $success_message
+    return 0
+  end
+  return 1
+end
+
+function __tasks_unset_variables
+  set -e selected_priority
+  set -e selected_operation
+  set -e selected_task
 end
 
