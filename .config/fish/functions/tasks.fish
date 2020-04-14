@@ -193,7 +193,7 @@ function __tasks_check_file
 end
 
 function __tasks_check_json_formatting
-  if test -s $tasks_file
+  if not test -s $tasks_file
     echo 'The tasks file is a empty file'
     return 1
   end
