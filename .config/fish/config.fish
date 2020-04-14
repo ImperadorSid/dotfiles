@@ -28,10 +28,13 @@ alias n  'npm'
 alias N  'node'
 alias p  'ipython'
 alias r  'c; exec fish'
-alias sc 's systemctl'
+alias sc 'sudo systemctl'
 alias t  'tasks'
-alias tr 'tree -C'
 alias v  'vim'
 alias V  'sudo vim'
 alias x  'xclip -selection clipboard'
+
+# Alias (make flags always enabled)
+alias tree 'tree -aC'
+alias ll 'll -a'
 
