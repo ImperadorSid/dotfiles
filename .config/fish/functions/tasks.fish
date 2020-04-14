@@ -117,10 +117,9 @@ end
 function __tasks_edit
   set id $argv[1]
   set new_task $argv[2]
-  set new_date (date '+%d/%m %H:%M')
   set filter "(.tasks[] | select(.id == $id))"
 
-  set operations "$filter.date = \"$new_date\""
+  set operations '.'
 
   if set -q selected_priority
     set operations $operations "| $filter.priority = \"$selected_priority\""
@@ -131,6 +130,9 @@ function __tasks_edit
   end
 
   if not __tasks_inplace_write $operations; return 1; end
+
+  set new_date (date '+%d/%m %H:%M')
+  if not __tasks_inplace_write "$filter.date = \"$new_date\""; return 1; end
 
   __tasks_commit_changes "Edit task #$id" "Task #$id edited"
   return $status
