@@ -190,11 +190,18 @@ end
 
 function __tasks_check_id 
   set id $argv[1]
+
+  if string match -qrv '^\d+$' $id
+    echo "\"$id\" isn't a valid task ID"
+    return 1
+  end
+
   set target (jq ".tasks[] | select(.id == $id) | has(\"task\")" $tasks_file)
   if test "$target" != 'true'
     echo "Task #$id doesn't exist"
     return 1
   end
+
   return 0
 end
 
