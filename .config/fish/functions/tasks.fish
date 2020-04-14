@@ -133,19 +133,31 @@ function __tasks_edit
     set operations $operations "| $filter.task = \"$new_task\""
   end
 
-  if not __tasks_inplace_write $operations; return 1; end
+  set old_task (jq "$filter.task" $tasks_file)
+  set old_priority (jq -r "$filter.priority" $tasks_file)
 
+  if not __tasks_inplace_write $operations; return 1; end
   set new_date (date '+%d/%m %H:%M')
   __tasks_inplace_write "$filter.date = \"$new_date\"" > /dev/null
 
-  __tasks_commit_changes "Edit task #$id" "Task #$id edited"
+  set new_task (jq "$filter.task" $tasks_file)
+  set new_priority (jq -r "$filter.priority" $tasks_file)
+
+  set changes
+  if test $old_task != $new_task; set changes "Name: $old_task -> $new_task"; end
+  if test $old_priority != $new_priority; set changes $changes "Priority: "(string upper $old_priority)" -> "(string upper $new_priority); end
+
+
+  set version_control_message "Edit task #$id ("(string join ' / ' $changes)")"
+  set output_message "Task #$id edited\n"(string join '\n' $changes)
+
+  __tasks_commit_changes $version_control_message $output_message
   return $status
 end
 
 function __tasks_delete
   set key $argv[1]
-  set value $argv[2]
-  set filter ".tasks[] | select(.$key == $value)"
+  set value $argv[2] set filter ".tasks[] | select(.$key == $value)"
 
   if test $key = 'id'
     set version_control_message "Delete task #$value"
@@ -228,7 +240,7 @@ function __tasks_commit_changes
   g -C (dirname $tasks_file) commit -qm $commit_message
 
   if test $status -eq 0
-    echo $success_message
+    echo -e $success_message
     return 0
   end
   return 1
