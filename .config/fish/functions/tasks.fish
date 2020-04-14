@@ -21,16 +21,17 @@ function tasks -d "Manage personal tasks"
         if not count $argv > /dev/null
           v $tasks_file
         else
-          set -g selected_task_id $argv[1]
-          set -g selected_task "(.tasks[] | select(.id == $selected_task_id))"
-          if not __tasks_check_id; __tasks_unset_variables; return 6; end
-          if not __tasks_edit $argv[2]; __tasks_unset_variables; return 8; end
+          if not __tasks_check_id $argv[1]; __tasks_unset_variables; return 6; end
+          if not __tasks_edit $argv; __tasks_unset_variables; return 8; end
         end
       case 'delete'
         if set -q selected_priority
           if not __tasks_delete 'priority' \"$selected_priority\"; __tasks_unset_variables; return 7; end
         else if count $argv > /dev/null
-          if not __tasks_delete 'id' $argv[1]; __tasks_unset_variables; return 7; end
+          for t in $argv
+            if not __tasks_check_id $t; __tasks_unset_variables; return 6; end
+            if not __tasks_delete 'id' $t; __tasks_unset_variables; return 7; end
+          end
         else
           if not __tasks_delete_all; __tasks_unset_variables; return 4; end
         end
@@ -63,13 +64,13 @@ function __tasks_create
   set capital_task (string_capitalize $argv[1])
   set prefix_abbreviation (string sub -l 1 (string_capitalize $argv[2]))
 
-  __tasks_inplace_write ".tasks += [{
+  if not __tasks_inplace_write ".tasks += [{
     id: $index,
     task: \"$capital_task\",
     priority: \"$argv[2]\",
     date: \"$date\"
-  }]"
-  __tasks_inplace_write ".next_index += 1"
+  }]"; return 1; end
+  if not __tasks_inplace_write ".next_index += 1"; return 1; end
 
   __tasks_commit_changes "Create task \"[$prefix_abbreviation] $capital_task\" with id $index" "Task \"$capital_task\" created. ID: $index"
   return $status
@@ -114,20 +115,24 @@ function __tasks_print
 end
 
 function __tasks_edit
+  set id $argv[1]
+  set new_task $argv[2]
   set new_date (date '+%d/%m %H:%M')
-  set operations "$selected_task.date = \"$new_date\""
+  set filter "(.tasks[] | select(.id == $id))"
+
+  set operations "$filter.date = \"$new_date\""
 
   if set -q selected_priority
-    set operations $operations "| $selected_task.priority = \"$selected_priority\""
+    set operations $operations "| $filter.priority = \"$selected_priority\""
   end
 
-  if count $argv > /dev/null
-    set operations $operations "| $selected_task.task = \"$argv\""
+  if count $new_task > /dev/null
+    set operations $operations "| $filter.task = \"$new_task\""
   end
 
-  __tasks_inplace_write $operations
+  if not __tasks_inplace_write $operations; return 1; end
 
-  __tasks_commit_changes "Edit task #$selected_task_id" "Task #$selected_task_id edited"
+  __tasks_commit_changes "Edit task #$id" "Task #$id edited"
   return $status
 end
 
@@ -135,11 +140,20 @@ function __tasks_delete
   set key $argv[1]
   set value $argv[2]
   set filter ".tasks[] | select(.$key == $value)"
-  set affected_tasks (jq "[$filter] | length" $tasks_file)
 
-  __tasks_inplace_write "del($filter)"
+  if test $key = 'id'
+    set version_control_message "Delete task #$value"
+    set output_message "Task #$value deleted"
+  else
+    set affected_tasks (jq "[$filter] | length" $tasks_file)
+    set unquoted_priority (echo $value | tr -d \")
 
-  __tasks_commit_changes "Delete tasks with a condition '$key' equals to '$value'" "$affected_tasks task(s) deleted"
+    set version_control_message "Delete $affected_tasks $unquoted_priority priority task(s)"
+    set output_message "$affected_tasks $unquoted_priority priority task(s) deleted"
+  end
+
+  if not __tasks_inplace_write "del($filter)"; return 1; end
+  __tasks_commit_changes $version_control_message $output_message
   return $status
 end
 
@@ -168,10 +182,11 @@ function __tasks_check_json_formatting
   return 0
 end
 
-function __tasks_check_id
-  set target (jq "$selected_task | has(\"task\")" $tasks_file)
+function __tasks_check_id 
+  set id $argv[1]
+  set target (jq ".tasks[] | select(.id == $id) | has(\"task\")" $tasks_file)
   if test "$target" != 'true'
-    echo "Task #$selected_task_id doesn't exist"
+    echo "Task #$id doesn't exist"
     return 1
   end
   return 0
@@ -182,7 +197,14 @@ function __tasks_inplace_write
   set tmp_file /tmp/(date +%N)
 
   jq "$filter" $tasks_file > $tmp_file
+
+  if diff -q $tmp_file $tasks_file > /dev/null
+    echo 'Nothing changes'
+    return 1
+  end
+
   mv $tmp_file $tasks_file
+  return 0
 end
 
 function __tasks_commit_changes
@@ -202,6 +224,5 @@ end
 function __tasks_unset_variables
   set -e selected_priority
   set -e selected_operation
-  set -e selected_task
 end
 
