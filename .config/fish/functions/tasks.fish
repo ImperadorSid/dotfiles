@@ -181,8 +181,6 @@ function __tasks_inplace_write
   set filter $argv
   set tmp_file /tmp/(date +%N)
 
-  echo "Filter applied: $filter"
-  read
   jq "$filter" $tasks_file > $tmp_file
   mv $tmp_file $tasks_file
 end
