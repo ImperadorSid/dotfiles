@@ -23,9 +23,10 @@ function tasks -d "Manage personal tasks"
         if not count $argv > /dev/null
           v $tasks_file
         else
-          set -g selected_task "(.tasks[] | select(.id == $argv[1]))"
+          set -g selected_task_id $argv[1]
+          set -g selected_task "(.tasks[] | select(.id == $selected_task_id))"
           if not __tasks_check_id; __tasks_unset_variables; return 6; end
-          if not __tasks_edit; __tasks_unset_variables; return 8; end
+          if not __tasks_edit $argv[2]; __tasks_unset_variables; return 8; end
         end
       case 'delete'
         if set -q selected_priority
@@ -40,7 +41,7 @@ function tasks -d "Manage personal tasks"
     if not count $argv > /dev/null
       __tasks_print $selected_priority
     else
-      if not __tasks_create "$argv" $selected_priority; __tasks_unset_variables; return 5; end
+      if not __tasks_create "$argv[1]" $selected_priority; __tasks_unset_variables; return 5; end
     end
   else if set -q _flag_priority
     __tasks_print 'low'
@@ -50,7 +51,7 @@ function tasks -d "Manage personal tasks"
     if not count $argv > /dev/null
       __tasks_print
     else
-      if not __tasks_create "$argv" 'normal'; __tasks_unset_variables; return 5; end
+      if not __tasks_create "$argv[1]" 'normal'; __tasks_unset_variables; return 5; end
     end
   end
 
@@ -125,7 +126,7 @@ function __tasks_create
   if not __tasks_commit_changes "Create task \"[$prefix_abbreviation] $capital_task\" with id $index"
     return 1
   end
-  echo 'Task created'
+  echo "Task \"$capital_task\" created. ID: $index"
   return 0
 end
 
@@ -181,8 +182,7 @@ end
 function __tasks_check_id
   set target (jq "$selected_task | has(\"task\")" $tasks_file)
   if test "$target" != 'true'
-    set id (echo $selected_task | sed -nr 's/.*== ([[:digit:]]+).*/\1/p')
-    echo "Task #$id doesn't exist"
+    echo "Task #$selected_task_id doesn't exist"
     return 1
   end
   return 0
@@ -190,7 +190,23 @@ end
 
 function __tasks_edit
   set new_date (date '+%d/%m %H:%M')
-  set operation "$selected_task = \"$new_date\""
-  echo $operation
+  set operations "$selected_task.date = \"$new_date\""
+
+  if set -q selected_priority
+    set operations $operations "| $selected_task.priority = \"$selected_priority\""
+  end
+
+  if count $argv > /dev/null
+    set operations $operations "| $selected_task.task = \"$argv\""
+  end
+
+  jq "$operations" $tasks_file > $tmp_file
+  mv $tmp_file $tasks_file
+
+  if not __tasks_commit_changes "Edit task #$selected_task_id"
+    return 1
+  end
+  echo "Task #$selected_task_id edited"
+  return 0
 end
 
