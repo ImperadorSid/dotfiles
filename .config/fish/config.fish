@@ -1,8 +1,5 @@
 #!/usr/bin/env fish
 
-# PATH variable
-set -x PATH ~/.local/anaconda3/bin ~/.local/bin $PATH
-
 # System configuraton folders
 set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/ImperadorSid@dotfiles
