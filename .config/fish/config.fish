@@ -1,5 +1,9 @@
 #!/usr/bin/env fish
 
+# Environments variables
+set -x EDITOR vim
+set -x BROWSER google-chrome
+
 # System configuraton folders
 set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/ImperadorSid@dotfiles
@@ -34,7 +38,4 @@ alias x  'xclip -selection clipboard'
 # Alias (make flags always enabled)
 alias ll 'ls -lha'
 alias tree 'tree -aC'
-
-# Source files
-source ~/.local/omf/pkg/colorman/init.fish
 
