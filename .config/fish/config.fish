@@ -12,6 +12,8 @@ set -x system_files $repositories/ImperadorSid@system-files
 # Tasks file
 set -x tasks_file ~/Documents/Books/Tasks/tasks.json
 
+# FZF
+set -x FZF_DEFAULT_OPTS $FZF_DEFAULT_OPTS '--color=dark --color=fg:-1,bg:-1,hl:#5fff87,fg+:-1,bg+:-1,hl+:#ffaf5f --color=info:#af87ff,prompt:#5fff87,pointer:#ff87d7,marker:#ff87d7,spinner:#ff87d7'
 # Theme options
 set -g theme_display_date no
 set -g theme_nerd_fonts yes
