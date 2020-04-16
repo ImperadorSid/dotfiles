@@ -1,4 +1,5 @@
 package colorman
+package fzf
 package grc
 package pisces
 theme bobthefish
