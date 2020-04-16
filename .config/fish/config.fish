@@ -38,6 +38,6 @@ alias V  'sudo vim'
 alias x  'xclip -selection clipboard'
 
 # Alias (make flags always enabled)
-alias ll 'ls -lha'
+alias ll 'ls -lhA'
 alias tree 'tree -aC'
 
