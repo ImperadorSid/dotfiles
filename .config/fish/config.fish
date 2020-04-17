@@ -39,3 +39,5 @@ alias x  'xclip -selection clipboard'
 alias ll 'ls -lhA'
 alias tree 'tree -aC'
 
+# Colorman
+source ~/.local/omf/pkg/colorman/init.fish
