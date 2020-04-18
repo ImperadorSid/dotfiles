@@ -11,7 +11,7 @@ function personal_script
   set results_count (count $script_name)
 
   if test $results_count -eq 0
-    echo 'Script not find'
+    echo 'Script not found'
     return 1
   else if test $results_count -ge 2
     echo 'More than 1 script matches the input'
