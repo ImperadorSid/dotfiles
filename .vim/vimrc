@@ -45,9 +45,9 @@ map <Leader>, :execute 'tabedit' vimrc_path<CR>
 map <Leader>. :execute 'source' vimrc_path<CR>
 
 " Useful actions
+map <Leader>f :noh<CR>
 map <Leader>s :set list!<CR>
 map <Leader>t :%s/ \+$//<CR>
-map <F5> :e<CR>
 
 " Disable arrow keys
 map <Up> <Nop>
