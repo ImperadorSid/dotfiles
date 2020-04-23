@@ -1,7 +1,6 @@
 "OPTIONS
 " Disabled plugins
 let g:loaded_matchparen=1
-let g:loaded_netrwPlugin=1
 
 " Netrw plugin
 let g:netrw_banner=0
@@ -36,14 +35,14 @@ set splitbelow
 set splitright
 set tabpagemax=100
 set termguicolors
-set timeoutlen=300
+set timeoutlen=200
 set wildmode=list:full
 
 " MAPPINGS
 " Source .vimrc
 let vimrc_path = "~/.vim/vimrc"
 map <Leader>, :execute 'tabedit' vimrc_path<CR>
-map <Leader><lt> :execute 'source' vimrc_path<CR>
+map <Leader>. :execute 'source' vimrc_path<CR>
 
 " Useful actions
 map <Leader>s :set list!<CR>
