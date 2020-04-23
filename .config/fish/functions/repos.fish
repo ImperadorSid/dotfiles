@@ -1,12 +1,11 @@
+#!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download'
   argparse -x 'e,c,i,d' -X 2 $options -- $argv
-  if test $status -ne 0
-    __repos_unset
-    return 2
-  end
+  test $status -ne 0; and return 2
 
-  set -g repo_file "$repositories/$argv[1]"
+  set -g repo_file $argv[1]
+  set -g repo_path "$repositories/$argv[1]"
 
   if set -q _flag_create;
     echo 'Create'
@@ -15,29 +14,15 @@ function repos -d 'Manage repository downloads and script installations'
   end
 
   not __repos_check_file; and return 1
-  echo 'Do something'
-
+  set repo_type repo_metadata $repo_file '.type'
   __repos_unset
   return 0
 end
 
-function __repos_jq
-  argparse 'n/null' -- $argv
-  set -g metadata (sed '/^#!/,$d' $repo_file)
-
-  if set -q _flag_null
-    echo $metadata | jq -e "$argv[1]" > /dev/null
-  else
-    echo $metadata | jq -re "$argv[1]"
-  end
-
-  return $status
-end
-
 function __repos_check_file
-  if test ! -f $repo_file
+  if test ! -f $repo_path
     echo 'File doesn\'t exit'
-  else if not __repos_jq -n 'has("type")'
+  else if not repo_metadata -c $repo_file
     echo 'Repo metadata is invalid'
   else
     return 0
@@ -49,6 +34,6 @@ end
 
 function __repos_unset
   set -e repo_file
-  set -e metadata
+  set -e repo_path
 end
 
