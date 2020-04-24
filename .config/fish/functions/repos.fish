@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
-  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download'
-  argparse -x 'e,c,i,d' -X 2 $options -- $argv
+  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clone'
+  argparse -x 'e,c,i,d' -x 'f,c,e' -X 2 $options -- $argv
   test $status -ne 0; and return 2
 
   set -g repo_file $argv[1]
@@ -25,7 +25,7 @@ function repos -d 'Manage repository downloads and script installations'
     case 'backup'
       echo 'Backup'
     case 'install'
-      __repos_install "$_flag_only_download$_flag_only_install"
+      __repos_install "$_flag_only_download$_flag_only_install" "$_flag_force_clone"
     case 'release'
       echo 'Release'
     case *
@@ -65,6 +65,7 @@ function __repos_install
   __repos_find_location
 
   if test "$argv[1]" != '-i'
+    test "$argv[2]" = '-f'; and rm -rf $repo_location
     g clone $repo_address $repo_location
   end
 
@@ -106,6 +107,16 @@ function __repos_find_location
   set -g repo_location (meta '.location' | sed -r 's|^~|/home/impsid|')
   if test "$repo_location" = 'null'
     set repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
+  end
+end
+
+function __repos_path_folders
+  echo 
+  for f in (meta '.path_folders[]')
+    if not contains $repo_location/$f $fish_user_paths
+      echo "Adding folder \"$f\" to PATH"
+      set -p fish_user_paths $repo_location/$f
+    end
   end
 end
 
