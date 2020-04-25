@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
-  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clone'
-  argparse -x 'e,c,i,d' -x 'f,c,e' -X 2 $options -- $argv
+  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear'
+  argparse -x 'c,e,i,d' -x 'f,c,e' -X 2 $options -- $argv
   test $status -ne 0; and return 2
 
   set -g repo_file $argv[1]
@@ -18,16 +18,14 @@ function repos -d 'Manage repository downloads and script installations'
   not __repos_check_file; and return 1
 
   set -g repo_name (meta '.repo')
-  set -g repo_address (string match -qr '^https' $repo_name; and echo $repo_name; or echo "https://github.com/$repo_name")
+  __repos_get_address
   set repo_type (meta '.type')
 
   switch $repo_type
     case 'backup'
       echo 'Backup'
-    case 'install'
-      __repos_install "$_flag_only_download$_flag_only_install" "$_flag_force_clone"
-    case 'release'
-      echo 'Release'
+    case 'clone' 'release'
+      __repos_clone_release "$_flag_i$_flag_d" "$_flag_f"; or return 4
     case *
       echo 'Repo type is invalid'
       __repos_cleanup_env
@@ -61,24 +59,13 @@ function __repos_cleanup_env
   functions -e meta meta_quiet
 end
 
-function __repos_install
+function __repos_clone_release
   __repos_find_location
 
-  if test "$argv[1]" != '-i'
-    test "$argv[2]" = '-f'; and rm -rf $repo_location
-    g clone $repo_address $repo_location
-  end
+  test "$argv[1]" = '-i'; or __repos_download $argv[2]; or return 1
+  test "$argv[1]" = '-d'; or __repos_install
 
-  if test "$argv[1]" != '-d'
-    set current_location $pwd
-    cd $repo_location; or return 1
-
-    __repos_script | bash
-    meta_quiet 'has("links")'; and __repos_links
-    meta_quiet 'has("path_folders")'; and __repos_path_folders
-
-    cd $current_location
-  end
+  return 0
 end
 
 function __repos_script
@@ -94,11 +81,9 @@ function __repos_links
 
     echo -e "\nCreating links in $destination"
 
-    set files_count (meta ".links[$i].files | length")
-    for j in (seq 0 (math "$files_count - 1"))
-      set file_name (meta ".links[$i].files[$j]")
-      ln -sf $file_name $destination
-      echo "Link to $file_name created"
+    for f in (meta ".links[$i].files[]")
+      ln -sf $f $destination
+      echo "Link to $f created"
     end
   end
 end
@@ -118,5 +103,61 @@ function __repos_path_folders
       set -p fish_user_paths $repo_location/$f
     end
   end
+end
+
+function __repos_download
+  test "$argv" = '-f'; and rm -rf $repo_location
+  
+  if test "$repo_type" = 'clone'
+    g clone $repo_address $repo_location
+  else
+    if not __repos_get_files $argv 
+      __repos_cleanup_env
+      return 1
+    end
+  end
+
+  return 0
+end
+
+function __repos_install
+  set current_location $pwd
+  cd $repo_location; or return 1
+
+  __repos_script | bash
+  meta_quiet 'has("links")'; and __repos_links
+  meta_quiet 'has("path_folders")'; and __repos_path_folders
+
+  cd $current_location
+end
+
+function __repos_get_files
+  __repos_name_formatting; or return 1
+  set releases_file (json_cache $argv api.github.com/repos/$repo_name/releases)
+  set targets_count (meta '.targets[] | length')
+  for i in (seq 0 (math "$targets_count - 1"))
+    if (meta ".targets[$i].tag")
+    end
+  end
+
+  return 0
+end
+
+function __repos_get_address
+  if string match -qr '^https' $repo_name
+    set -g repo_address $repo_name
+  else
+    set -g repo_address "https://github.com/$repo_name"
+  end
+
+end
+
+function __repos_name_formatting
+  if string match -qrv '^[\w-]+/[\w-]+$' $repo_name
+    echo 'To downloads releases from GitHub, the "repo" field must be formatted as <user>/<repo-name>'
+    return 1
+  end
+
+  return 0
 end
 
