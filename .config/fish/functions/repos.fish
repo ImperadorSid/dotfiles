@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear'
-  argparse -x 'c,e,i,d' -x 'f,c,e' -X 2 $options -- $argv
+  argparse -n 'Repository Management' -x 'c,e,i,d' -x 'f,c,e' -X 2 $options -- $argv
   test $status -ne 0; and return 2
 
   set -g repo_file $argv[1]
@@ -25,7 +25,7 @@ function repos -d 'Manage repository downloads and script installations'
     case 'backup'
       echo 'Backup'
     case 'clone' 'release'
-      __repos_clone_release "$_flag_i$_flag_d" "$_flag_f"; or return 4
+      __repos_clone_release "$_flag_i$_flag_d" $_flag_f; or return 4
     case *
       echo 'Repo type is invalid'
       __repos_cleanup_env
@@ -55,12 +55,14 @@ function __repos_cleanup_env
   set -e repo_name
   set -e repo_address
   set -e repo_location
+  set -e FILE_NAMES
 
   functions -e meta meta_quiet
 end
 
 function __repos_clone_release
   __repos_find_location
+  set -gx FILE_NAMES
 
   test "$argv[1]" = '-i'; or __repos_download $argv[2]; or return 1
   test "$argv[1]" = '-d'; or __repos_install
@@ -133,11 +135,27 @@ end
 
 function __repos_get_files
   __repos_name_formatting; or return 1
-  set releases_file (json_cache $argv api.github.com/repos/$repo_name/releases)
-  set targets_count (meta '.targets[] | length')
+
+  set targets_count (meta '.targets | length')
   for i in (seq 0 (math "$targets_count - 1"))
-    if (meta ".targets[$i].tag")
+    set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/') 
+    set assets (__repos_tag_assets $tag $argv)
+
+    echo "Release $tag"
+    for f in (meta ".targets[$i].files[]")
+      set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
+
+      echo -n "  Downloading $file_info[1]... "
+      a2 (test "$argv" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location $file_info[2]
+      if test "$status" -ne 0
+        echo -e "\n\nDownload failed. Aborting"
+        return 1
+      end
+      echo 'finished'
+
+      set -a FILE_NAMES $file_info[1]
     end
+    echo
   end
 
   return 0
@@ -159,5 +177,14 @@ function __repos_name_formatting
   end
 
   return 0
+end
+
+function __repos_tag_assets
+  set uri_prefix "https://api.github.com/repos/$repo_name/releases"
+  if test "$argv[1]" = 'latest'
+    json_cache $argv[2] "$uri_prefix/latest" | jq '.assets[]'
+  else
+    json_cache $argv[2] "$uri_prefix?per_page=100" | jq ".[] | select(.tag_name == \"$argv[1]\").assets[]"
+  end
 end
 
