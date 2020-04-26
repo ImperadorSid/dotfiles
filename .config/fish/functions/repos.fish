@@ -30,8 +30,6 @@ function __repos_execute
   set -g repo_type (meta '.type')
 
   switch $repo_type
-    case 'backup'
-      echo 'Backup'
     case 'clone' 'release'
       __repos_clone_release $argv; or return 1
     case '*'
@@ -220,8 +218,6 @@ function __repos_create
   set targets '"targets": [{"tag": "", "files": []}]'
 
   switch $argv[1]
-    case 'backup'
-      set template "{$type, $repo, $location}"
     case 'clone'
       set template "{$type, $repo, $location, $links, $path_folders}"
     case 'release'
