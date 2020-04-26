@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear'
-  argparse -n 'Repository Management' -x 'c,e,i,d' -x 'f,e' -X 2 $options -- $argv
+  argparse -n 'Repository Management' -x 'c,e,i,d' -x 'f,e,i' -X 2 $options -- $argv
   test $status -ne 0; and return 1
 
   set -g repo_file $argv[1]
@@ -67,7 +67,11 @@ function __repos_clone_release
   __repos_find_location
   set -gx FILE_NAMES
 
-  test "$argv[1]" = '-i'; or __repos_download $argv[2]; or return 1
+  if test "$argv[1]" = '-i'
+    __repos_get_files $argv[1]
+  else
+    __repos_download $argv[2]; or return 1
+  end
   test "$argv[1]" = '-d'; or __repos_install; or return 1
 
   return 0
@@ -82,11 +86,11 @@ end
 
 function __repos_download
   test "$argv" = '-f'; and rm -rf $repo_location
-  
+
   if test "$repo_type" = 'clone'
     g clone $repo_address $repo_location
   else
-    if not __repos_get_files $argv 
+    if not __repos_get_files $argv
       __repos_cleanup_env
       return 1
     end
@@ -97,16 +101,23 @@ end
 
 function __repos_get_files
   __repos_name_formatting; or return 1
+  argparse 'f/force' 'i/only-install' -- $argv
 
   set targets_count (meta '.targets | length')
   for i in (seq 0 (math "$targets_count - 1"))
-    set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/') 
-    set assets (__repos_tag_assets $tag $argv)
+    set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/')
+    set assets (__repos_tag_assets $tag $_flag_force)
 
     echo "Release $tag"
     for f in (meta ".targets[$i].files[]")
       set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
-      __repos_download_file $file_info $argv; or return 1
+
+      if set -q _flag_only_install
+        set -a FILE_NAMES $file_info[1]
+        echo "  File" (count $FILE_NAMES)": $file_info[1]"
+      else
+        __repos_download_file $file_info $_flag_force; or return 1
+      end
     end
     echo
   end
@@ -227,7 +238,7 @@ function __repos_create
       __repos_cleanup_env
       return 1
   end
-  
+
   echo $template | jq '.' > $repo_path
   echo '#!/usr/bin/env bash' >> $repo_path
 
