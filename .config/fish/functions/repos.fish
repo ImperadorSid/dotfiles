@@ -27,15 +27,15 @@ function __repos_execute
 
   set -g repo_name (meta '.repo')
   __repos_get_address
-  set repo_type (meta '.type')
+  set -g repo_type (meta '.type')
 
   switch $repo_type
     case 'backup'
       echo 'Backup'
     case 'clone' 'release'
       __repos_clone_release $argv; or return 1
-    case *
-      echo 'Repo type is invalid'
+    case '*'
+      echo "Repo type \"$repo_type\" is invalid"
       __repos_cleanup_env
       return 1
   end
@@ -45,7 +45,7 @@ end
 
 function __repos_check_file
   if test ! -f $repo_path
-    echo 'File doesn\'t exit'
+    echo "File \"$repo_file\" doesn't exit"
   else if not repo_metadata -c $repo_file
     echo 'Repo metadata is invalid'
   else
@@ -70,7 +70,7 @@ function __repos_clone_release
   set -gx FILE_NAMES
 
   test "$argv[1]" = '-i'; or __repos_download $argv[2]; or return 1
-  test "$argv[1]" = '-d'; or __repos_install
+  test "$argv[1]" = '-d'; or __repos_install; or return 1
 
   return 0
 end
@@ -108,16 +108,7 @@ function __repos_get_files
     echo "Release $tag"
     for f in (meta ".targets[$i].files[]")
       set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
-
-      echo -n "  Downloading $file_info[1]... "
-      a2 (test "$argv" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location $file_info[2]
-      if test "$status" -ne 0
-        echo -e "\n\nDownload failed. Aborting"
-        return 1
-      end
-      echo 'finished'
-
-      set -a FILE_NAMES $file_info[1]
+      __repos_download_file $file_info $argv; or return 1
     end
     echo
   end
@@ -143,13 +134,28 @@ function __repos_tag_assets
   end
 end
 
+function __repos_download_file
+  echo -n "  Downloading $argv[1]... "
+  a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location $argv[2]
+  if test "$status" -ne 0
+    echo -e "\n\nDownload failed. Aborting"
+    return 1
+  end
+  echo 'finished'
+
+  set -a FILE_NAMES $argv[1]
+  return 0
+end
+
 function __repos_install
-  set current_location $pwd
+  set current_location $PWD
   cd $repo_location; or return 1
 
+  echo 'Running installation script...'
   __repos_script | bash
-  meta_quiet 'has("links")'; and __repos_links
-  meta_quiet 'has("path_folders")'; and __repos_path_folders
+
+  __repos_links
+  __repos_path_folders
 
   cd $current_location
 end
@@ -168,14 +174,15 @@ function __repos_links
     echo -e "\nCreating links in $destination"
 
     for f in (meta ".links[$i].files[]")
-      ln -sf $f $destination
+      ln -sf $repo_location/$f $destination
       echo "Link to $f created"
     end
   end
 end
 
 function __repos_path_folders
-  echo 
+  test (meta '.path_folders | length') -gt 0; or return
+  echo
   for f in (meta '.path_folders[]')
     if not contains $repo_location/$f $fish_user_paths
       echo "Adding folder \"$f\" to PATH"
@@ -190,6 +197,7 @@ function __repos_cleanup_env
   set -e repo_name
   set -e repo_address
   set -e repo_location
+  set -e repo_type
   set -e FILE_NAMES
 
   functions -e meta meta_quiet
@@ -199,16 +207,17 @@ function __repos_create
   set repo_path $repo_path.repo
   if test -f "$repo_path" -a 'x-f' != "x$argv[2]"
     echo 'Repository file already exists'
+    __repos_cleanup_env
     return 1
   end
   test "$argv[1]" = ''; and set argv[1] 'release'
 
-  set type '"type": ""'
+  set type '"type": "'$argv[1]'"'
   set repo '"repo": "/"'
   set location '"location": ""'
-  set links '"links": [{"destination": "", "files": [""]}]'
-  set path_folders '"path_folders": [""]'
-  set targets '"targets": [{"tag": "", "files": [""]}]'
+  set links '"links": [{"destination": "", "files": []}]'
+  set path_folders '"path_folders": []'
+  set targets '"targets": [{"tag": "", "files": []}]'
 
   switch $argv[1]
     case 'backup'
@@ -218,7 +227,7 @@ function __repos_create
     case 'release'
       set template "{$type, $repo, $location, $links, $path_folders, $targets}"
     case '*'
-      echo "Type \"$argv\" is not valid"
+      echo "Type \"$argv[1]\" is not valid"
       __repos_cleanup_env
       return 1
   end
@@ -226,19 +235,21 @@ function __repos_create
   echo $template | jq '.' > $repo_path
   echo '#!/usr/bin/env bash' >> $repo_path
 
+  __repos_edit
+
   echo "Repository \"$repo_file\" ($argv[1]) created"
   return 0
 end
 
 function __repos_edit
   if test -f $repo_path
-    vim -c 'set filetype=sh' $repo_path
+    vim -c 'set filetype=sh' +3 $repo_path
   else
-    echo "Repo file $repo_file doesn't exist"
+    echo "Repo file \"$repo_file\" doesn't exist"
+    __repos_cleanup_env
     return 1
   end
 
-  __repos_cleanup_env
   return 0
 end
 
