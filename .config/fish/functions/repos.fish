@@ -1,39 +1,45 @@
 #!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
-  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'm/metadata' 's/script'
-  argparse -n 'Repository Management' -x 'c,e,i,d' -x 'f,e' -x 'm,s,c,i,d,f' -X 2 $options -- $argv
-  test $status -ne 0; and return 2
+  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear'
+  argparse -n 'Repository Management' -x 'c,e,i,d' -x 'f,e' -X 2 $options -- $argv
+  test $status -ne 0; and return 1
 
   set -g repo_file $argv[1]
   set -g repo_path "$repositories/$repo_file"
 
   if set -q _flag_create
-    __repos_create "$argv[2]" $_flag_f; or return 5
+    __repos_create "$argv[2]" $_flag_f; or return 2
   else if set -q _flag_edit
-    __repos_edit
+    __repos_edit; or return 3
   else
-    alias meta 'repo_metadata $repo_file'
-    alias meta_quiet 'repo_metadata -n $repo_file'
-
-    __repos_check_file; or return 1
-
-    set -g repo_name (meta '.repo')
-    __repos_get_address
-    set repo_type (meta '.type')
-
-    switch $repo_type
-      case 'backup'
-        echo 'Backup'
-      case 'clone' 'release'
-        __repos_clone_release "$_flag_i$_flag_d" $_flag_f; or return 4
-      case *
-        echo 'Repo type is invalid'
-        __repos_cleanup_env
-        return 3
-    end
+    __repos_execute "$_flag_i$_flag_d" $_flag_f; or return 4
   end
 
   __repos_cleanup_env
+  return 0
+end
+
+function __repos_execute
+  alias meta 'repo_metadata $repo_file'
+  alias meta_quiet 'repo_metadata -n $repo_file'
+
+  __repos_check_file; or return 1
+
+  set -g repo_name (meta '.repo')
+  __repos_get_address
+  set repo_type (meta '.type')
+
+  switch $repo_type
+    case 'backup'
+      echo 'Backup'
+    case 'clone' 'release'
+      __repos_clone_release $argv; or return 1
+    case *
+      echo 'Repo type is invalid'
+      __repos_cleanup_env
+      return 1
+  end
+
   return 0
 end
 
@@ -121,7 +127,7 @@ end
 
 function __repos_name_formatting
   if string match -qrv '^[\w-]+/[\w-]+$' $repo_name
-    echo 'To downloads releases from GitHub, the "repo" field must be formatted as <user>/<repo-name>'
+    echo 'To downloads releases from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
     return 1
   end
 
@@ -190,12 +196,12 @@ function __repos_cleanup_env
 end
 
 function __repos_create
-
   set repo_path $repo_path.repo
   if test -f "$repo_path" -a 'x-f' != "x$argv[2]"
     echo 'Repository file already exists'
     return 1
   end
+  test "$argv[1]" = ''; and set argv[1] 'release'
 
   set type '"type": ""'
   set repo '"repo": "/"'
@@ -220,13 +226,13 @@ function __repos_create
   echo $template | jq '.' > $repo_path
   echo '#!/usr/bin/env bash' >> $repo_path
 
-  echo "Repository $repo_file ($argv) created"
+  echo "Repository \"$repo_file\" ($argv[1]) created"
   return 0
 end
 
 function __repos_edit
   if test -f $repo_path
-    vim -c 'set filetype=json' $repo_path
+    vim -c 'set filetype=sh' $repo_path
   else
     echo "Repo file $repo_file doesn't exist"
     return 1
