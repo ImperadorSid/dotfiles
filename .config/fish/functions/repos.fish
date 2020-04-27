@@ -169,14 +169,12 @@ end
 function __repos_install
   set current_location $PWD
   cd $repo_location; or return 1
-
   echo 'Running installation script...'
   __repos_script
+  cd $current_location
 
   __repos_links
   __repos_path_folders
-
-  cd $current_location
 end
 
 function __repos_script
@@ -202,7 +200,10 @@ function __repos_links
     echo -e "\nCreating links in $destination"
 
     for f in (meta ".links[$i].files[]")
-      ln -sf $repo_location/$f $destination
+      set relative_path $repo_location/$f
+      string match -qr '^/' $f; and set relative_path $f
+
+      ln -sf $relative_path $destination
       echo "Link to $f created"
     end
   end
@@ -212,9 +213,12 @@ function __repos_path_folders
   test (meta '.path_folders | length') -gt 0; or return
   echo
   for f in (meta '.path_folders[]')
-    if not contains $repo_location/$f $fish_user_paths
+    set relative_path $repo_location/$f
+    string match -qr '^/' $f; and set relative_path $f
+
+    if not contains $relative_path $fish_user_paths
       echo "Adding folder \"$f\" to PATH"
-      set -p fish_user_paths $repo_location/$f
+      set -p fish_user_paths $relative_path
     end
   end
 end
@@ -270,8 +274,10 @@ function __repos_create
 end
 
 function __repos_edit
-  if test -f $repo_path
-    vim -c 'set filetype=sh' +3 $repo_path
+  if test (count $repo_file) -eq 0
+    v $repositories/*.repo
+  else if test -f $repo_path
+    v -c 'set filetype=sh' +3 $repo_path
   else
     echo "Repo file \"$repo_file\" doesn't exist"
     __repos_cleanup_env
