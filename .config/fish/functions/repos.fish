@@ -197,14 +197,15 @@ function __repos_links
     test "$destination" = 'null'; and set destination '/home/impsid/.local/bin'
     mkdir -p $destination
 
-    echo -e "\nCreating links in $destination"
+    echo -e "\nCreating links in \"$destination\""
 
     for f in (meta ".links[$i].files[]")
+      set f (string replace -r '^~' '/home/impsid' $f)
       set relative_path $repo_location/$f
       string match -qr '^/' $f; and set relative_path $f
 
       ln -sf $relative_path $destination
-      echo "Link to $f created"
+      echo "Link to \"$f\" created"
     end
   end
 end
@@ -213,6 +214,7 @@ function __repos_path_folders
   test (meta '.path_folders | length') -gt 0; or return
   echo
   for f in (meta '.path_folders[]')
+    set f (string replace -r '^~' '/home/impsid' $f)
     set relative_path $repo_location/$f
     string match -qr '^/' $f; and set relative_path $f
 
