@@ -171,7 +171,7 @@ function __repos_install
   cd $repo_location; or return 1
 
   echo 'Running installation script...'
-  __repos_script | bash
+  __repos_script
 
   __repos_links
   __repos_path_folders
@@ -180,7 +180,16 @@ function __repos_install
 end
 
 function __repos_script
-  sed -n '/^#!/,$p' $repo_path
+  set exec_file /tmp/bash-script-(date +%N)
+
+  echo 'FILE_FULL_NAMES=($FILE_FULL_NAMES)' > $exec_file
+  echo 'FILE_NAMES=($FILE_NAMES)' >> $exec_file
+  echo 'FILE_EXTENSIONS=($FILE_EXTENSIONS)' >> $exec_file
+
+  sed -n '/^#!/,$p' $repo_path >> $exec_file
+
+  bash $exec_file
+  rm $exec_file
 end
 
 function __repos_links
