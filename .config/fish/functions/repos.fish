@@ -76,6 +76,7 @@ function __repos_clone_release
   end
   test "$argv[1]" = '-d'; or __repos_install; or return 1
 
+  echo -e '\nDONE.'
   return 0
 end
 
@@ -121,7 +122,6 @@ function __repos_get_files
         __repos_download_file $file_info $_flag_force; or return 1
       end
     end
-    echo
   end
 
   return 0
@@ -167,38 +167,50 @@ function __repos_append_file_variables
 end
 
 function __repos_install
-  set current_location $PWD
-  cd $repo_location; or return 1
-  echo 'Running installation script...'
-  __repos_script
-  echo -e '\nInstallation script finished'
-  cd $current_location
+  __repos_script; or return 1
 
   __repos_links
   __repos_path_folders
+
+  return 0
 end
 
 function __repos_script
-  set exec_file /tmp/bash-script-(date +%N)
+  set current_location $PWD
+  cd $repo_location; or return 1
 
+  set exec_file /tmp/bash-script-(date +%N)
   echo 'FILE_FULL_NAMES=($FILE_FULL_NAMES)' > $exec_file
   echo 'FILE_NAMES=($FILE_NAMES)' >> $exec_file
   echo 'FILE_EXTENSIONS=($FILE_EXTENSIONS)' >> $exec_file
-
   sed -n '/^#!/,$p' $repo_path >> $exec_file
 
-  bash $exec_file
+  if test (wc -l < $exec_file) -gt 4
+    echo -e '\nRunning installation script...'
+    bash $exec_file
+    echo -e 'Installation script finished'
+  else
+    echo -e '\nInstall script is empty. Skipping...'
+  end
+
   rm $exec_file
+  cd $current_location
+
+  return 0
 end
 
 function __repos_links
   set links_count (meta '.links | length')
+  set first_output true
+
+
   for i in (seq 0 (math "$links_count - 1"))
     set destination (meta ".links[$i].destination" | sed -r 's|^~|/home/impsid|')
     test "$destination" = 'null'; and set destination '/home/impsid/.local/bin'
     mkdir -p $destination
 
-    echo -e "\nCreating links in \"$destination\""
+    $first_output; and set first_output false; and echo
+    echo "Creating links in \"$destination\""
 
     for f in (meta ".links[$i].files[]")
       set f (string replace -r '^~' '/home/impsid' $f)
@@ -206,21 +218,24 @@ function __repos_links
       string match -qr '^/' $f; and set relative_path $f
 
       ln -sf $relative_path $destination
-      echo "Link to \"$f\" created"
+      echo "  Link to \"$f\" created"
     end
   end
 end
 
 function __repos_path_folders
   test (meta '.path_folders | length') -gt 0; or return
-  echo
+  set first_output true
+
   for f in (meta '.path_folders[]')
     set f (string replace -r '^~' '/home/impsid' $f)
     set relative_path $repo_location/$f
     string match -qr '^/' $f; and set relative_path $f
 
     if not contains $relative_path $fish_user_paths
+      $first_output; and set first_output false; and echo
       echo "Adding folder \"$f\" to PATH"
+
       set -p fish_user_paths $relative_path
     end
   end
@@ -250,7 +265,7 @@ function __repos_create
   test "$argv[1]" = ''; and set argv[1] 'release'
 
   set type '"type": "'$argv[1]'"'
-  set repo '"repo": "/"'
+  set repo '"repo": ""'
   set location '"location": ""'
   set links '"links": [{"destination": "", "files": []}]'
   set path_folders '"path_folders": []'
@@ -280,7 +295,7 @@ function __repos_edit
   if test (count $repo_file) -eq 0
     v $repositories/*.repo
   else if test -f $repo_path
-    v -c 'set filetype=sh' +3 $repo_path
+    v -c 'set filetype=sh | call cursor(3,12)' $repo_path
   else
     echo "Repo file \"$repo_file\" doesn't exist"
     __repos_cleanup_env
