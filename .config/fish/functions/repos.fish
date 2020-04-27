@@ -65,7 +65,9 @@ end
 
 function __repos_clone_release
   __repos_find_location
+  set -gx FILE_FULL_NAMES
   set -gx FILE_NAMES
+  set -gx FILE_EXTENSIONS
 
   if test "$argv[1]" = '-i'
     __repos_get_files $argv[1]
@@ -113,7 +115,7 @@ function __repos_get_files
       set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
 
       if set -q _flag_only_install
-        set -a FILE_NAMES $file_info[1]
+        __repos_append_file_variables $file_info[1]
         echo "  File" (count $FILE_NAMES)": $file_info[1]"
       else
         __repos_download_file $file_info $_flag_force; or return 1
@@ -152,8 +154,16 @@ function __repos_download_file
   end
   echo 'finished'
 
-  set -a FILE_NAMES $argv[1]
+  __repos_append_file_variables $argv[1]
   return 0
+end
+
+function __repos_append_file_variables
+  set -a FILE_FULL_NAMES $argv
+
+  set split_file_name (file_extension $argv)
+  set -a FILE_NAMES $split_file_name[1]
+  set -a FILE_EXTENSIONS $split_file_name[2]
 end
 
 function __repos_install
@@ -207,7 +217,9 @@ function __repos_cleanup_env
   set -e repo_address
   set -e repo_location
   set -e repo_type
+  set -e FILE_FULL_NAMES
   set -e FILE_NAMES
+  set -e FILE_EXTENSIONS
 
   functions -e meta meta_quiet
 end
