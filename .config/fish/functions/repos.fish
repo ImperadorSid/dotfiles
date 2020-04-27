@@ -171,6 +171,7 @@ function __repos_install
   cd $repo_location; or return 1
   echo 'Running installation script...'
   __repos_script
+  echo -e '\nInstallation script finished'
   cd $current_location
 
   __repos_links
