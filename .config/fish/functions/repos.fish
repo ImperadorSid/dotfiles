@@ -33,7 +33,7 @@ function __repos_execute
     case 'clone' 'release'
       __repos_clone_release $argv; or return 1
     case '*'
-      echo "Repo type \"$repo_type\" is invalid"
+      echo_err "Repo type \"$repo_type\" is invalid"
       __repos_cleanup_env
       return 1
   end
@@ -43,9 +43,9 @@ end
 
 function __repos_check_file
   if test ! -f $repo_path
-    echo "File \"$repo_file\" doesn't exit"
+    echo_err "File \"$repo_file\" doesn't exit"
   else if not repo_metadata -c $repo_file
-    echo 'Repo metadata is invalid'
+    echo_err 'Repo metadata is invalid'
   else
     return 0
   end
@@ -129,7 +129,7 @@ end
 
 function __repos_name_formatting
   if string match -qrv '^[\w-]+/[\w-]+$' $repo_name
-    echo 'To downloads releases from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
+    echo_err 'To downloads releases from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
     return 1
   end
 
@@ -149,7 +149,7 @@ function __repos_download_file
   printf '  Downloading %s%s%s... ' (set_color cyan) $argv[1] (set_color normal)
   a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location $argv[2]
   if test "$status" -ne 0
-    echo -e "\n\nDownload failed. Aborting"
+    echo_err -e "\n\nDownload failed. Aborting"
     return 1
   end
   echo 'finished'
@@ -259,7 +259,7 @@ end
 function __repos_create
   set repo_path $repo_path.repo
   if test -f "$repo_path" -a 'x-f' != "x$argv[2]"
-    echo 'Repository file already exists'
+    echo_err 'Repository file already exists'
     __repos_cleanup_env
     return 1
   end
@@ -278,7 +278,7 @@ function __repos_create
     case 'release'
       set template "{$type, $repo, $location, $links, $path_folders, $targets}"
     case '*'
-      echo "Type \"$argv[1]\" is not valid"
+      echo_err "Type \"$argv[1]\" is not valid"
       __repos_cleanup_env
       return 1
   end
@@ -298,7 +298,7 @@ function __repos_edit
   else if test -f $repo_path
     v -c 'set filetype=sh | call cursor(3,12)' $repo_path
   else
-    echo "Repo file \"$repo_file\" doesn't exist"
+    echo_err "Repo file \"$repo_file\" doesn't exist"
     __repos_cleanup_env
     return 1
   end
