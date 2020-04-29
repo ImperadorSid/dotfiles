@@ -6,8 +6,8 @@ set -x BROWSER google-chrome
 
 # System configuraton folders
 set -x repositories ~/Downloads/Linux/System/Repositories
-set -x dotfiles $repositories/ImperadorSid@dotfiles
-set -x system_files $repositories/ImperadorSid@system-files
+set -x dotfiles $repositories/dotfiles
+set -x system_files $repositories/system-files
 
 # Tasks file
 set -x tasks_file ~/Documents/Books/Tasks/tasks.json
