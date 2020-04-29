@@ -91,7 +91,13 @@ function __repos_download
   test "$argv" = '-f'; and rm -rf $repo_location
 
   if test "$repo_type" = 'clone'
-    g clone $repo_address $repo_location
+    printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
+    g clone -q $repo_address $repo_location
+    if test "$status" -ne 0
+      echo_err -e "\n\nDownload failed. Aborting"
+      return 1
+    end
+    echo 'complete'
   else
     if not __repos_get_files $argv
       __repos_cleanup_env
