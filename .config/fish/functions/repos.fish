@@ -76,7 +76,7 @@ function __repos_clone_release
   end
   test "$argv[1]" = '-d'; or __repos_install; or return 1
 
-  echo -e '\nDONE.'
+  echo -e '\nDONE'
   return 0
 end
 
@@ -111,13 +111,13 @@ function __repos_get_files
     set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/')
     set assets (__repos_tag_assets $tag $_flag_force)
 
-    echo "Release $tag"
+    printf 'Release %s%s%s\n' (set_color brred) "$tag" (set_color normal)
     for f in (meta ".targets[$i].files[]")
       set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
 
       if set -q _flag_only_install
         __repos_append_file_variables $file_info[1]
-        echo "  File" (count $FILE_NAMES)": $file_info[1]"
+        printf '  File %s: %s%s%s\n' (count $FILE_NAMES) (set_color cyan) "$file_info[1]" (set_color normal)
       else
         __repos_download_file $file_info $_flag_force; or return 1
       end
@@ -146,7 +146,7 @@ function __repos_tag_assets
 end
 
 function __repos_download_file
-  echo -n "  Downloading $argv[1]... "
+  printf '  Downloading %s%s%s... ' (set_color cyan) $argv[1] (set_color normal)
   a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location $argv[2]
   if test "$status" -ne 0
     echo -e "\n\nDownload failed. Aborting"
@@ -185,6 +185,7 @@ function __repos_script
   echo 'FILE_EXTENSIONS=($FILE_EXTENSIONS)' >> $exec_file
   sed -n '/^#!/,$p' $repo_path >> $exec_file
 
+  set_color yellow
   if test (wc -l < $exec_file) -gt 4
     echo -e '\nRunning installation script...'
     bash $exec_file
@@ -192,6 +193,7 @@ function __repos_script
   else
     echo -e '\nInstall script is empty. Skipping...'
   end
+  set_color normal
 
   rm $exec_file
   cd $current_location
@@ -203,14 +205,13 @@ function __repos_links
   set links_count (meta '.links | length')
   set first_output true
 
-
   for i in (seq 0 (math "$links_count - 1"))
     set destination (meta ".links[$i].destination" | sed -r 's|^~|/home/impsid|')
     test "$destination" = 'null'; and set destination '/home/impsid/.local/bin'
     mkdir -p $destination
 
     $first_output; and set first_output false; and echo
-    echo "Creating links in \"$destination\""
+    printf 'Creating links in %s%s%s\n' (set_color green) "$destination" (set_color normal)
 
     for f in (meta ".links[$i].files[]")
       set f (string replace -r '^~' '/home/impsid' $f)
@@ -218,7 +219,7 @@ function __repos_links
       string match -qr '^/' $f; and set relative_path $f
 
       ln -sf $relative_path $destination
-      echo "  Link to \"$f\" created"
+      printf '  Link to %s%s%s created\n' (set_color cyan) "$f" (set_color normal)
     end
   end
 end
@@ -234,7 +235,7 @@ function __repos_path_folders
 
     if not contains $relative_path $fish_user_paths
       $first_output; and set first_output false; and echo
-      echo "Adding folder \"$f\" to PATH"
+      printf 'Adding folder %s%s%s to PATH\n' (set_color green) "$f" (set_color normal)
 
       set -p fish_user_paths $relative_path
     end
