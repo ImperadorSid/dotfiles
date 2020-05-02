@@ -346,6 +346,6 @@ function __repos_open
   end
 
   cd $destination
-  xdg-open $destination > /dev/null
+  xdg-open $destination &> /dev/null
 end
 

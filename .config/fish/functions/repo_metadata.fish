@@ -6,7 +6,7 @@ function repo_metadata
 
   test ! -f $repositories/$argv[1]; and return 1
 
-  set metadata (sed '/^#!/,$d' $repositories/$argv[1])
+  set metadata (sed '/^#!/,$d; s/\\\/\\\\\\\\\\\\\\\/g' $repositories/$argv[1])
 
   if set -q _flag_check
     echo $metadata | jq -e 'has("repo") and has("type")' &> /dev/null
