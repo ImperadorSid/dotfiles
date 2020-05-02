@@ -1,27 +1,36 @@
 #!/usr/bin/env fish
 function repos -d 'Manage repository downloads and script installations'
-  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear'
-  argparse -n 'Repository Management' -x 'c,e,i,d' -x 'f,e,i' -X 2 $options -- $argv
+  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open'
+  argparse -n 'Repository Management' -x 'c,e,i,d,O' -x 'f,e,i,O' -x 'o,c,O' -X 2 $options -- $argv
   test $status -ne 0; and return 1
 
+  set final_status 0
   set -g repo_file $argv[1]
   set -g repo_path "$repositories/$repo_file"
 
-  if set -q _flag_create
-    __repos_create "$argv[2]" $_flag_f; or return 2
-  else if set -q _flag_edit
-    __repos_edit; or return 3
-  else
-    __repos_execute "$_flag_i$_flag_d" $_flag_f; or return 4
+  alias meta 'repo_metadata $repo_file'
+  alias meta_quiet 'repo_metadata -n $repo_file'
+
+  if set -q _flag_open
+    __repos_open
   end
 
+  if set -q _flag_only_open
+    __repos_open
+  else if set -q _flag_create
+    __repos_create "$argv[2]" $_flag_f; or set final_status 2
+  else if set -q _flag_edit
+    __repos_edit; or set final_status 3
+  else
+    __repos_execute "$_flag_i$_flag_d" $_flag_f; or set final_status 4
+  end
+
+
   __repos_cleanup_env
-  return 0
+  return $final_status
 end
 
 function __repos_execute
-  alias meta 'repo_metadata $repo_file'
-  alias meta_quiet 'repo_metadata -n $repo_file'
 
   __repos_check_file; or return 1
 
@@ -29,16 +38,13 @@ function __repos_execute
   __repos_get_address
   set -g repo_type (meta '.type')
 
-  switch $repo_type
-    case 'clone' 'release'
-      __repos_clone_release $argv; or return 1
-    case '*'
-      echo_err "Repo type \"$repo_type\" is invalid"
-      __repos_cleanup_env
-      return 1
+  if contains $repo_type 'clone' 'release' 'tag'
+    __repos_clone_release_tag $argv; and return 0
+  else
+    echo_err "Repo type \"$repo_type\" is invalid"
   end
 
-  return 0
+  return 1
 end
 
 function __repos_check_file
@@ -50,7 +56,6 @@ function __repos_check_file
     return 0
   end
 
-  __repos_cleanup_env
   return 1
 end
 
@@ -63,14 +68,14 @@ function __repos_get_address
 
 end
 
-function __repos_clone_release
+function __repos_clone_release_tag
   __repos_find_location
   set -gx FILE_FULL_NAMES
   set -gx FILE_NAMES
   set -gx FILE_EXTENSIONS
 
   if test "$argv[1]" = '-i'
-    __repos_get_files $argv[1]
+    __repos_release $argv[1]
   else
     __repos_download $argv[2]; or return 1
   end
@@ -90,21 +95,44 @@ end
 function __repos_download
   test "$argv" = '-f'; and rm -rf $repo_location
 
-  if test "$repo_type" = 'clone'
-    printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
-    g clone -q $repo_address $repo_location
-    test $status -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
-  else
-    if not __repos_get_files $argv
-      __repos_cleanup_env
-      return 1
-    end
+  switch $repo_type
+    case 'clone'
+      __repos_clone
+    case 'tag'
+      __repos_tag $argv; or return 1
+    case '*'
+      __repos_release $argv; or return 1
   end
 
   return 0
 end
 
-function __repos_get_files
+function __repos_clone
+  printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
+  g clone -q $repo_address $repo_location
+  test $status -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
+end
+
+function __repos_tag
+  __repos_name_formatting; or return 1
+
+  set uri_prefix https://api.github.com/repos/$repo_name
+  set tag (meta '.tag' | sed -r 's/^null$/latest/')
+  test "$tag" = 'latest'; and set tag (json_cache $argv $uri_prefix/tags | jq -r '.[0].name')
+  set tarball_name $tag.tar.gz
+
+  printf 'Tag %s%s%s\n' (set_color brred) "$tag" (set_color normal)
+
+  __repos_download_file $tarball_name $uri_prefix/tarball/$tag $argv; or return 1
+
+  echo -n '  Extracting tarball... '
+  tar xf $repo_location/$tarball_name -C $repo_location --strip-components=1
+  echo 'finished'
+
+  return 0
+end
+
+function __repos_release
   __repos_name_formatting; or return 1
   argparse 'f/force' 'i/only-install' -- $argv
 
@@ -117,8 +145,8 @@ function __repos_get_files
     for f in (meta ".targets[$i].files[]")
       set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
 
+      __repos_append_file_variables $file_info[1]
       if set -q _flag_only_install
-        __repos_append_file_variables $file_info[1]
         printf '  File %s: %s%s%s\n' (count $FILE_NAMES) (set_color cyan) "$file_info[1]" (set_color normal)
       else
         __repos_download_file $file_info $_flag_force; or return 1
@@ -131,7 +159,7 @@ end
 
 function __repos_name_formatting
   if string match -qrv '^[\w-]+/[\w-]+$' $repo_name
-    echo_err 'To downloads releases from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
+    echo_err "For download $repo_type"'s from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
     return 1
   end
 
@@ -149,7 +177,7 @@ end
 
 function __repos_download_file
   printf '  Downloading %s%s%s... ' (set_color cyan) $argv[1] (set_color normal)
-  a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location $argv[2]
+  a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location -o $argv[1] $argv[2]
   if test "$status" -ne 0
     echo -e '\r'
     echo_err 'Download failed. Aborting'
@@ -157,7 +185,6 @@ function __repos_download_file
   end
   echo 'finished'
 
-  __repos_append_file_variables $argv[1]
   return 0
 end
 
@@ -263,7 +290,6 @@ function __repos_create
   set repo_path $repo_path.repo
   if test -f "$repo_path" -a 'x-f' != "x$argv[2]"
     echo_err 'Repository file already exists'
-    __repos_cleanup_env
     return 1
   end
   test "$argv[1]" = ''; and set argv[1] 'release'
@@ -274,15 +300,17 @@ function __repos_create
   set links '"links": [{"destination": "", "files": []}]'
   set path_folders '"path_folders": []'
   set targets '"targets": [{"tag": "", "files": []}]'
+  set tag '"tag": ""'
 
   switch $argv[1]
     case 'clone'
       set template "{$type, $repo, $location, $links, $path_folders}"
+    case 'tag'
+      set template "{$type, $repo, $location, $links, $path_folders, $tag}"
     case 'release'
       set template "{$type, $repo, $location, $links, $path_folders, $targets}"
     case '*'
       echo_err "Type \"$argv[1]\" is not valid"
-      __repos_cleanup_env
       return 1
   end
 
@@ -302,10 +330,22 @@ function __repos_edit
     v -c 'set filetype=sh | call cursor(3,12)' $repo_path
   else
     echo_err "Repo file \"$repo_file\" doesn't exist"
-    __repos_cleanup_env
     return 1
   end
 
   return 0
+end
+
+function __repos_open
+  if __repos_check_file
+    __repos_find_location
+    set destination $repo_location
+  else
+    echo 'Opening repositories folder...'
+    set destination $repositories
+  end
+
+  cd $destination
+  xdg-open $destination > /dev/null
 end
 
