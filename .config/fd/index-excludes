@@ -1,19 +1,43 @@
-./.git
+.dartServer/
+.git/
+.gradle/
+.npm/
+.thumbnails/
+.vscode/
 Activision/
+anaconda3/
+android-sdk/
+Animus Control Panel/
+As Minhas Criações Spore/
 Assassin's Creed*/
+Black Desert/
+*[cC]ache*/
 Criterion Games/
+desktop.ini
 EA Games/
 Electronic Arts/
 FeedbackHub/
+flutter/
+GameMakerStudio2/
+generated_completions/
 Ghost Games/
+google-chrome/
+gvfs-metadata/
 Minhas criações Spore/
+Minecraft/
+Mutant Blobs Attack/
 My Games/
 Need For Speed/
 Need for Speed/
+NFS Most Wanted/
+NMM CLI/
 Radeon ReLive/
+Rayman Legends/
 Red Dead Redemption 2/
 Rockstar Games/
 Square Enix/
+TelegramDesktop/
 The Witcher 3/
+Trash/
 Uplay/
 WB Games/
