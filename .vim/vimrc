@@ -34,6 +34,7 @@ set softtabstop=2
 set splitbelow
 set splitright
 set tabpagemax=100
+set term=xterm-256color
 set termguicolors
 set timeoutlen=200
 set wildmode=list:full
@@ -74,7 +75,7 @@ let g:AutoPairsShortcutToggle='<Esc>p'
 set runtimepath+=~/.local/fzf
 
 " ryanoasis/vim-devicons
-let g:webdevicons_enable_airline_statusline=0
+let g:webdevicons_enable_airline_statusline=1
 
 " vim-airline/vim-airline
 let g:airline#extensions#tabline#enabled=1
