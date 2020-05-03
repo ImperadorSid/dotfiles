@@ -1,0 +1,1 @@
+/home/impsid/.local/omf/themes/bobthefish/fish_prompt.fish
