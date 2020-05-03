@@ -15,7 +15,7 @@ set autoindent
 set autoread
 set clipboard=unnamedplus
 set expandtab
-set foldlevel=3
+set foldlevel=4
 set hidden
 set hlsearch
 set ignorecase
@@ -42,13 +42,16 @@ set wildmode=list:full
 " MAPPINGS
 " Source .vimrc
 let vimrc_path = "~/.vim/vimrc"
-map <Leader>, :execute 'tabedit' vimrc_path<CR>
-map <Leader>. :execute 'source' vimrc_path<CR>
+nmap <Leader>, :execute 'tabedit' vimrc_path<CR>
+nmap <Leader>. :execute 'source' vimrc_path<CR>
+
+nmap gc :bnext<CR>
+nmap gC :bprevious<CR>
 
 " Useful actions
-map <Leader>f :noh<CR>
-map <Leader>s :set list!<CR>
-map <Leader>t :%s/ \+$//<CR>
+nmap <Leader>f :noh<CR>
+nmap <Leader>s :set list!<CR>
+nmap <Leader>t :%s/ \+$//<CR>
 
 " Disable arrow keys
 map <Up> <Nop>
