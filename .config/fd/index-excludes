@@ -1,9 +1,3 @@
-.dartServer/
-.git/
-.gradle/
-.npm/
-.thumbnails/
-.vscode/
 Activision/
 anaconda3/
 android-sdk/
@@ -13,6 +7,8 @@ Assassin's Creed*/
 Black Desert/
 *[cC]ache*/
 Criterion Games/
+/mnt/Data/Programs/
+.dartServer/
 desktop.ini
 EA Games/
 Electronic Arts/
@@ -21,7 +17,9 @@ flutter/
 GameMakerStudio2/
 generated_completions/
 Ghost Games/
+.git/
 google-chrome/
+.gradle/
 gvfs-metadata/
 Minhas criações Spore/
 Minecraft/
@@ -31,13 +29,18 @@ Need For Speed/
 Need for Speed/
 NFS Most Wanted/
 NMM CLI/
+.npm/
+/proc
 Radeon ReLive/
 Rayman Legends/
 Red Dead Redemption 2/
 Rockstar Games/
 Square Enix/
+/sys
 TelegramDesktop/
 The Witcher 3/
+.thumbnails/
 Trash/
 Uplay/
+.vscode/
 WB Games/
