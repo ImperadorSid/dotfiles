@@ -4,9 +4,6 @@ window:
   # Window decorations
   decorations: none
 
-  # Startup Mode (changes require restart)
-  startup_mode: Fullscreen
-
 # Font configuration
 font:
   # Normal (roman) font face
@@ -16,7 +13,6 @@ font:
 
   # Point size
   size: 13.0
-
 
 # Colors (Dracula)
 colors:
