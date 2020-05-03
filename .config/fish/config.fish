@@ -39,7 +39,7 @@ alias x  'xclip -selection clipboard'
 # Alias (make flags always enabled)
 alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
 alias fd 'fd -IHL --ignore-file ~/.config/fd/index-excludes'
-alias ll 'ls -lhA'
+alias ll 'ls -lhA --group-directories-first --color=always'
 alias tree 'tree -aC'
 
 # Colorman
