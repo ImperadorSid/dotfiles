@@ -37,9 +37,10 @@ alias V  'sudo vim'
 alias x  'xclip -selection clipboard'
 
 # Alias (make flags always enabled)
+alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
+alias fd 'fd -IHL --ignore-file ~/.config/fd/index-excludes'
 alias ll 'ls -lhA'
 alias tree 'tree -aC'
-alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
 
 # Colorman
 source ~/.local/omf/pkg/colorman/init.fish
