@@ -1,3 +1,4 @@
+--color=always
 --theme="Dracula"
 --italic-text=always
 --map-syntax="*.repo:JSON"
