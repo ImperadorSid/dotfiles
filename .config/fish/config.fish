@@ -20,7 +20,7 @@ set -g theme_color_scheme dracula
 # Alias
 alias a  'apt'
 alias a2 'aria2c'
-alias c  'clear; clear'
+alias c  'clear; tmux clear-history'
 alias e  'grep -E'
 alias g  'git'
 alias i  'ipython'
