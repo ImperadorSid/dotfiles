@@ -34,6 +34,7 @@ alias sc 'sudo systemctl'
 alias t  'tasks'
 alias v  'vim'
 alias V  'sudo vim'
+alias vf 'vifm'
 alias x  'xclip -selection clipboard'
 
 # Alias (make flags always enabled)
