@@ -1,4 +1,4 @@
-"OPTIONS
+
 " Disabled plugins
 let g:loaded_matchparen=1
 
@@ -58,6 +58,9 @@ map <Up> <Nop>
 map <Down> <Nop>
 map <Left> <Nop>
 map <Right> <Nop>
+
+" Other options
+syntax on
 
 " PLUGINS
 " dag/vim-fish
