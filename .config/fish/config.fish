@@ -3,6 +3,7 @@
 # Environments variables
 set -x EDITOR vim
 set -x BROWSER google-chrome
+set -x MAKEFLAGS j 12
 
 # System configuraton folders
 set -x repositories ~/Downloads/Linux/System/Repositories
@@ -33,7 +34,7 @@ alias r  'repos'
 alias sc 'sudo systemctl'
 alias t  'tasks'
 alias v  'vim'
-alias V  'sudo vim'
+alias V  'sudo (which vim)'
 alias vf 'vifm'
 alias x  'xclip -selection clipboard'
 
