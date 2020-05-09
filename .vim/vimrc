@@ -13,6 +13,7 @@ let g:netrw_winsize=80
 set autochdir
 set autoindent
 set autoread
+set backspace=indent,eol,start
 set clipboard=unnamedplus
 set expandtab
 set foldlevel=4
