@@ -23,7 +23,6 @@
     "git.enableSmartCommit": true,
     "liveServer.settings.donotShowInfoMsg": true,
     "liveServer.settings.showOnStatusbar": false,
-    "liveshare.showInStatusBar": "whileCollaborating",
     "markdown.preview.fontFamily": "Ubuntu",
     "material-icon-theme.folders.color": "#17917a",
     "python.dataScience.askForKernelRestart": false,
