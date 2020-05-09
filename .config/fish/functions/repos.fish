@@ -104,7 +104,7 @@ function __repos_download
 end
 
 function __repos_clone
-  if test "$argv" = '-d'
+  if test "$argv" = '-i'
     printf 'Repository %s%s%s\n' (set_color brred) "$repo_name" (set_color normal)
   else
     printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
