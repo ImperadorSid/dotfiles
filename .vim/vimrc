@@ -22,10 +22,12 @@ set hlsearch
 set ignorecase
 set incsearch
 set listchars=eol:$,tab:>-,space:.,trail:*
+set nomodeline
 set noshowcmd
 set noshowmode
 set noswapfile
 set number
+set relativenumber
 set scrolloff=5
 set shell=sh
 set shiftwidth=2
@@ -76,7 +78,6 @@ colorscheme dracula
 let g:AutoPairsShortcutBackInsert='<Esc>b'
 let g:AutoPairsShortcutFastWrap='<Esc>e'
 let g:AutoPairsShortcutJump='<Esc>n'
-let g:AutoPairsShortcutToggle='<Esc>p'
 
 " junegunn/fzf
 set runtimepath+=~/.local/fzf
