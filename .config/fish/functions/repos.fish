@@ -25,7 +25,6 @@ function repos -d 'Manage repository downloads and script installations'
     __repos_execute "$_flag_i$_flag_d" $_flag_f; or set final_status 4
   end
 
-
   __repos_cleanup_env
   return $final_status
 end
@@ -74,11 +73,7 @@ function __repos_clone_release_tag
   set -gx FILE_NAMES
   set -gx FILE_EXTENSIONS
 
-  if test "$argv[1]" = '-i'
-    __repos_release $argv[1]
-  else
-    __repos_download $argv[2]; or return 1
-  end
+  __repos_download $argv; or return 1
   test "$argv[1]" = '-d'; or __repos_install; or return 1
 
   echo -e '\nDONE'
@@ -88,42 +83,57 @@ end
 function __repos_find_location
   set -g repo_location (meta '.location' | sed -r 's|^~|/home/impsid|')
   if test "$repo_location" = 'null'
-    set repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
+    set -g repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
   end
 end
 
 function __repos_download
-  test "$argv" = '-f'; and rm -rf $repo_location
+  argparse 'f/force' 'i/only-install' 'd/only-download' -- $argv
+  set -q _flag_force; and rm -rf $repo_location
 
   switch $repo_type
     case 'clone'
-      __repos_clone
+      __repos_clone $_flag_only_install
     case 'tag'
-      __repos_tag $argv; or return 1
+      __repos_tag $_flag_only_install $_flag_force; or return 1
     case '*'
-      __repos_release $argv; or return 1
+      __repos_release $_flag_only_install $_flag_force; or return 1
   end
 
   return 0
 end
 
 function __repos_clone
-  printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
-  g clone -q $repo_address $repo_location
-  test $status -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
+  if test "$argv" = '-d'
+    printf 'Repository %s%s%s\n' (set_color brred) "$repo_name" (set_color normal)
+  else
+    printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
+    g clone -q $repo_address $repo_location
+    test $status -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
+  end
 end
 
 function __repos_tag
   __repos_name_formatting; or return 1
+  argparse 'f/force' 'i/only-install' -- $argv
 
   set uri_prefix https://api.github.com/repos/$repo_name
   set tag (meta '.tag' | sed -r 's/^null$/latest/')
-  test "$tag" = 'latest'; and set tag (json_cache $argv $uri_prefix/tags | jq -r '.[0].name')
+  test "$tag" = 'latest'; and set tag (json_cache $_flag_force $uri_prefix/tags | jq -r '.[0].name')
   set tarball_name $tag.tar.gz
 
   printf 'Tag %s%s%s\n' (set_color brred) "$tag" (set_color normal)
 
-  __repos_download_file $tarball_name $uri_prefix/tarball/$tag $argv; or return 1
+  if set -q _flag_only_install
+    set tmp_tar /tmp/tar-(date +%N)
+    mv $repo_location/$tarball_name $tmp_tar
+
+    rm -rf $repo_location
+    mkdir -p $repo_location
+    mv $tmp_tar $repo_location/$tarball_name
+  else
+    __repos_download_file $tarball_name $uri_prefix/tarball/$tag $flag_force; or return 1
+  end
 
   echo -n '  Extracting tarball... '
   tar xf $repo_location/$tarball_name -C $repo_location --strip-components=1
@@ -197,12 +207,45 @@ function __repos_append_file_variables
 end
 
 function __repos_install
+  __repos_dependencies; or return 1
+
   __repos_script; or return 1
 
   __repos_links
   __repos_path_folders
 
   return 0
+end
+
+function __repos_dependencies
+  test (meta '.dependencies | length') -gt 0; or return 0
+
+  set -g repo_dependencies (meta '.dependencies[]')
+
+  if not dpkg -l $repo_dependencies &> /dev/null
+    echo -e '\nInstalling dependencies:'
+    printf '  %s... ' (__repos_print_dependencies)
+
+    if not a install -y $repo_dependencies &> /dev/null
+      echo -e '\r'
+      echo_err 'Installation failed. Check the APT log for details'
+      return 1
+    end
+
+    echo 'complete'
+    return 0
+  end
+end
+
+function __repos_print_dependencies
+  set first_output true
+  for d in $repo_dependencies
+    $first_output; and set first_output false; or echo -n ', '
+
+    set_color blue
+    echo -n $d
+    set_color normal
+  end
 end
 
 function __repos_script
@@ -279,6 +322,7 @@ function __repos_cleanup_env
   set -e repo_address
   set -e repo_location
   set -e repo_type
+  set -e repo_dependencies
   set -e FILE_FULL_NAMES
   set -e FILE_NAMES
   set -e FILE_EXTENSIONS
@@ -301,12 +345,13 @@ function __repos_create
   set path_folders '"path_folders": []'
   set targets '"targets": [{"tag": "", "files": []}]'
   set tag '"tag": ""'
+  set dependencies '"dependencies": []'
 
   switch $argv[1]
     case 'clone'
-      set template "{$type, $repo, $location, $links, $path_folders}"
+      set template "{$type, $repo, $location, $dependencies, $links, $path_folders}"
     case 'tag'
-      set template "{$type, $repo, $location, $links, $path_folders, $tag}"
+      set template "{$type, $repo, $location, $dependencies, $links, $path_folders, $tag}"
     case 'release'
       set template "{$type, $repo, $location, $links, $path_folders, $targets}"
     case '*'
