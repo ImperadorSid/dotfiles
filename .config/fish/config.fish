@@ -22,7 +22,6 @@ set -g theme_color_scheme dracula
 alias a  'apt'
 alias a2 'aria2c'
 alias c  'clear; tmux clear-history'
-alias e  'grep -E'
 alias g  'git'
 alias i  'ipython'
 alias j  'jupyter lab'
@@ -41,7 +40,8 @@ alias x  'xclip -selection clipboard'
 # Alias (make flags always enabled)
 alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
 alias fd 'fd -IHL --ignore-file ~/.config/fd/index-excludes'
-alias ll 'ls -lhA --group-directories-first --color=always'
+alias ll 'lsd -lA --group-dirs=first'
+alias ls 'lsd -A --group-dirs=first'
 alias tree 'tree -aC'
 
 # Colorman
