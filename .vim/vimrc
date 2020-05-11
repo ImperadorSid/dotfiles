@@ -1,13 +1,5 @@
-
 " Disabled plugins
 let g:loaded_matchparen=1
-
-" Netrw plugin
-let g:netrw_banner=0
-let g:netrw_browse_split=2
-let g:netrw_liststyle=3
-let g:netrw_preview=1
-let g:netrw_winsize=80
 
 " Set
 set autochdir
@@ -48,8 +40,8 @@ let vimrc_path = "~/.vim/vimrc"
 nmap <Leader>, :execute 'tabedit' vimrc_path<CR>
 nmap <Leader>. :execute 'source' vimrc_path<CR>
 
-nmap gc :bnext<CR>
-nmap gC :bprevious<CR>
+nmap gl :bnext<CR>
+nmap gL :bprevious<CR>
 
 " Useful actions
 nmap <Leader>f :noh<CR>
@@ -66,6 +58,13 @@ map <Right> <Nop>
 syntax on
 
 " PLUGINS
+" Netrw plugin
+let g:netrw_banner=0
+let g:netrw_browse_split=2
+let g:netrw_liststyle=3
+let g:netrw_preview=1
+let g:netrw_winsize=80
+
 " dag/vim-fish
 filetype plugin indent on
 autocmd FileType fish compiler fish | setlocal textwidth=80 | setlocal foldmethod=expr
