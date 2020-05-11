@@ -151,6 +151,11 @@ function __repos_release
     set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/')
     set assets (__repos_tag_assets $tag $_flag_force)
 
+    if not count $assets > /dev/null
+      echo_err "Repository \"$repo_name\" not found"
+      return 1
+    end
+
     printf 'Release %s%s%s\n' (set_color brred) "$tag" (set_color normal)
     for f in (meta ".targets[$i].files[]")
       set file_info (echo $assets | jq -r "select(.name | test(\"$f\")) | .name, .browser_download_url")
@@ -179,9 +184,9 @@ end
 function __repos_tag_assets
   set uri_prefix "https://api.github.com/repos/$repo_name/releases"
   if test "$argv[1]" = 'latest'
-    json_cache $argv[2] "$uri_prefix/latest" | jq '.assets[]'
+    json_cache $argv[2] "$uri_prefix/latest" | jq '.assets[]' 2> /dev/null
   else
-    json_cache $argv[2] "$uri_prefix?per_page=100" | jq ".[] | select(.tag_name == \"$argv[1]\").assets[]"
+    json_cache $argv[2] "$uri_prefix?per_page=100" | jq ".[] | select(.tag_name == \"$argv[1]\").assets[]" 2> /dev/null
   end
 end
 
