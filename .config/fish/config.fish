@@ -42,7 +42,7 @@ alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
 alias fd 'fd -IHL --ignore-file ~/.config/fd/index-excludes'
 alias ll 'lsd -lA --group-dirs=first'
 alias ls 'lsd -A --group-dirs=first'
-alias tree 'tree -aC'
+alias tree 'ls --tree'
 
 # Colorman
 source ~/.local/omf/pkg/colorman/init.fish
