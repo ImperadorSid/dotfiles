@@ -1,7 +1,4 @@
-" Disabled plugins
-let g:loaded_matchparen=1
-
-" Set
+" Options
 set autochdir
 set autoindent
 set autoread
@@ -13,6 +10,7 @@ set hidden
 set hlsearch
 set ignorecase
 set incsearch
+set laststatus=2
 set listchars=eol:$,tab:>-,space:.,trail:*
 set nomodeline
 set noshowcmd
@@ -32,7 +30,11 @@ set tabpagemax=100
 set term=xterm-256color
 set termguicolors
 set timeoutlen=200
+set updatetime=1000
 set wildmode=list:full
+
+" Commands
+syntax on
 
 " MAPPINGS
 " Source .vimrc
@@ -54,38 +56,35 @@ map <Down> <Nop>
 map <Left> <Nop>
 map <Right> <Nop>
 
-" Other options
-syntax on
-
 " PLUGINS
-" Netrw plugin
+" Netrw
 let g:netrw_banner=0
-let g:netrw_browse_split=2
+let g:netrw_browse_split=4
 let g:netrw_liststyle=3
 let g:netrw_preview=1
 let g:netrw_winsize=80
 
-" dag/vim-fish
+" Fish
 filetype plugin indent on
 autocmd FileType fish compiler fish | setlocal textwidth=80 | setlocal foldmethod=expr
 
-" dracula/vim
+" Dracula
 packadd! dracula
 colorscheme dracula
 
-" jiangmiao/auto-pairs
+" Auto-pairs
 let g:AutoPairsShortcutBackInsert='<Esc>b'
 let g:AutoPairsShortcutFastWrap='<Esc>e'
 let g:AutoPairsShortcutJump='<Esc>n'
 
-" junegunn/fzf
+" FZF
 set runtimepath+=~/.local/fzf
 
-" ryanoasis/vim-devicons
-let g:webdevicons_enable_airline_statusline=1
-
-" vim-airline/vim-airline
+" Airline
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline_powerline_fonts=1
+
+" Disabled plugins
+let g:loaded_matchparen=1
 
