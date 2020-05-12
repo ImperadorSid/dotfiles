@@ -21,6 +21,7 @@ Ghost Games/
 google-chrome/
 .gradle/
 gvfs-metadata/
+.ipynb_checkpoints/
 Minhas criações Spore/
 Minecraft/
 Mutant Blobs Attack/
@@ -29,8 +30,10 @@ Need For Speed/
 Need for Speed/
 NFS Most Wanted/
 NMM CLI/
+node_modules/
 .npm/
 /proc
+__pycache__/
 Radeon ReLive/
 Rayman Legends/
 Red Dead Redemption 2/
