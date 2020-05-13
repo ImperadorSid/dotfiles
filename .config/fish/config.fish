@@ -44,7 +44,7 @@ alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
 alias fd 'fd -IHL --ignore-file ~/.config/ignore-locations'
 alias ll 'lsd -lA --group-dirs=first'
 alias ls 'lsd -A --group-dirs=first'
-alias tree 'ls --tree'
+alias tree 'ls --tree -I .git'
 
 # Colorman
 source ~/.local/omf/pkg/colorman/init.fish
