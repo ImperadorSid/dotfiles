@@ -216,6 +216,7 @@ function __repos_install
 
   __repos_script; or return 1
 
+  __repos_packages
   __repos_links
   __repos_path_folders
 
@@ -279,6 +280,19 @@ function __repos_script
   return 0
 end
 
+function __repos_packages
+  test (meta '.packages | length') -gt 0; or return
+
+  echo -e "\nElevating privileges"
+  sudo date > /dev/null
+
+  for p in (meta '.packages[]')
+    printf 'Installing package %s%s%s... ' (set_color magenta) $FILE_FULL_NAMES[$p] (set_color normal)
+    sudo apt-get install -yq=2 $repo_location/$FILE_FULL_NAMES[$p] > /dev/null
+    echo 'done'
+  end
+end
+
 function __repos_links
   set links_count (meta '.links | length')
   set first_output true
@@ -286,7 +300,6 @@ function __repos_links
   for i in (seq 0 (math "$links_count - 1"))
     set destination (meta ".links[$i].destination" | sed -r 's|^~|/home/impsid|')
     test "$destination" = 'null'; and set destination '/home/impsid/.local/bin'
-    mkdir -p $destination
 
     $first_output; and set first_output false; and echo
     printf 'Creating links in %s%s%s\n' (set_color green) "$destination" (set_color normal)
@@ -342,8 +355,7 @@ function __repos_create
     return 1
   end
   test "$argv[1]" = ''; and set argv[1] 'release'
-
-  set type '"type": "'$argv[1]'"'
+set type '"type": "'$argv[1]'"'
   set repo '"repo": ""'
   set location '"location": ""'
   set links '"links": [{"destination": "", "files": []}]'
@@ -351,6 +363,7 @@ function __repos_create
   set targets '"targets": [{"tag": "", "files": []}]'
   set tag '"tag": ""'
   set dependencies '"dependencies": []'
+  set packages '"packages": []'
 
   switch $argv[1]
     case 'clone'
@@ -358,7 +371,7 @@ function __repos_create
     case 'tag'
       set template "{$type, $repo, $location, $dependencies, $links, $path_folders, $tag}"
     case 'release'
-      set template "{$type, $repo, $location, $links, $path_folders, $targets}"
+      set template "{$type, $repo, $location, $links, $path_folders, $targets, $packages}"
     case '*'
       echo_err "Type \"$argv[1]\" is not valid"
       return 1
