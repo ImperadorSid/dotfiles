@@ -1,9 +1,10 @@
 #!/usr/bin/env fish
 
 # Environments variables
-set -x EDITOR vim
 set -x BROWSER google-chrome
+set -x EDITOR vim
 set -x MAKEFLAGS j 12
+set -x RIPGREP_CONFIG_PATH ~/.config/ripgrep/ripgreprc
 
 # System configuraton folders
 set -x repositories ~/Downloads/Linux/System/Repositories
@@ -39,7 +40,7 @@ alias x  'xclip -selection clipboard'
 
 # Alias (make flags always enabled)
 alias echo_err 'set_color brred; echo -n "ERROR: "; set_color normal; echo'
-alias fd 'fd -IHL --ignore-file ~/.config/fd/index-excludes'
+alias fd 'fd -IHL --ignore-file ~/.config/ignore-locations'
 alias ll 'lsd -lA --group-dirs=first'
 alias ls 'lsd -A --group-dirs=first'
 alias tree 'ls --tree'
