@@ -82,14 +82,14 @@ end
 
 function __tasks_print
   if not count $argv > /dev/null
-    set filter '[.tasks[]]'
+    set filter '.tasks[]'
     echo 'All tasks'
   else
-    set filter "[.tasks[] | select(.priority == \"$argv\")]"
+    set filter ".tasks[] | select(.priority == \"$argv\")"
     echo "Tasks with $argv priority"
   end
 
-  set entries (jq -r ".tasks[] | keys[] as \$k | .[\$k]" $tasks_file)
+  set entries (jq -r "$filter | keys[] as \$k | .[\$k]" $tasks_file)
   set tasks_count (math (count $entries) '/ 4')
 
   if test $tasks_count -eq 0
