@@ -89,7 +89,8 @@ function __tasks_print
     echo "Tasks with $argv priority"
   end
 
-  set tasks_count (jq "$filter | length" $tasks_file)
+  set entries (jq -r ".tasks[] | keys[] as \$k | .[\$k]" $tasks_file)
+  set tasks_count (math (count $entries) '/ 4')
 
   if test $tasks_count -eq 0
     echo -e 'NO TASKS\n'
@@ -98,10 +99,10 @@ function __tasks_print
 
   echo ' ID | DATE        | TASK'
   for i in (seq 0 (math "$tasks_count - 1"))
-    set id (jq -r "$filter [$i].id" $tasks_file)
-    set task (jq -r "$filter [$i].task" $tasks_file)
-    set date (jq -r "$filter [$i].date" $tasks_file)
-    set priority (jq -r "$filter [$i].priority" $tasks_file)
+    set id $entries[(math "4 * $i + 2")]
+    set task $entries[(math "4 * $i + 4")]
+    set date $entries[(math "4 * $i + 1")]
+    set priority $entries[(math "4 * $i + 3")]
 
     switch $priority
       case 'low'
