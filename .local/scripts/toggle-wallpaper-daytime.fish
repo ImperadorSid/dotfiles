@@ -25,7 +25,7 @@ else
   set daytime 'Day'
 end
 
-printf 'Setting %s%s%s as a wallpaper (%s%s%s mode)\n' (set_color yellow) "$image" (set_color normal) (set_color cyan) "$daytime" (set_color normal)
+printf 'Setting %s%s%s as a wallpaper (%s%s%s mode, %s%s%%%s)\n' (set_color yellow) "$image" (set_color normal) (set_color cyan) "$daytime" (set_color normal) (set_color green) "$brightness" (set_color normal)
 
 convert $image_path -modulate $brightness $wallpaper_path
 dconf write $dconf_background_path "'file://$wallpaper_path'"
