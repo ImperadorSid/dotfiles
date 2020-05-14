@@ -1,13 +1,32 @@
 #!/usr/bin/env fish
 
-set pictures_path 'file:///home/impsid/Pictures'
-set images 'Geraldo e Alberto.png' 'Geraldo e Alberto (Noturno).png'
+set image $argv[1]
+set brightness $argv[2]
+set pictures_path '/home/impsid/Pictures'
+set image_path $pictures_path/$image
+set wallpaper_path "$pictures_path/wallpaper.png"
 set dconf_background_path '/org/cinnamon/desktop/background/picture-uri'
 
-set actual_image (dconf read $dconf_background_path | tr -d '\'')
+if test ! -f "$image_path"
+  echo_err "Image \"$image\" not found"
+  exit 1
+end
 
-test $actual_image = "$pictures_path/$images[1]"; and set new_image "$pictures_path/$images[2]"; or set new_image "$pictures_path/$images[1]"
-echo $new_image
+set actual_hour (date +%H)
 
-dconf write $dconf_background_path "'$new_image'"
+if test "$actual_hour" -ge 17 -o "$actual_hour" -lt 9
+  if not count $brightness > /dev/null
+    set brightness 50
+  end
+
+  set daytime 'Night'
+else
+  set brightness 100
+  set daytime 'Day'
+end
+
+printf 'Setting %s%s%s as a wallpaper (%s%s%s mode)\n' (set_color yellow) "$image" (set_color normal) (set_color cyan) "$daytime" (set_color normal)
+
+convert $image_path -modulate $brightness $wallpaper_path
+dconf write $dconf_background_path "'file://$wallpaper_path'"
 
