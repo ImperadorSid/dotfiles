@@ -8,7 +8,9 @@
     // The theme for the terminal.
     "theme": "light",
     
-    "fontFamily": "Fira Code",
+    "fontFamily": "JetBrainsMono Nerd Font",
+        
+    "fontSize": 17,
         
     "scrollback": 1000000,
         

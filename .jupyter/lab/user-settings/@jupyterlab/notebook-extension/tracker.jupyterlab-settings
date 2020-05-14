@@ -1,6 +1,7 @@
 {
     "codeCellConfig": {
-        "fontFamily": "Fira Code",
+        "fontFamily": "JetBrainsMono Nerd Font",
+        "fontSize": 17,
         "tabSize": 2,
         "codeFolding": true
     },
@@ -9,12 +10,12 @@
 
     "markdownCellConfig": {
         "autoClosingBrackets": true,
-        "fontFamily": "Fira Code",
+        "fontFamily": "JetBrainsMono Nerd Font",
         "tabSize": 2,
     },
         
     "rawCellConfig": {
         "autoClosingBrackets": true,
-        "fontFamily": "Fira Code",
+        "fontFamily": "JetBrainsMono Nerd Font",
     },
 }

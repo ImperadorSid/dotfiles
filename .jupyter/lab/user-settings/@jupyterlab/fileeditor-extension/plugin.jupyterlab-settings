@@ -9,6 +9,7 @@
     // If `fontFamily`, `fontSize` or `lineHeight` are `null`,
     // values from current theme are used.
     "editorConfig": {
-        "fontFamily": "Fira Code",
+        "fontFamily": "JetBrainsMono Nerd Font",
+        "fontSize": 17
     }
 }
