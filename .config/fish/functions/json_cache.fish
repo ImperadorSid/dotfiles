@@ -86,7 +86,7 @@ function __json_cache_check_content_type
 end 
 
 function __json_cache_new_entry
-  set tmp_file /tmp/json-cache-(date +%N)
+  set tmp_file (mktemp)
   jq ". + [\"$prefixed_uri\"]" $index_file > $tmp_file
   mv $tmp_file $index_file
 end

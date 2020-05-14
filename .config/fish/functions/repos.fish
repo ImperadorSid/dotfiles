@@ -125,7 +125,7 @@ function __repos_tag
   printf 'Tag %s%s%s\n' (set_color brred) "$tag" (set_color normal)
 
   if set -q _flag_only_install
-    set tmp_tar /tmp/tar-(date +%N)
+    set tmp_tar (mktemp)
     mv $repo_location/$tarball_name $tmp_tar
 
     rm -rf $repo_location
@@ -258,7 +258,7 @@ function __repos_script
   set current_location $PWD
   cd $repo_location; or return 1
 
-  set exec_file /tmp/bash-script-(date +%N)
+  set exec_file (mktemp)
   echo 'FILE_FULL_NAMES=($FILE_FULL_NAMES)' > $exec_file
   echo 'FILE_NAMES=($FILE_NAMES)' >> $exec_file
   echo 'FILE_EXTENSIONS=($FILE_EXTENSIONS)' >> $exec_file

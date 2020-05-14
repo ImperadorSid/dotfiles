@@ -226,7 +226,7 @@ end
 
 function __tasks_inplace_write
   set filter $argv
-  set tmp_file /tmp/(date +%N)
+  set tmp_file (mktemp)
 
   jq "$filter" $tasks_file > $tmp_file
 
