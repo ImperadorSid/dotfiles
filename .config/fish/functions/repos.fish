@@ -81,7 +81,7 @@ function __repos_clone_release_tag
 end
 
 function __repos_find_location
-  set -g repo_location (meta '.location' | sed -r 's|^~|/home/impsid|')
+  set -g repo_location (meta '.location' | sed -r "s|^~|$HOME|")
   if test "$repo_location" = 'null'
     set -g repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
   end
@@ -298,14 +298,14 @@ function __repos_links
   set first_output true
 
   for i in (seq 0 (math "$links_count - 1"))
-    set destination (meta ".links[$i].destination" | sed -r 's|^~|/home/impsid|')
-    test "$destination" = 'null'; and set destination '/home/impsid/.local/bin'
+    set destination (meta ".links[$i].destination" | sed -r "s|^~|$HOME|")
+    test "$destination" = 'null'; and set destination "$HOME/.local/bin"
 
     $first_output; and set first_output false; and echo
     printf 'Creating links in %s%s%s\n' (set_color green) "$destination" (set_color normal)
 
     for f in (meta ".links[$i].files[]")
-      set f (string replace -r '^~' '/home/impsid' $f)
+      set f (string replace -r '^~' $HOME $f)
       set relative_path $repo_location/$f
       string match -qr '^/' $f; and set relative_path $f
 
@@ -320,7 +320,7 @@ function __repos_path_folders
   set first_output true
 
   for f in (meta '.path_folders[]')
-    set f (string replace -r '^~' '/home/impsid' $f)
+    set f (string replace -r '^~' $HOME $f)
     set relative_path $repo_location/$f
     string match -qr '^/' $f; and set relative_path $f
 
