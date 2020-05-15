@@ -7,8 +7,7 @@ function personal_script
     return 4
   end
 
-  set scripts_dir ~/.local/scripts
-  set script_name (ls $scripts_dir | grep $argv[1])
+  set script_name (ls $personal_scripts | grep $argv[1])
   set results_count (count $script_name)
 
   if test $results_count -eq 0
@@ -19,7 +18,7 @@ function personal_script
     return 3
   end
 
-  set script_full_path $scripts_dir/$script_name
+  set script_full_path $personal_scripts/$script_name
 
   if string match -qr '\.fish$' $script_name
     set -q _flag_show_shell; and echo 'Using fish'
