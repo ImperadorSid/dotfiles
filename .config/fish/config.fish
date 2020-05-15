@@ -6,13 +6,12 @@ set -x EDITOR vim
 set -x MAKEFLAGS j 12
 set -x RIPGREP_CONFIG_PATH ~/.config/ripgrep/ripgreprc
 
-# System configuraton folders
+# Useful locations
 set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/dotfiles
 set -x system_files $repositories/system-files
-
-# Tasks file
 set -x tasks_file ~/Documents/Books/Tasks/tasks.json
+set -x personal_scripts ~/.local/scripts
 
 # Theme options
 set -g theme_display_date no
