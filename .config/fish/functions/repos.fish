@@ -108,7 +108,7 @@ function __repos_clone
     printf 'Repository %s%s%s\n' (set_color brred) "$repo_name" (set_color normal)
   else
     printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
-    g clone -q $repo_address $repo_location
+    loading g clone -q $repo_address $repo_location
     test $status -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
   end
 end
@@ -136,7 +136,7 @@ function __repos_tag
   end
 
   echo -n '  Extracting tarball... '
-  tar xf $repo_location/$tarball_name -C $repo_location --strip-components=1
+  loading tar xf $repo_location/$tarball_name -C $repo_location --strip-components=1
   echo 'finished'
 
   return 0
@@ -192,7 +192,7 @@ end
 
 function __repos_download_file
   printf '  Downloading %s%s%s... ' (set_color cyan) $argv[1] (set_color normal)
-  a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location -o $argv[1] $argv[2]
+  loading a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location -o $argv[1] $argv[2]
   if test "$status" -ne 0
     echo -e '\r'
     echo_err 'Download failed. Aborting'
