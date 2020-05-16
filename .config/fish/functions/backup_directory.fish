@@ -14,22 +14,30 @@ function backup_directory
     end
   end
 
-  set return_code $status
+  set result_code $status
   __backup_directory_unset_variables
-  return $return_code
+  return $result_code
 end
 
 function __backup_directory_backup
-  if not set -q file_path
-    echo_err 'File not specified'
+  if not set -q fd_path
+    echo_err 'File/directory not specified'
     return 2
   end
 
-  set relative_path (realpath --relative-base=$target_dir $file_path)
+  set relative_path (realpath --relative-base=$target_dir $fd_path)
   if test (string sub -s 1 -l 1 $relative_path) = '/'
-    echo_err "The file \"$file_path\" isn't inside of \"$target_dir\""
+    echo_err "\"$fd_path\" isn't inside of \"$target_dir\""
     return 3
   end
+
+  echo $full_fd_path
+  echo $relative_path
+  # test -w "$full_fd_path"; and v $full_fd_path; or V $full_fd_path
+  
+  # if test -d "$full_fd_path"
+  #   mkdir
+  # end
 
   return 0
 end
@@ -43,11 +51,15 @@ function __backup_directory_restore
 end
 
 function __backup_directory_init_variables
+  if test ! -d $argv[1]
+    echo_err "Directory \"$argv[1]\" doesn't exist"
+    return 5
+  end
   set -g target_dir $argv[1]
   set -g full_target_dir (realpath $target_dir)
 
   set -g repo_name $argv[2]
-  set -g repo_path (realpath $repo_name)
+  set -g repo_path $repositories/$argv[2]
 
   if set -q argv[3]
     if test ! -e "$argv[3]"
@@ -55,8 +67,8 @@ function __backup_directory_init_variables
       return 4
     end
 
-    set -g file_path $argv[3]
-    set -g full_file_path (realpath $file_path)
+    set -g fd_path $argv[3]
+    set -g full_fd_path (realpath $fd_path)
   end
 
   return 0
@@ -65,9 +77,11 @@ end
 function __backup_directory_unset_variables
   set -e target_dir
   set -e full_target_dir
+
   set -e repo_name
   set -e repo_path
-  set -e file_path
-  set -e full_file_path
+
+  set -e fd_path
+  set -e full_fd_path
 end
 
