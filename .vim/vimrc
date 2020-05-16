@@ -42,6 +42,7 @@ let vimrc_path = "~/.vim/vimrc"
 nmap <Leader>, :execute 'tabedit' vimrc_path<CR>
 nmap <Leader>. :execute 'source' vimrc_path<CR>
 
+" Buffers
 nmap gl :bnext<CR>
 nmap gL :bprevious<CR>
 
