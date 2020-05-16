@@ -3,7 +3,7 @@
 function json_cache -d "Make a cache of JSON files to avoid requisition limits"
   # Parsing arguments
   argparse -n 'JSON Cache' -x 'f,c' -X 1 'f/force' 'c/clean' -- $argv
-  if test $status -ne 0; return 1; end
+  if test "$status" -ne 0; return 1; end
 
   # Set variables
   set -g cache_dir ~/.cache/fish_json
@@ -17,7 +17,7 @@ function json_cache -d "Make a cache of JSON files to avoid requisition limits"
 
     set search_result (jq "indices(\"$prefixed_uri\")[0]" $index_file)
 
-    if test $search_result != 'null'
+    if test "$search_result" != 'null'
       if set -q _flag_force
         if not __json_cache_check_content_type; return 3; end
         if not __json_cache_download_json $search_result; return 4; end

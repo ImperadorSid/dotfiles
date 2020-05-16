@@ -6,7 +6,7 @@ function tasks -d "Manage personal tasks"
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
   argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
-  if test $status -ne 0; return 2; end
+  if test "$status" -ne 0; return 2; end
 
   if set -q _flag_low; set -g selected_priority 'low'; end
   if set -q _flag_normal; set -g selected_priority 'normal'; end
@@ -92,7 +92,7 @@ function __tasks_print
   set entries (jq -r "$filter | keys[] as \$k | .[\$k]" $tasks_file)
   set tasks_count (math (count $entries) '/ 4')
 
-  if test $tasks_count -eq 0
+  if test "$tasks_count" -eq 0
     echo -e 'NO TASKS\n'
     return
   end
@@ -145,8 +145,8 @@ function __tasks_edit
   set new_priority (jq -r "$filter.priority" $tasks_file)
 
   set changes
-  if test $old_task != $new_task; set changes "Name: $old_task -> $new_task"; end
-  if test $old_priority != $new_priority; set changes $changes "Priority: "(string upper $old_priority)" -> "(string upper $new_priority); end
+  if test "$old_task" != "$new_task"; set changes "Name: $old_task -> $new_task"; end
+  if test "$old_priority" != "$new_priority"; set changes $changes "Priority: "(string upper $old_priority)" -> "(string upper $new_priority); end
 
 
   set version_control_message "Edit task #$id ("(string join ' / ' $changes)")"
@@ -161,7 +161,7 @@ function __tasks_delete
   set value $argv[2]
   set filter ".tasks[] | select(.$key == $value)"
 
-  if test $key = 'id'
+  if test "$key" = 'id'
     set version_control_message "Delete task #$value"
     set output_message "Task #$value deleted"
   else
@@ -185,7 +185,7 @@ function __tasks_delete_all
 end
 
 function __tasks_check_file
-  if test ! -f $tasks_file
+  if test ! -f "$tasks_file"
     echo "Tasks file ($tasks_file) doesn't exist"
     set -e tasks_file
     return 1
@@ -194,7 +194,7 @@ function __tasks_check_file
 end
 
 function __tasks_check_json_formatting
-  if not test -s $tasks_file
+  if not test -s "$tasks_file"
     echo 'The tasks file is a empty file'
     return 1
   end
@@ -246,7 +246,7 @@ function __tasks_commit_changes
   g -C (dirname $tasks_file) add -A
   g -C (dirname $tasks_file) commit -qm $commit_message
 
-  if test $status -eq 0
+  if test "$status" -eq 0
     echo -e $success_message
     return 0
   end

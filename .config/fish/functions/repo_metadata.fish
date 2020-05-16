@@ -2,9 +2,9 @@
 function repo_metadata
   set options 'n/null' 'c/check'
   argparse -s -x 'n,c' $options -- $argv
-  test $status -ne 0; and return 2
+  test "$status" -ne 0; and return 2
 
-  test ! -f $repositories/$argv[1]; and return 1
+  test ! -f "$repositories/$argv[1]"; and return 1
 
   set metadata (sed '/^#!/,$d; s/\\\/\\\\\\\\\\\\\\\/g' $repositories/$argv[1])
 

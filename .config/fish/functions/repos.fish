@@ -2,7 +2,7 @@
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open'
   argparse -n 'Repository Management' -x 'c,e,i,d,O' -x 'f,e,i,O' -x 'o,c,O' -X 2 $options -- $argv
-  test $status -ne 0; and return 1
+  test "$status" -ne 0; and return 1
 
   set final_status 0
   set -g repo_file $argv[1]
@@ -47,7 +47,7 @@ function __repos_execute
 end
 
 function __repos_check_file
-  if test ! -f $repo_path
+  if test ! -f "$repo_path"
     echo_err "File \"$repo_file\" doesn't exit"
   else if not repo_metadata -c $repo_file
     echo_err 'Repo metadata is invalid'
@@ -109,7 +109,7 @@ function __repos_clone
   else
     printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
     loading g clone -q $repo_address $repo_location
-    test $status -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
+    test "$status" -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
   end
 end
 
@@ -389,7 +389,7 @@ end
 function __repos_edit
   if test (count $repo_file) -eq 0
     v $repositories/*.repo
-  else if test -f $repo_path
+  else if test -f "$repo_path"
     v -c 'set filetype=sh | call cursor(3,12)' $repo_path
   else
     echo_err "Repo file \"$repo_file\" doesn't exist"
