@@ -31,13 +31,16 @@ function __backup_directory_backup
     return 3
   end
 
-  echo $full_fd_path
-  echo $relative_path
-  # test -w "$full_fd_path"; and v $full_fd_path; or V $full_fd_path
-  
-  # if test -d "$full_fd_path"
-  #   mkdir
-  # end
+  test -w "$fd_path"; and v $fd_path; or V $fd_path
+
+  set destination_dir $repo_path/(dirname $relative_path)
+  mkdir -p $destination_dir
+
+  if test -w "$fd_path"
+    cp -r $fd_path $destination_dir
+  else
+    sudo cp -r $fd_path $destination_dir
+  end
 
   return 0
 end
@@ -56,7 +59,6 @@ function __backup_directory_init_variables
     return 5
   end
   set -g target_dir $argv[1]
-  set -g full_target_dir (realpath $target_dir)
 
   set -g repo_name $argv[2]
   set -g repo_path $repositories/$argv[2]
@@ -68,7 +70,6 @@ function __backup_directory_init_variables
     end
 
     set -g fd_path $argv[3]
-    set -g full_fd_path (realpath $fd_path)
   end
 
   return 0
@@ -76,12 +77,8 @@ end
 
 function __backup_directory_unset_variables
   set -e target_dir
-  set -e full_target_dir
-
   set -e repo_name
   set -e repo_path
-
   set -e fd_path
-  set -e full_fd_path
 end
 
