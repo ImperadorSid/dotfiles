@@ -17,7 +17,7 @@ function loading
 
     printf '\b'
     kill -USR1 $spinner_pid
-    wait $spinner_pid
+    wait
     return $command_exit_code
   end
 
