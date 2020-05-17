@@ -1,12 +1,12 @@
 #!/usr/bin/env fish
 function backup_directory
   set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit'
-  argparse -n 'Backup Directory' -N 2 -x 'd,r,e' -x 'd,r,n' $options -- $argv
+  argparse -n 'Backup Directory' -N 2 -x 'd,e' -x 'd,r,n' $options -- $argv
   test "$status" -eq 0; or return 1
 
   if __backup_directory_init_variables $argv
     if set -q _flag_diff
-      __backup_directory_diff
+      __backup_directory_diff "$_flag_edit"
     else if set -q _flag_restore
       __backup_directory_restore
     else
