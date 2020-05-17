@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 function backup_directory
-  set options 'd/diff' 'r/restore'
+  set options 'd/diff' 'r/restore' 'e/edit'
   argparse -n 'Backup Directory' -N 2 -x 'd,r' $options -- $argv
   test "$status" -eq 0; or return 1
 
@@ -10,7 +10,7 @@ function backup_directory
     else if set -q _flag_restore
       __backup_directory_restore
     else
-      __backup_directory_backup
+      __backup_directory_backup $_flag_edit
     end
   end
 
@@ -31,16 +31,14 @@ function __backup_directory_backup
     return 3
   end
 
-  test -w "$fd_path"; and v $fd_path; or V $fd_path
+  if test "$argv" = '-e'
+    test -w "$fd_path"; and v $fd_path; or V $fd_path
+  end
 
   set destination_dir $repo_path/(dirname $relative_path)
   mkdir -p $destination_dir
 
-  if test -w "$fd_path"
-    cp -r $fd_path $destination_dir
-  else
-    sudo cp -r $fd_path $destination_dir
-  end
+  cp -r $fd_path $destination_dir
 
   return 0
 end
