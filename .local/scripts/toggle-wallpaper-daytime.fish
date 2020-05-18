@@ -9,7 +9,7 @@ set dconf_background_path '/org/cinnamon/desktop/background/picture-uri'
 
 if test ! -f "$image_path"
   echo_err "Image \"$image\" not found"
-  exit 1
+  exit
 end
 
 set actual_hour (date +%H)
