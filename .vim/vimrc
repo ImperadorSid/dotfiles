@@ -18,7 +18,7 @@ set noshowmode
 set noswapfile
 set number
 set relativenumber
-set scrolloff=5
+set scrolloff=10
 set shell=sh
 set shiftwidth=2
 set shortmess=flmrwxoOWF
