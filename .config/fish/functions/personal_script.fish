@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function personal_script
-  argparse 's/show-shell' -- $argv
+  argparse -n 'Personal script' 's/show-shell' -- $argv
   if not count $argv > /dev/null
     echo 'A task name must be passed as a parameter'
     return 4
