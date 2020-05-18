@@ -27,19 +27,22 @@ function __backup_directory_backup
     return
   end
 
-  __backup_directory_edit_backup $argv[1]
-
-  __backup_directory_commit $argv[2]
+  test "x$argv[1]" = 'x-e'; and __backup_directory_backup_edit
+  __backup_directory_backup_copy
+  test "x$argv[2]" = 'x-n'; or __backup_directory_commit
 end
 
-function __backup_directory_edit_backup
-  if test "x$argv" = 'x-e'
-    test -w "$fd_path"; and v $fd_path; or V $fd_path
-  end
+function __backup_directory_backup_edit
+  test -w "$fd_path"; and v $fd_path; or V $fd_path
+end
 
+function __backup_directory_backup_copy
   set destination_dir $repo_path/(dirname $relative_path)
-  mkdir -p $destination_dir
 
+  printf '%s%s%s ' (set_color yellow) "$fd_path" (set_color normal)
+  test -e "$destination_dir/"(basename $fd_path); and echo 'updated'; or echo 'created'
+
+  mkdir -p $destination_dir
   cp -r $fd_path $destination_dir
 end
 
@@ -93,18 +96,15 @@ function __backup_directory_diff_file
   test -w "$target_dir/$argv"; and v -d $target_dir/$argv $argv; or V -d $target_dir/$argv $argv
 end
 
-function __backup_directory_restore
-  echo 'Restore'
+function __backup_directory_commit
+  if test -d "$repo_path/.git"
+    printf '\nCommiting changes\n'
+    commit_repo $repo_path
+  end
 end
 
-function __backup_directory_commit
-  if test "x$argv" != 'x-n'
-    if test ! -d "$repo_path/.git"
-      echo_err "Not a Git repository. Skipping commits..."
-    else
-      commit_repo $repo_path
-    end
-  end
+function __backup_directory_restore
+  echo 'Restore'
 end
 
 function __backup_directory_init_variables
