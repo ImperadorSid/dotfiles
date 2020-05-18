@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 function backup_directory
-  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit'
-  argparse -n 'Backup Directory' -N 2 -x 'd,e' -x 'd,r,n' $options -- $argv
+  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit'
+  argparse -n 'Backup Directory' -N 2 -x 'd,r,n' -x 'r,e,n' -x 'j,d,r,e,n' $options -- $argv
   test "$status" -eq 0; or return 1
 
   if __backup_directory_init_variables $argv
@@ -9,14 +9,16 @@ function backup_directory
       __backup_directory_diff "$_flag_edit"
     else if set -q _flag_restore
       __backup_directory_restore
+    else if set -q _flag_just_commit
+      __backup_directory_commit
     else
       __backup_directory_backup "$_flag_edit" "$_flag_no_commit"
     end
   end
 
-  set result_code $status
+  set operation_code $status
   __backup_directory_unset_variables
-  return $result_code
+  return $operation_code
 end
 
 function __backup_directory_backup
@@ -25,14 +27,14 @@ function __backup_directory_backup
     return 2
   end
 
-  __backup_directory_edit_copy $argv[1]
+  __backup_directory_edit_backup $argv[1]
 
   __backup_directory_commit $argv[2]
 
   return 0
 end
 
-function __backup_directory_edit_copy
+function __backup_directory_edit_backup
   if test "x$argv" = 'x-e'
     test -w "$fd_path"; and v $fd_path; or V $fd_path
   end
@@ -41,6 +43,53 @@ function __backup_directory_edit_copy
   mkdir -p $destination_dir
 
   cp -r $fd_path $destination_dir
+end
+
+function __backup_directory_diff
+  set current_directory $PWD
+  $repo_path
+
+  if set -q fd_path
+    if test -d "$fd_path"
+      echo_err "\"$fd_path\" is a directory"
+      set result_code
+    else
+      __backup_directory_diff_single_file $relative_path
+    end
+  else
+    __backup_directory_diff_all
+  end
+
+  $current_directory
+  return 0
+end
+
+function __backup_directory_diff_single_file
+  echo $target_dir/$argv
+  test -w "$target_dir/$argv"; and v -d $target_dir/$argv $argv; or V -d $target_dir/$argv $argv
+
+  return 0
+end
+
+function __backup_directory_diff_all
+  set diffs (fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
+
+  if test "x$argv" = 'x-e'
+    for d in $diffs
+      __backup_directory_diff_single_file $d
+    end
+  else
+    echo 'Files with changes'
+    for i in (seq (count $diffs))
+      printf '%3s %s%s%s\n' "$i" (set_color cyan) "$diffs[$i]" (set_color normal)
+    end
+  end
+
+  return 0
+end
+
+function __backup_directory_restore
+  echo 'Restore'
 end
 
 function __backup_directory_commit
@@ -53,16 +102,8 @@ function __backup_directory_commit
   end
 end
 
-function __backup_directory_diff
-  echo 'Diff'
-end
-
-function __backup_directory_restore
-  echo 'Restore'
-end
-
 function __backup_directory_init_variables
-  if test ! -d $argv[1]
+  if test ! -d "$argv[1]"
     echo_err "Directory \"$argv[1]\" doesn't exist"
     return 5
   end
@@ -77,7 +118,7 @@ function __backup_directory_init_variables
       return 4
     end
     set -g fd_path $argv[3]
-    
+
     __backup_directory_check_relative
     return $status
   end
@@ -98,7 +139,7 @@ end
 
 function __backup_directory_unset_variables
   set -e target_dir
-  
+
   set -e repo_name
   set -e repo_path
 

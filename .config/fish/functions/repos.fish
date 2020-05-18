@@ -2,18 +2,15 @@
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open'
   argparse -n 'Repository Management' -x 'c,e,i,d,O' -x 'f,e,i,O' -x 'o,c,O' -X 2 $options -- $argv
-  test "$status" -ne 0; and return 1
+  test "$status" -eq 0; or return
 
-  set final_status 0
   set -g repo_file $argv[1]
   set -g repo_path "$repositories/$repo_file"
 
   alias meta 'repo_metadata $repo_file'
   alias meta_quiet 'repo_metadata -n $repo_file'
 
-  if set -q _flag_open
-    __repos_open
-  end
+  set -q _flag_open; and __repos_open
 
   if set -q _flag_only_open
     __repos_open
@@ -30,20 +27,17 @@ function repos -d 'Manage repository downloads and script installations'
 end
 
 function __repos_execute
-
-  __repos_check_file; or return 1
+  __repos_check_file; or return
 
   set -g repo_name (meta '.repo')
   __repos_get_address
   set -g repo_type (meta '.type')
 
   if contains $repo_type 'clone' 'release' 'tag'
-    __repos_clone_release_tag $argv; and return 0
+    __repos_clone_release_tag $argv
   else
     echo_err "Repo type \"$repo_type\" is invalid"
   end
-
-  return 1
 end
 
 function __repos_check_file
@@ -51,11 +45,7 @@ function __repos_check_file
     echo_err "File \"$repo_file\" doesn't exit"
   else if not repo_metadata -c $repo_file
     echo_err 'Repo metadata is invalid'
-  else
-    return 0
   end
-
-  return 1
 end
 
 function __repos_get_address
@@ -73,11 +63,10 @@ function __repos_clone_release_tag
   set -gx FILE_NAMES
   set -gx FILE_EXTENSIONS
 
-  __repos_download $argv; or return 1
-  test "$argv[1]" = '-d'; or __repos_install; or return 1
+  __repos_download $argv; or return
+  test "$argv[1]" = '-d'; or __repos_install; or return
 
   echo -e '\nDONE'
-  return 0
 end
 
 function __repos_find_location
@@ -95,12 +84,10 @@ function __repos_download
     case 'clone'
       __repos_clone $_flag_only_install
     case 'tag'
-      __repos_tag $_flag_only_install $_flag_force; or return 1
+      __repos_tag $_flag_only_install $_flag_force
     case '*'
-      __repos_release $_flag_only_install $_flag_force; or return 1
+      __repos_release $_flag_only_install $_flag_force
   end
-
-  return 0
 end
 
 function __repos_clone
@@ -111,10 +98,12 @@ function __repos_clone
     loading g clone -q $repo_address $repo_location
     test "$status" -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
   end
+
+  return 0
 end
 
 function __repos_tag
-  __repos_name_formatting; or return 1
+  __repos_name_formatting; or return
   argparse 'f/force' 'i/only-install' -- $argv
 
   set uri_prefix https://api.github.com/repos/$repo_name
@@ -132,18 +121,16 @@ function __repos_tag
     mkdir -p $repo_location
     mv $tmp_tar $repo_location/$tarball_name
   else
-    __repos_download_file $tarball_name $uri_prefix/tarball/$tag $flag_force; or return 1
+    __repos_download_file $tarball_name $uri_prefix/tarball/$tag $flag_force; or return
   end
 
   echo -n '  Extracting tarball... '
   loading tar xf $repo_location/$tarball_name -C $repo_location --strip-components=1
   echo 'finished'
-
-  return 0
 end
 
 function __repos_release
-  __repos_name_formatting; or return 1
+  __repos_name_formatting; or return
   argparse 'f/force' 'i/only-install' -- $argv
 
   set targets_count (meta '.targets | length')
@@ -153,7 +140,7 @@ function __repos_release
 
     if not count $assets > /dev/null
       echo_err "Repository \"$repo_name\" not found"
-      return 1
+      return
     end
 
     printf 'Release %s%s%s\n' (set_color brred) "$tag" (set_color normal)
@@ -164,21 +151,16 @@ function __repos_release
       if set -q _flag_only_install
         printf '  File %s: %s%s%s\n' (count $FILE_NAMES) (set_color cyan) "$file_info[1]" (set_color normal)
       else
-        __repos_download_file $file_info $_flag_force; or return 1
+        __repos_download_file $file_info $_flag_force; or return
       end
     end
   end
-
-  return 0
 end
 
 function __repos_name_formatting
   if string match -qrv '^[\w-]+/[\w-]+$' $repo_name
     echo_err "For download $repo_type"'s from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
-    return 1
   end
-
-  return 0
 end
 
 function __repos_tag_assets
@@ -196,11 +178,9 @@ function __repos_download_file
   if test "$status" -ne 0
     echo -e '\r'
     echo_err 'Download failed. Aborting'
-    return 1
+    return
   end
   echo 'finished'
-
-  return 0
 end
 
 function __repos_append_file_variables
@@ -212,19 +192,17 @@ function __repos_append_file_variables
 end
 
 function __repos_install
-  __repos_dependencies; or return 1
+  __repos_dependencies; or return
 
-  __repos_script; or return 1
+  __repos_script; or return
 
   __repos_packages
   __repos_links
   __repos_path_folders
-
-  return 0
 end
 
 function __repos_dependencies
-  test (meta '.dependencies | length') -gt 0; or return 0
+  test (meta '.dependencies | length') -eq 0; and return
 
   set -g repo_dependencies (meta '.dependencies[]')
 
@@ -235,11 +213,10 @@ function __repos_dependencies
     if not a install -y $repo_dependencies &> /dev/null
       echo -e '\r'
       echo_err 'Installation failed. Check the APT log for details'
-      return 1
+      return
     end
 
     echo 'complete'
-    return 0
   end
 end
 
@@ -256,7 +233,7 @@ end
 
 function __repos_script
   set current_location $PWD
-  cd $repo_location; or return 1
+  cd $repo_location; or return
 
   set exec_file (mktemp)
   echo 'FILE_FULL_NAMES=($FILE_FULL_NAMES)' > $exec_file
@@ -276,8 +253,6 @@ function __repos_script
 
   rm $exec_file
   cd $current_location
-
-  return 0
 end
 
 function __repos_packages
@@ -352,7 +327,7 @@ function __repos_create
   set repo_path $repo_path.repo
   if test -f "$repo_path" -a 'x-f' != "x$argv[2]"
     echo_err 'Repository file already exists'
-    return 1
+    return
   end
   test "$argv[1]" = ''; and set argv[1] 'release'
 set type '"type": "'$argv[1]'"'
@@ -374,7 +349,7 @@ set type '"type": "'$argv[1]'"'
       set template "{$type, $repo, $location, $links, $path_folders, $targets, $packages}"
     case '*'
       echo_err "Type \"$argv[1]\" is not valid"
-      return 1
+      return
   end
 
   echo $template | jq '.' > $repo_path
@@ -383,7 +358,6 @@ set type '"type": "'$argv[1]'"'
   __repos_edit
 
   echo "Repository \"$repo_file\" ($argv[1]) created"
-  return 0
 end
 
 function __repos_edit
@@ -393,10 +367,8 @@ function __repos_edit
     v -c 'set filetype=sh | call cursor(3,12)' $repo_path
   else
     echo_err "Repo file \"$repo_file\" doesn't exist"
-    return 1
+    return
   end
-
-  return 0
 end
 
 function __repos_open
