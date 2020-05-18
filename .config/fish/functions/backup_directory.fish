@@ -1,14 +1,14 @@
 #!/usr/bin/env fish
 function backup_directory
   set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit'
-  argparse -n 'Backup Directory' -N 2 -x 'd,r,n,j' -x 'e,r,j' $options -- $argv
+  argparse -n 'Backup Directory' -N 2 -x 'd,n,j' -x 'e,r,j' $options -- $argv
   test "$status" -eq 0; or return
 
   if __backup_directory_init_variables $argv
-    if set -q _flag_diff
-      __backup_directory_diff "$_flag_edit"
-    else if set -q _flag_restore
-      __backup_directory_restore
+    if set -q _flag_restore
+      __backup_directory_restore $_flag_diff
+    else if set -q _flag_diff
+      __backup_directory_diff $_flag_edit
     else if set -q _flag_just_commit
       __backup_directory_commit
     else
@@ -71,7 +71,7 @@ function __backup_directory_diff_single_file
 end
 
 function __backup_directory_diff_all
-  set diffs (fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
+  set diffs (__backup_directory_changed_files)
 
   for d in $diffs
     __backup_directory_diff_file $d
@@ -79,7 +79,7 @@ function __backup_directory_diff_all
 end
 
 function __backup_directory_diff_show
-  set diffs (fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
+  set diffs (__backup_directory_changed_files)
   set files_changed_count (count $diffs)
 
   if test "$files_changed_count" -gt 0
@@ -104,7 +104,56 @@ function __backup_directory_commit
 end
 
 function __backup_directory_restore
-  echo 'Restore'
+  set current_directory $PWD
+  $repo_path
+
+  if test "x$argv" = 'x-d'
+    __backup_directory_restore_changed
+  else if set -q fd_path
+    __backup_directory_restore_file $relative_path
+  else
+    __backup_directory_restore_all
+  end
+
+  $current_directory
+end
+
+function __backup_directory_restore_all
+  printf 'Restoring backup from %s%s%s to %s%s%s...  ' (set_color yellow) "$repo_name" (set_color normal) (set_color blue) "$target_dir" (set_color normal)
+  
+  if not loading -a cp -r . $target_dir
+    printf '\r'
+    echo_err 'An error ocurred while restoring files'
+  else
+    echo 'complete'
+  end
+
+  set copy_code $status
+  rm -rf $target_dir/.git
+  return $copy_code
+end
+
+function __backup_directory_restore_file
+  cp -r $argv $target_dir/$argv
+  printf '%s%s%s was restored\n' (set_color cyan) "$argv" (set_color normal)
+end
+
+function __backup_directory_restore_changed
+  set diffs (__backup_directory_changed_files)
+  set files_changed_count (count $diffs)
+
+  if test "$files_changed_count" -gt 0
+    echo 'Restoring changed files'
+    for d in $diffs
+      __backup_directory_restore_file $d
+    end
+  else
+    echo 'No file has changed'
+  end
+end
+
+function __backup_directory_changed_files
+  fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}'
 end
 
 function __backup_directory_init_variables
