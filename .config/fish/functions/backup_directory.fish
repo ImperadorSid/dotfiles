@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 function backup_directory
   set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit'
-  argparse -n 'Backup Directory' -N 2 -x 'd,r,n' -x 'r,e,n' -x 'j,d,r,e,n' $options -- $argv
-  test "$status" -eq 0; or return 1
+  argparse -n 'Backup Directory' -N 2 -x 'd,r,n,j' -x 'e,r,j' $options -- $argv
+  test "$status" -eq 0; or return
 
   if __backup_directory_init_variables $argv
     if set -q _flag_diff
@@ -23,15 +23,13 @@ end
 
 function __backup_directory_backup
   if not set -q fd_path
-    echo_err 'File/directory not specified'
-    return 2
+    echo_err 'File/directory not specified' 2
+    return
   end
 
   __backup_directory_edit_backup $argv[1]
 
   __backup_directory_commit $argv[2]
-
-  return 0
 end
 
 function __backup_directory_edit_backup
@@ -49,43 +47,50 @@ function __backup_directory_diff
   set current_directory $PWD
   $repo_path
 
-  if set -q fd_path
-    if test -d "$fd_path"
-      echo_err "\"$fd_path\" is a directory"
-      set result_code
-    else
-      __backup_directory_diff_single_file $relative_path
-    end
-  else
+  if test "x$argv" = 'x-e'
     __backup_directory_diff_all
+  else if set -q fd_path
+    __backup_directory_diff_single_file; or set diff_code $status
+  else
+    __backup_directory_diff_show
   end
 
   $current_directory
-  return 0
+  return $diff_code
 end
 
 function __backup_directory_diff_single_file
-  echo $target_dir/$argv
-  test -w "$target_dir/$argv"; and v -d $target_dir/$argv $argv; or V -d $target_dir/$argv $argv
-
-  return 0
+  if test -d "$relative_path"
+    echo_err "\"$fd_path\" is a directory" 6
+  else
+    __backup_directory_diff_file $relative_path
+  end
 end
 
 function __backup_directory_diff_all
   set diffs (fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
 
-  if test "x$argv" = 'x-e'
-    for d in $diffs
-      __backup_directory_diff_single_file $d
-    end
-  else
+  for d in $diffs
+    __backup_directory_diff_file $d
+  end
+end
+
+function __backup_directory_diff_show
+  set diffs (fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
+  set files_changed_count (count $diffs)
+
+  if test "$files_changed_count" -gt 0
     echo 'Files with changes'
-    for i in (seq (count $diffs))
+    for i in (seq $files_changed_count)
       printf '%3s %s%s%s\n' "$i" (set_color cyan) "$diffs[$i]" (set_color normal)
     end
+  else
+    echo 'All files are synched'
   end
+end
 
-  return 0
+function __backup_directory_diff_file
+  test -w "$target_dir/$argv"; and v -d $target_dir/$argv $argv; or V -d $target_dir/$argv $argv
 end
 
 function __backup_directory_restore
@@ -104,8 +109,8 @@ end
 
 function __backup_directory_init_variables
   if test ! -d "$argv[1]"
-    echo_err "Directory \"$argv[1]\" doesn't exist"
-    return 5
+    echo_err "Directory \"$argv[1]\" doesn't exist" 5
+    return
   end
   set -g target_dir $argv[1]
 
@@ -114,27 +119,21 @@ function __backup_directory_init_variables
 
   if set -q argv[3]
     if test ! -e "$argv[3]"
-      echo_err "\"$argv[3]\" doesn't exist"
-      return 4
+      echo_err "\"$argv[3]\" doesn't exist" 4
+      return
     end
+
     set -g fd_path $argv[3]
-
     __backup_directory_check_relative
-    return $status
   end
-
-  return 0
 end
 
 function __backup_directory_check_relative
   set -g relative_path (realpath --relative-base=$target_dir $fd_path)
 
   if test (string sub -s 1 -l 1 $relative_path) = '/'
-    echo_err "\"$fd_path\" isn't inside of \"$target_dir\""
-    return 3
+    echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3
   end
-
-  return 0
 end
 
 function __backup_directory_unset_variables
