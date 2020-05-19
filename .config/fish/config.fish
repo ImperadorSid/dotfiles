@@ -39,6 +39,9 @@ alias vf 'vifm'
 alias x  'xclip -selection clipboard'
 
 # Alias (make flags always enabled)
+alias bdl 'backup_directory ~/Downloads installers'
+alias bdot 'backup_directory ~ dotfiles'
+alias bsys 'backup_directory / system-files'
 alias fd 'fd -IHL --ignore-file ~/.config/ignore-locations'
 alias ll 'lsd -lA --group-dirs=first'
 alias ls 'lsd -A --group-dirs=first'

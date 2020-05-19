@@ -57,6 +57,10 @@ map <Down> <Nop>
 map <Left> <Nop>
 map <Right> <Nop>
 
+" MACROS
+" Folding functions
+let @f = 'zajj'
+
 " PLUGINS
 " Netrw
 let g:netrw_banner=0

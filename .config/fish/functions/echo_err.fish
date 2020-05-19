@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function echo_err
   printf '%sERROR: %s' (set_color brred) (set_color normal)
 

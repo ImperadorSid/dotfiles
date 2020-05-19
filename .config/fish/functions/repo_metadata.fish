@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function repo_metadata
   set options 'n/null' 'c/check'
   argparse -n 'Repository metadata' -s -x 'n,c' $options -- $argv

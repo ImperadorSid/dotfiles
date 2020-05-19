@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function __repos_completions_list
   fd -d 1 -e repo -x fish -c "repo_metadata -c {/}; or exit; echo -e '{/}\tRepository:' (repo_metadata {/} '.repo')" \; . $repositories
 end

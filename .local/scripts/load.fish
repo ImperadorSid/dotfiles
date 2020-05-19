@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function __load_stop -s USR1
   set stop true
 end

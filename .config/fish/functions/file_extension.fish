@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function file_extension
   set name (string replace -r '(.+)\.\w+$' '$1' $argv)
   set extension (string replace -r '.+\.(\w+)$' '$1' $argv)

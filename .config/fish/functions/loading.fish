@@ -1,4 +1,5 @@
 #!/usr/bin/env fish
+
 function loading
   argparse -n 'Loading Spinner' -s -x 'a,n,e' 'a/all' 'n/none' 'e/error' -- $argv
   test "$status" -eq 0; or return 1
