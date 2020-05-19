@@ -34,7 +34,7 @@ function __backup_directory_backup
     __backup_directory_backup_copy "$relative_path"
   end
 
-  test "x$argv[2]" = 'x-n'; or __backup_directory_commit
+  test "x$argv[2]" != 'x-n' -a "$status" -eq 0; and __backup_directory_commit
 end
 
 function __backup_directory_backup_changes
