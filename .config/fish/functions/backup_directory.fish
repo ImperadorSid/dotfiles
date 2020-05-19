@@ -93,7 +93,7 @@ function __backup_directory_diff_show
 end
 
 function __backup_directory_diff_file
-  __backup_directory_run_writable "$target_dir/$argv" vim -d $target_dir/$argv
+  __backup_directory_run_writable "$target_dir/$argv" vim -d $target_dir/$argv $argv
 end
 
 function __backup_directory_commit
