@@ -2,7 +2,7 @@
 
 function tasks -d "Manage personal tasks"
   if not __tasks_check_file; return 1; end
-  if not __tasks_check_json_formatting; return 3; end  
+  if not __tasks_check_json_formatting; return 3; end
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
   argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
@@ -18,7 +18,7 @@ function tasks -d "Manage personal tasks"
   if set -q selected_operation
     switch $selected_operation
       case 'edit'
-        if not count $argv > /dev/null
+        if test -z "$argv"
           v $tasks_file
         else
           if not __tasks_check_id $argv[1]; __tasks_unset_variables; return 6; end
@@ -27,7 +27,7 @@ function tasks -d "Manage personal tasks"
       case 'delete'
         if set -q selected_priority
           if not __tasks_delete 'priority' \"$selected_priority\"; __tasks_unset_variables; return 7; end
-        else if count $argv > /dev/null
+        else if test -n "$argv"
           for t in $argv
             if not __tasks_check_id $t; __tasks_unset_variables; return 6; end
             if not __tasks_delete 'id' $t; __tasks_unset_variables; return 7; end
@@ -37,7 +37,7 @@ function tasks -d "Manage personal tasks"
         end
     end
   else if set -q selected_priority
-    if not count $argv > /dev/null
+    if test -z "$argv"
       __tasks_print $selected_priority
     else
       for t in $argv
@@ -49,7 +49,7 @@ function tasks -d "Manage personal tasks"
     __tasks_print 'normal'
     __tasks_print 'high'
   else
-    if not count $argv > /dev/null
+    if test -z "$argv"
       __tasks_print
     else
       for t in $argv
@@ -81,7 +81,7 @@ function __tasks_create
 end
 
 function __tasks_print
-  if not count $argv > /dev/null
+  if test -z "$argv"
     set filter '.tasks[]'
     echo 'All tasks'
   else
@@ -130,9 +130,7 @@ function __tasks_edit
     set operations $operations "| $filter.priority = \"$selected_priority\""
   end
 
-  if count $new_task > /dev/null
-    set operations $operations "| $filter.task = \"$new_task\""
-  end
+  test -n "$new_task"; and set operations $operations "| $filter.task = \"$new_task\""
 
   set old_task (jq "$filter.task" $tasks_file)
   set old_priority (jq -r "$filter.priority" $tasks_file)
@@ -207,7 +205,7 @@ function __tasks_check_json_formatting
   return 0
 end
 
-function __tasks_check_id 
+function __tasks_check_id
   set id $argv[1]
 
   if string match -qrv '^\d+$' $id
@@ -242,7 +240,7 @@ end
 function __tasks_commit_changes
   set commit_message $argv[1]
   set success_message $argv[2]
-  
+
   g -C (dirname $tasks_file) add -A
   g -C (dirname $tasks_file) commit -qm $commit_message
 

@@ -2,20 +2,20 @@
 
 function personal_script
   argparse -n 'Personal script' 's/show-shell' -- $argv
-  if not count $argv > /dev/null
-    echo 'A task name must be passed as a parameter'
-    return 4
+  if test -z "$argv"
+    echo_err 'A task name must be passed as a parameter' 4
+    return
   end
 
   set script_name (ls $personal_scripts | grep $argv[1])
   set results_count (count $script_name)
 
   if test "$results_count" -eq 0
-    echo 'Script not found'
-    return 1
+    echo_err 'Script not found'
+    return
   else if test "$results_count" -ge 2
-    echo 'More than 1 script matches the input'
-    return 3
+    echo_err 'More than 1 script matches the input' 3
+    return
   end
 
   set script_full_path $personal_scripts/$script_name
@@ -31,7 +31,7 @@ function personal_script
   else
     set shell_executable (sed -nr '1 s/^#!(.*)/\1/p' $script_full_path)
 
-    if count $shell_executable > /dev/null
+    if test -n "$shell_executable"
       set -q _flag_show_shell; and echo "Using $shell_executable"
       eval "$shell_executable $script_full_path $argv[2..-1]"
     else

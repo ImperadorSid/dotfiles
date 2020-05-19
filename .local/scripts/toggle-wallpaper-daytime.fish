@@ -15,9 +15,7 @@ end
 set actual_hour (date +%H)
 
 if test "$actual_hour" -ge 17 -o "$actual_hour" -lt 9
-  if not count $brightness > /dev/null
-    set brightness 50
-  end
+  test -z "$brightness"; and set brightness 50
 
   set daytime 'Night'
 else

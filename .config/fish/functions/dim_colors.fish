@@ -12,7 +12,7 @@ function dim_colors
     set color (string sub -s $i -l 2 $argv[1])
     set new_color_dec (math "round(0x$color * $argv[2])")
     set new_color_hex (printf '%02x' $new_color_dec)
-    
+
     set result (string join '' $result$new_color_hex)
   end
 

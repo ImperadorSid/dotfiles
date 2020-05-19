@@ -139,7 +139,7 @@ function __repos_release
     set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/')
     set assets (__repos_tag_assets $tag $_flag_force)
 
-    if not count $assets > /dev/null
+    if test -z "$assets"
       echo_err "Repository \"$repo_name\" not found"
       return
     end
@@ -330,7 +330,7 @@ function __repos_create
     echo_err 'Repository file already exists'
     return
   end
-  test "$argv[1]" = ''; and set argv[1] 'release'
+  test -z "$argv[1]"; and set argv[1] 'release'
 set type '"type": "'$argv[1]'"'
   set repo '"repo": ""'
   set location '"location": ""'
@@ -362,7 +362,7 @@ set type '"type": "'$argv[1]'"'
 end
 
 function __repos_edit
-  if test (count $repo_file) -eq 0
+  if test -z "$repo_file"
     v $repositories/*.repo
   else if test -f "$repo_path"
     v -c 'set filetype=sh | call cursor(3,12)' $repo_path
