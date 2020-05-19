@@ -33,7 +33,7 @@ function __backup_directory_backup
 end
 
 function __backup_directory_backup_edit
-  test -w "$fd_path"; and v $fd_path; or V $fd_path
+  __backup_directory_run_writable "$fd_path" vim $fd_path
 end
 
 function __backup_directory_backup_copy
@@ -93,7 +93,7 @@ function __backup_directory_diff_show
 end
 
 function __backup_directory_diff_file
-  test -w "$target_dir/$argv"; and v -d $target_dir/$argv $argv; or V -d $target_dir/$argv $argv
+  __backup_directory_run_writable "$target_dir/$argv" vim -d $target_dir/$argv
 end
 
 function __backup_directory_commit
@@ -120,8 +120,8 @@ end
 
 function __backup_directory_restore_all
   printf 'Restoring backup from %s%s%s to %s%s%s...  ' (set_color yellow) "$repo_name" (set_color normal) (set_color blue) "$target_dir" (set_color normal)
-  
-  if not loading -a cp -r . $target_dir
+
+  if not loading -a __backup_directory_run_writable "$target_dir" cp -r . $target_dir
     printf '\r'
     echo_err 'An error ocurred while restoring files'
   else
@@ -129,12 +129,12 @@ function __backup_directory_restore_all
   end
 
   set copy_code $status
-  rm -rf $target_dir/.git
+  __backup_directory_run_writable "$target_dir/.git" rm -rf $target_dir/.git
   return $copy_code
 end
 
 function __backup_directory_restore_file
-  cp -r $argv $target_dir/$argv
+  __backup_directory_run_writable "$target_dir/$argv" cp -r $argv $target_dir/$argv
   printf '%s%s%s was restored\n' (set_color cyan) "$argv" (set_color normal)
 end
 
@@ -154,6 +154,15 @@ end
 
 function __backup_directory_changed_files
   fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}'
+end
+
+function __backup_directory_run_writable
+  if test -w $argv[1]
+    $argv[2..-1]
+  else
+    set command_path (which $argv[2])
+    sudo $command_path $argv[3..-1]
+  end
 end
 
 function __backup_directory_init_variables
