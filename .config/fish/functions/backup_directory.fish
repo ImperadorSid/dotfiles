@@ -72,6 +72,7 @@ end
 
 function __backup_directory_diff_all
   set diffs (__backup_directory_changed_files)
+  count $diffs > /dev/null; or echo 'No files has changed'
 
   for d in $diffs
     __backup_directory_diff_file $d
@@ -148,7 +149,7 @@ function __backup_directory_restore_changed
       __backup_directory_restore_file $d
     end
   else
-    echo 'No file has changed'
+    echo 'No files has changed'
   end
 end
 
