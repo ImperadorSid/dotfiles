@@ -3,7 +3,7 @@
 function repo_metadata
   set options 'n/null' 'c/check'
   argparse -n 'Repository metadata' -s -x 'n,c' $options -- $argv
-  test "$status" -ne 0; and return 2
+  test "$status" -eq 0; or return 2
 
   test ! -f "$repositories/$argv[1]"; and return 1
 

@@ -172,12 +172,12 @@ end
 function __repos_download_file
   printf '  Downloading %s%s%s... ' (set_color cyan) $argv[1] (set_color normal)
   loading a2 (test "$argv[3]" = '-f'; or echo '-c') -q --allow-overwrite -d $repo_location -o $argv[1] $argv[2]
-  if test "$status" -ne 0
+  if test "$status" -eq 0
+    echo 'finished'
+  else
     echo -e '\r'
     echo_err 'Download failed. Aborting'
-    return
   end
-  echo 'finished'
 end
 
 function __repos_append_file_variables
