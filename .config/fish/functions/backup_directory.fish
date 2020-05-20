@@ -1,13 +1,15 @@
 #!/usr/bin/env fish
 
 function backup_directory
-  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit'
-  argparse -n 'Backup Directory' -N 2 -x 'd,n,j' -x 'e,r,j' $options -- $argv
+  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit' 'h/help'
+  argparse -n 'Backup Directory' -N 2 -x 'd,n,j,h' -x 'e,r,j,h' -x 'r,n' $options -- $argv
   test "$status" -eq 0; or return
 
   set current_directory $PWD
 
-  if __backup_directory_init_variables $argv
+  if set -q _flag_help
+    __backup_directory_help
+  else if __backup_directory_init_variables $argv
     if set -q _flag_restore
       __backup_directory_restore $_flag_diff
     else if set -q _flag_diff
@@ -201,5 +203,31 @@ function __backup_directory_unset_variables
 
   set -e diffs
   set -e diffs_count
+end
+
+function __backup_directory_help
+  echo 'Backup Directory'
+  echo
+  echo 'Script to backup, restore and get changes of a target folder'
+  echo 'Created by Moisés Carvalho'
+  echo
+  echo 'USAGE'
+  echo '  backup_directory TARGET_DIR REPO_NAME [OPTIONS] FILE'
+  echo
+  echo 'OPTIONS'
+  echo '  -b       Backup all files with changes'
+  echo '    FILE   Backup FILE'
+  echo '    -e     Open FILE before backup'
+  echo '    -n     Do not commit changes after backup'
+  echo
+  echo '  -d       List all files with changes'
+  echo '    -e     Open all files with changes'
+  echo '    FILE   Show diff between backup and actual FILE'
+  echo
+  echo '  -r       Restore all backup tree to TARGET_DIR'
+  echo '    -d     Restore only files with changes'
+  echo '    FILE   Restore FILE'
+  echo
+  echo '  -h       Show this help'
 end
 
