@@ -2,7 +2,7 @@
 
 function dim_colors
   if test (count $argv) -ne 2
-    echo 'Wrong arguments count'
+    echo_err 'Wrong arguments count'
     echo 'Command usage: <#RRGGBB> <opacity>'
     return 1
   end

@@ -16,7 +16,5 @@ function repo_metadata
   else
     echo $metadata | jq -re $argv[3] $argv[2]
   end
-
-  return $status
 end
 

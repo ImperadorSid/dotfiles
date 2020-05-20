@@ -38,7 +38,7 @@ function __backup_directory_backup
 end
 
 function __backup_directory_backup_changes
-  __backup_directory_check_changes; or return 1
+  __backup_directory_check_changes; or return
 
   echo 'Updating changes'
   for d in $diffs
@@ -66,12 +66,10 @@ function __backup_directory_diff
   if test "x$argv" = 'x-e'
     __backup_directory_diff_all
   else if set -q fd_path
-    __backup_directory_diff_single_file; or set diff_code $status
+    __backup_directory_diff_single_file
   else
     __backup_directory_diff_show
   end
-
-  return $diff_code
 end
 
 function __backup_directory_diff_single_file
@@ -83,7 +81,7 @@ function __backup_directory_diff_single_file
 end
 
 function __backup_directory_diff_all
-  __backup_directory_check_changes; or return 1
+  __backup_directory_check_changes; or return
 
   for d in $diffs
     __backup_directory_diff_file $d
@@ -91,7 +89,7 @@ function __backup_directory_diff_all
 end
 
 function __backup_directory_diff_show
-  __backup_directory_check_changes; or return 1
+  __backup_directory_check_changes; or return
 
   echo 'Files with changes'
   for i in (seq $diffs_count)
@@ -136,7 +134,7 @@ function __backup_directory_restore_file
 end
 
 function __backup_directory_restore_changed
-  __backup_directory_check_changes; or return 1
+  __backup_directory_check_changes; or return
 
   echo 'Restoring changed files'
   for d in $diffs
