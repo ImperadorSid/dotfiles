@@ -1,19 +1,19 @@
 #!/usr/bin/env fish
 
 function tasks -d "Manage personal tasks"
-  if not __tasks_check_file; return 1; end
-  if not __tasks_check_json_formatting; return 3; end
+  __tasks_check_file; or return
+  __tasks_check_json_formatting; or return
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
   argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
-  if test "$status" -ne 0; return 2; end
+  test "$status" -eq 0; or return 2
 
-  if set -q _flag_low; set -g selected_priority 'low'; end
-  if set -q _flag_normal; set -g selected_priority 'normal'; end
-  if set -q _flag_high; set -g selected_priority 'high'; end
+  set -q _flag_low; and set -g selected_priority 'low'
+  set -q _flag_normal; and set -g selected_priority 'normal'
+  set -q _flag_high; and set -g selected_priority 'high'
 
-  if set -q _flag_edit; set -g selected_operation 'edit'; end
-  if set -q _flag_delete; set -g selected_operation 'delete'; end
+  set -q _flag_edit; and set -g selected_operation 'edit'
+  set -q _flag_delete; and set -g selected_operation 'delete'
 
   if set -q selected_operation
     switch $selected_operation
@@ -21,19 +21,17 @@ function tasks -d "Manage personal tasks"
         if test -z "$argv"
           v $tasks_file
         else
-          if not __tasks_check_id $argv[1]; __tasks_unset_variables; return 6; end
-          if not __tasks_edit $argv; __tasks_unset_variables; return 8; end
+          __tasks_check_id $argv[1]; and __tasks_edit $argv
         end
       case 'delete'
         if set -q selected_priority
-          if not __tasks_delete 'priority' \"$selected_priority\"; __tasks_unset_variables; return 7; end
+          __tasks_delete 'priority' \"$selected_priority\"
         else if test -n "$argv"
           for t in $argv
-            if not __tasks_check_id $t; __tasks_unset_variables; return 6; end
-            if not __tasks_delete 'id' $t; __tasks_unset_variables; return 7; end
+            __tasks_check_id $t; and __tasks_delete 'id' $t
           end
         else
-          if not __tasks_delete_all; __tasks_unset_variables; return 4; end
+          __tasks_delete_all
         end
     end
   else if set -q selected_priority
@@ -41,7 +39,7 @@ function tasks -d "Manage personal tasks"
       __tasks_print $selected_priority
     else
       for t in $argv
-        if not __tasks_create "$t" $selected_priority; __tasks_unset_variables; return 5; end
+        __tasks_create "$t" $selected_priority
       end
     end
   else if set -q _flag_priority
@@ -53,13 +51,14 @@ function tasks -d "Manage personal tasks"
       __tasks_print
     else
       for t in $argv
-        if not __tasks_create "$t" 'normal'; __tasks_unset_variables; return 5; end
+        __tasks_create "$t" 'normal'
       end
     end
   end
 
+  set exit_code $status
   __tasks_unset_variables
-  return 0
+  return $exit_code
 end
 
 function __tasks_create
@@ -68,16 +67,11 @@ function __tasks_create
   set capital_task (string_capitalize $argv[1])
   set priority_upper (string upper $argv[2])
 
-  if not __tasks_inplace_write ".tasks += [{
-    id: $index,
-    task: \"$capital_task\",
-    priority: \"$argv[2]\",
-    date: \"$date\"
-  }]"; return 1; end
-  if not __tasks_inplace_write ".next_index += 1"; return 1; end
+  set new_task_string ".tasks += [{id: $index, task: \"$capital_task\", priority: \"$argv[2]\", date: \"$date\" }]"
+  __tasks_inplace_write $new_task_string; or return 5
+  __tasks_inplace_write ".next_index += 1"; or return 5
 
   __tasks_commit_changes "Create task \"[$priority_upper] $capital_task\" with id $index" "Task \"$capital_task\" created\nID: $index\nPriority: $priority_upper"
-  return $status
 end
 
 function __tasks_print
@@ -92,10 +86,7 @@ function __tasks_print
   set entries (jq -r "$filter | keys[] as \$k | .[\$k]" $tasks_file)
   set tasks_count (math (count $entries) '/ 4')
 
-  if test "$tasks_count" -eq 0
-    echo -e 'NO TASKS\n'
-    return
-  end
+  test "$tasks_count" -eq 0; and echo -e 'NO TASKS\n'; and return
 
   echo ' ID | DATE        | TASK'
   for i in (seq 0 (math "$tasks_count - 1"))
@@ -126,16 +117,14 @@ function __tasks_edit
 
   set operations '.'
 
-  if set -q selected_priority
-    set operations $operations "| $filter.priority = \"$selected_priority\""
-  end
+  set -q selected_priority; and set operations $operations "| $filter.priority = \"$selected_priority\""
 
   test -n "$new_task"; and set operations $operations "| $filter.task = \"$new_task\""
 
   set old_task (jq "$filter.task" $tasks_file)
   set old_priority (jq -r "$filter.priority" $tasks_file)
 
-  if not __tasks_inplace_write $operations; return 1; end
+  __tasks_inplace_write $operations; or return 8
   set new_date (date '+%d/%m %H:%M')
   __tasks_inplace_write "$filter.date = \"$new_date\"" > /dev/null
 
@@ -143,15 +132,14 @@ function __tasks_edit
   set new_priority (jq -r "$filter.priority" $tasks_file)
 
   set changes
-  if test "$old_task" != "$new_task"; set changes "Name: $old_task -> $new_task"; end
-  if test "$old_priority" != "$new_priority"; set changes $changes "Priority: "(string upper $old_priority)" -> "(string upper $new_priority); end
-
+  test "$old_task" != "$new_task"; and set changes "Name: $old_task -> $new_task"
+  test "$old_priority" != "$new_priority"; and set changes $changes "Priority: "(string upper $old_priority)" -> "(string upper $new_priority)
 
   set version_control_message "Edit task #$id ("(string join ' / ' $changes)")"
   set output_message "Task #$id edited\n"(string join '\n' $changes)
 
   __tasks_commit_changes $version_control_message $output_message
-  return $status
+  return
 end
 
 function __tasks_delete
@@ -170,56 +158,32 @@ function __tasks_delete
     set output_message "$affected_tasks $unquoted_priority priority task(s) deleted"
   end
 
-  if not __tasks_inplace_write "del($filter)"; return 1; end
+  __tasks_inplace_write "del($filter)"; or return 7
   __tasks_commit_changes $version_control_message $output_message
-  return $status
 end
 
 function __tasks_delete_all
   echo '{"next_index": 0, "tasks": []}' | jq '.' > $tasks_file
 
-  __tasks_commit_changes 'Delete all tasks' 'All tasks deleted'
-  return $status
+  __tasks_commit_changes 'Delete all tasks' 'All tasks deleted'; or return 4
 end
 
 function __tasks_check_file
-  if test ! -f "$tasks_file"
-    echo "Tasks file ($tasks_file) doesn't exist"
-    set -e tasks_file
-    return 1
-  end
-  return 0
+  test -f "$tasks_file"; or echo_err "Tasks file ($tasks_file) doesn't exist"
 end
 
 function __tasks_check_json_formatting
-  if not test -s "$tasks_file"
-    echo 'The tasks file is a empty file'
-    return 1
-  end
-
-  if not jq '.' $tasks_file > /dev/null 2> /dev/null
-    echo 'The tasks file has JSON formatting errors'
-    return 1
-  end
-
-  return 0
+  test -s "$tasks_file"; or echo_err 'The tasks file is a empty file' 3; or return
+  jq '.' $tasks_file > /dev/null 2> /dev/null; or echo_err 'The tasks file has JSON formatting errors' 3; or return
 end
 
 function __tasks_check_id
   set id $argv[1]
 
-  if string match -qrv '^\d+$' $id
-    echo "\"$id\" isn't a valid task ID"
-    return 1
-  end
+  string match -qr '^\d+$' $id; or echo_err "\"$id\" isn't a valid task ID" 6; or return
 
   set target (jq ".tasks[] | select(.id == $id) | has(\"task\")" $tasks_file)
-  if test "$target" != 'true'
-    echo "Task #$id doesn't exist"
-    return 1
-  end
-
-  return 0
+  test "$target" = 'true'; or echo_err "Task #$id doesn't exist" 6; or return
 end
 
 function __tasks_inplace_write
@@ -227,14 +191,12 @@ function __tasks_inplace_write
   set tmp_file (mktemp)
 
   jq "$filter" $tasks_file > $tmp_file
-
   if diff -q $tmp_file $tasks_file > /dev/null
-    echo 'Nothing changes'
-    return 1
+    echo_err 'Nothing changes'
+    return
   end
 
   mv $tmp_file $tasks_file
-  return 0
 end
 
 function __tasks_commit_changes
@@ -242,13 +204,7 @@ function __tasks_commit_changes
   set success_message $argv[2]
 
   g -C (dirname $tasks_file) add -A
-  g -C (dirname $tasks_file) commit -qm $commit_message
-
-  if test "$status" -eq 0
-    echo -e $success_message
-    return 0
-  end
-  return 1
+  g -C (dirname $tasks_file) commit -qm $commit_message; and echo -e $success_message
 end
 
 function __tasks_unset_variables
