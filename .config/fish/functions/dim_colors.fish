@@ -17,6 +17,5 @@ function dim_colors
   end
 
   echo $result
-  return 0
 end
 

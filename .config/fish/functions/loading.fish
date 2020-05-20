@@ -19,6 +19,5 @@ function loading
   kill -USR1 $spinner_pid
   wait
   return $command_exit_code
-
 end
 

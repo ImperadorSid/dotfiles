@@ -7,6 +7,5 @@ function string_capitalize
   set capitalized_character (string upper $first_character)
 
   echo $capitalized_character$remaining_charaters
-
 end
 

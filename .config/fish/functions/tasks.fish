@@ -139,7 +139,6 @@ function __tasks_edit
   set output_message "Task #$id edited\n"(string join '\n' $changes)
 
   __tasks_commit_changes $version_control_message $output_message
-  return
 end
 
 function __tasks_delete
@@ -183,7 +182,7 @@ function __tasks_check_id
   string match -qr '^\d+$' $id; or echo_err "\"$id\" isn't a valid task ID" 6; or return
 
   set target (jq ".tasks[] | select(.id == $id) | has(\"task\")" $tasks_file)
-  test "$target" = 'true'; or echo_err "Task #$id doesn't exist" 6; or return
+  test "$target" = 'true'; or echo_err "Task #$id doesn't exist" 6
 end
 
 function __tasks_inplace_write

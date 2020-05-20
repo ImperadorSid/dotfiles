@@ -50,11 +50,9 @@ function __repos_check_file
 end
 
 function __repos_get_address
-  if string match -qr '^https' $repo_name
-    set -g repo_address $repo_name
-  else
-    set -g repo_address "https://github.com/$repo_name"
-  end
+  string match -qr '^https' $repo_name
+  and set -g repo_address $repo_name
+  or set -g repo_address "https://github.com/$repo_name"
 end
 
 function __repos_clone_release_tag
@@ -71,9 +69,9 @@ end
 
 function __repos_find_location
   set -g repo_location (meta '.location' | sed -r "s|^~|$HOME|")
-  if test "$repo_location" = 'null'
-    set -g repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
-  end
+
+  test "$repo_location" = 'null'
+  and set -g repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
 end
 
 function __repos_download
@@ -138,7 +136,7 @@ function __repos_release
     set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/')
     set assets (__repos_tag_assets $tag $_flag_force)
 
-    test -n "$assets"; or echo_err "Repository \"$repo_name\" not found"; orreturn
+    test -n "$assets"; or echo_err "Repository \"$repo_name\" not found"; or return
 
     printf 'Release %s%s%s\n' (set_color brred) "$tag" (set_color normal)
     for f in (meta ".targets[$i].files[]")
@@ -155,9 +153,8 @@ function __repos_release
 end
 
 function __repos_name_formatting
-  if string match -qrv '^[\w-]+/[\w-]+$' $repo_name
-    echo_err "For download $repo_type"'s from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
-  end
+  string match -qr '^[\w-]+/[\w-]+$' $repo_name
+  or echo_err "For download $repo_type"'s from GitHub, the "repo" key must be formatted as <user>/<repo-name>'
 end
 
 function __repos_tag_assets
@@ -207,13 +204,12 @@ function __repos_dependencies
     echo -e '\nInstalling dependencies:'
     printf '  %s... ' (__repos_print_dependencies)
 
-    if not a install -y $repo_dependencies &> /dev/null
+    if a install -y $repo_dependencies &> /dev/null
+      echo 'complete'
+    else
       echo -e '\r'
       echo_err 'Installation failed. Check the APT log for details'
-      return
     end
-
-    echo 'complete'
   end
 end
 
@@ -325,6 +321,7 @@ function __repos_create
     echo_err 'Repository file already exists'
     return
   end
+
   test -z "$argv[1]"; and set argv[1] 'release'
   set type '"type": "'$argv[1]'"'
   set repo '"repo": ""'

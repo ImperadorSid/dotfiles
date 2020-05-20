@@ -18,11 +18,9 @@ function personal_script
     bash $script_full_path $argv[2..-1]
   else
     set shell_executable (sed -nr '1 s/^#!(.*)/\1/p' $script_full_path)
-    if test -n "$shell_executable"
-      eval "$shell_executable $script_full_path $argv[2..-1]"
-    else
-      bash $script_full_path $argv[2..-1]
-    end
+    test -n "$shell_executable"
+    and eval "$shell_executable $script_full_path $argv[2..-1]"
+    or bash $script_full_path $argv[2..-1]
   end
 end
 

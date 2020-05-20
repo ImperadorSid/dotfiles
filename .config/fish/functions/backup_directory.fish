@@ -73,11 +73,9 @@ function __backup_directory_diff
 end
 
 function __backup_directory_diff_single_file
-  if test -d "$relative_path"
-    echo_err "\"$fd_path\" is a directory" 6
-  else
-    __backup_directory_diff_file $relative_path
-  end
+  test -d "$relative_path"
+  and echo_err "\"$fd_path\" is a directory" 6
+  or __backup_directory_diff_file $relative_path
 end
 
 function __backup_directory_diff_all
@@ -143,10 +141,7 @@ function __backup_directory_restore_changed
 end
 
 function __backup_directory_commit
-  if test -d "$repo_path/.git"
-    printf '\nCommiting changes\n'
-    commit_repo $repo_path
-  end
+  test -d "$repo_path/.git"; and printf '\nCommiting changes\n'; and commit_repo $repo_path
 end
 
 function __backup_directory_changed_files
@@ -156,6 +151,7 @@ end
 
 function __backup_directory_check_changes
   __backup_directory_changed_files
+
   if test "$diffs_count" -eq 0
     echo 'No files has changed'
     return 1
@@ -172,20 +168,15 @@ function __backup_directory_run_writable
 end
 
 function __backup_directory_init_variables
-  if test ! -d "$argv[1]"
-    echo_err "Directory \"$argv[1]\" doesn't exist" 5
-    return
-  end
+  test -d "$argv[1]"; or echo_err "Directory \"$argv[1]\" doesn't exist" 5; or return
+
   set -g target_dir $argv[1]
 
   set -g repo_name $argv[2]
   set -g repo_path $repositories/$argv[2]
 
   if set -q argv[3]
-    if test ! -e "$argv[3]"
-      echo_err "\"$argv[3]\" doesn't exist" 4
-      return
-    end
+    test -e "$argv[3]"; or echo_err "\"$argv[3]\" doesn't exist" 4; or return
 
     set -g fd_path $argv[3]
     __backup_directory_check_relative
@@ -195,9 +186,8 @@ end
 function __backup_directory_check_relative
   set -g relative_path (realpath --relative-base=$target_dir $fd_path)
 
-  if test (string sub -s 1 -l 1 $relative_path) = '/'
-    echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3
-  end
+  test (string sub -s 1 -l 1 $relative_path) = '/'
+  and echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3
 end
 
 function __backup_directory_unset_variables
