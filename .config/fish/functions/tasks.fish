@@ -211,3 +211,6 @@ function __tasks_unset_variables
   set -e selected_operation
 end
 
+function __tasks_help
+end
+

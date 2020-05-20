@@ -188,8 +188,8 @@ end
 function __backup_directory_check_relative
   set -g relative_path (realpath --relative-base=$target_dir $fd_path)
 
-  test (string sub -s 1 -l 1 $relative_path) = '/'
-  and echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3
+  test (string sub -s 1 -l 1 $relative_path) != '/'
+  or echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3
 end
 
 function __backup_directory_unset_variables

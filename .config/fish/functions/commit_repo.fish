@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function commit_repo
-  set repo_dir $argv
+  test -n "$argv"; and set repo_dir $argv; or set repo_dir $PWD
   $repo_dir
 
   set git_status (g status -s)
