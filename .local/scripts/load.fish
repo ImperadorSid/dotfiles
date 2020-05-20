@@ -1,8 +1,6 @@
 #!/usr/bin/env fish
 
-function __load_stop -s USR1
-  set stop true
-end
+function __load_stop -s USR1; set stop true; end
 
 set stop false
 set states '\u2807' '\u280B' '\u2819' '\u2838' '\u2834' '\u2826'
