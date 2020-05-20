@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function commit_repo
-  argparse -n 'n/no-push' -- $argv
+  argparse -n 'Commit Repository' 'n/no-push' -- $argv
   test "$status" -eq 0; or return
 
   test -n "$argv"; and set repo_dir $argv; or set repo_dir $PWD
