@@ -7,87 +7,72 @@ function json_cache -d "Make a cache of JSON files to avoid requisition limits"
 
   # Set variables
   set -g cache_dir ~/.cache/fish_json
-  set -g index_file $cache_dir/index.json
+  set -g indexes_file $cache_dir/index.json
 
   if set -q _flag_clean
     __json_cache_reset_cache
   else
-    if not __json_cache_check_uri $argv; return 2; end
-    set -g prefixed_uri (__json_cache_add_uri_prefix $argv)
+    if __json_cache_check_uri $argv
+      set -g prefixed_uri (__json_cache_add_uri_prefix $argv)
 
-    set search_result (jq "indices(\"$prefixed_uri\")[0]" $index_file)
+      set file_index (jq "indices(\"$prefixed_uri\")[0]" $indexes_file)
 
-    if test "$search_result" != 'null'
-      if set -q _flag_force
-        if not __json_cache_check_content_type; return 3; end
-        if not __json_cache_download_json $search_result; return 4; end
+      if test "$file_index" != 'null'
+        if set -q _flag_force; __json_cache_make_download $file_index; end
+      else
+        set file_index (jq 'length' $indexes_file)
+        __json_cache_make_download $file_index
+        and __json_cache_new_entry
       end
 
-      jq . $cache_dir/$search_result.json
-    else
-      set new_entry_id (jq 'length' $index_file)
-
-      if not __json_cache_check_content_type; return 3; end
-      if not __json_cache_download_json $new_entry_id; return 4; end
-
-      __json_cache_new_entry
-
-      jq . $cache_dir/$new_entry_id.json
+      and jq . $cache_dir/$file_index.json
     end
   end
 
+  set exit_code $status
   set -e cache_dir
-  set -e index_file
+  set -e indexes_file
   set -e prefixed_uri
-  return 0
+  return $exit_code
 end
 
 function __json_cache_check_uri
-  if string match -qrv '.+\..+' "$argv"
-    echo "The argument '$argv' doesn't meet the requirements for URIs"
-    return 1
-  end
-  return 0
+  string match -qr '.+\..+' "$argv"
+  or echo_err "The argument '$argv' doesn't meet the requirements for URIs" 2
 end
 
 function __json_cache_add_uri_prefix
-  if string match -qrv '^https?://' $argv
-    echo "https://$argv"
-  else
-    echo "$argv"
-  end
+  string match -qrv '^https?://' $argv; and echo "https://$argv"; or echo "$argv"
 end
 
 function __json_cache_download_json
   set file_id $argv
-  if not curl -sLo $cache_dir/$file_id.json $prefixed_uri
-    echo 'Download failed'
-    return 1
-  end
-  return 0
+  curl -sLo $cache_dir/$file_id.json $prefixed_uri; or echo_err 'Download failed' 4
+end
+
+function __json_cache_make_download
+  __json_cache_check_content_type
+  and __json_cache_download_json $argv
 end
 
 function __json_cache_reset_cache
   rm -r $cache_dir
   mkdir -p $cache_dir
-  echo '[]' > $index_file
+  echo '[]' > $indexes_file
 
   echo 'Cache directory cleared'
 end
 
 function __json_cache_check_content_type
   set content_type (curl -LIsw '%{content_type}' -o /dev/null $prefixed_uri | sed -nr 's/(.*)(;.*|$)/\1/p')
-  if test "$content_type" != 'application/json'
-    echo 'This URI doesn\'t link to a JSON file'
-    echo "Content-Type: '$content_type'"
-    return 1
-  end
-  return 0
+
+  test "$content_type" = 'application/json'
+  or echo_err -e 'This URI doesn\'t link to a JSON file\nContent-Type: '$content_type'' 3
 end
 
 function __json_cache_new_entry
   set tmp_file (mktemp)
-  jq ". + [\"$prefixed_uri\"]" $index_file > $tmp_file
-  mv $tmp_file $index_file
+  jq ". + [\"$prefixed_uri\"]" $indexes_file > $tmp_file
+  mv $tmp_file $indexes_file
 end
 
