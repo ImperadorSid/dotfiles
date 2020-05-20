@@ -7,16 +7,12 @@ set image_path $pictures_path/$image
 set wallpaper_path "$pictures_path/wallpaper.png"
 set dconf_background_path '/org/cinnamon/desktop/background/picture-uri'
 
-if test ! -f "$image_path"
-  echo_err "Image \"$image\" not found"
-  exit
-end
+test -f "$image_path"; or echo_err "Image \"$image\" not found"; or exit
 
 set actual_hour (date +%H)
 
 if test "$actual_hour" -ge 17 -o "$actual_hour" -lt 9
   test -z "$brightness"; and set brightness 50
-
   set daytime 'Night'
 else
   set brightness 100
