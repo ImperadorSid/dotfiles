@@ -55,7 +55,6 @@ function __repos_get_address
   else
     set -g repo_address "https://github.com/$repo_name"
   end
-
 end
 
 function __repos_clone_release_tag
@@ -139,10 +138,7 @@ function __repos_release
     set tag (meta ".targets[$i].tag" | sed -r 's/^null$/latest/')
     set assets (__repos_tag_assets $tag $_flag_force)
 
-    if test -z "$assets"
-      echo_err "Repository \"$repo_name\" not found"
-      return
-    end
+    test -n "$assets"; or echo_err "Repository \"$repo_name\" not found"; orreturn
 
     printf 'Release %s%s%s\n' (set_color brred) "$tag" (set_color normal)
     for f in (meta ".targets[$i].files[]")
@@ -233,7 +229,6 @@ function __repos_print_dependencies
 end
 
 function __repos_script
-  set current_location $PWD
   cd $repo_location; or return
 
   set exec_file (mktemp)
@@ -253,7 +248,7 @@ function __repos_script
   set_color normal
 
   rm $exec_file
-  cd $current_location
+  cd -
 end
 
 function __repos_packages
@@ -264,7 +259,7 @@ function __repos_packages
 
   for p in (meta '.packages[]')
     printf 'Installing package %s%s%s... ' (set_color magenta) $FILE_FULL_NAMES[$p] (set_color normal)
-    sudo apt-get install -yq=2 $repo_location/$FILE_FULL_NAMES[$p] > /dev/null
+    loading sudo apt-get install -yq=2 $repo_location/$FILE_FULL_NAMES[$p] > /dev/null
     echo 'done'
   end
 end
@@ -331,7 +326,7 @@ function __repos_create
     return
   end
   test -z "$argv[1]"; and set argv[1] 'release'
-set type '"type": "'$argv[1]'"'
+  set type '"type": "'$argv[1]'"'
   set repo '"repo": ""'
   set location '"location": ""'
   set links '"links": [{"destination": "", "files": []}]'

@@ -26,7 +26,7 @@ function json_cache -d "Make a cache of JSON files to avoid requisition limits"
       jq . $cache_dir/$search_result.json
     else
       set new_entry_id (jq 'length' $index_file)
-      
+
       if not __json_cache_check_content_type; return 3; end
       if not __json_cache_download_json $new_entry_id; return 4; end
 
@@ -83,7 +83,7 @@ function __json_cache_check_content_type
     return 1
   end
   return 0
-end 
+end
 
 function __json_cache_new_entry
   set tmp_file (mktemp)
