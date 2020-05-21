@@ -46,6 +46,7 @@ function __backup_directory_backup_changes
   for d in $diffs
     __backup_directory_backup_copy "$d"
   end
+  echo
 end
 
 function __backup_directory_backup_edit
@@ -143,7 +144,7 @@ function __backup_directory_restore_changed
 end
 
 function __backup_directory_commit
-  test -d "$repo_path/.git"; and printf '\nCommiting changes\n'; and commit_repo $repo_path
+  test -d "$repo_path/.git"; and echo 'Commiting changes'; and commit_repo $repo_path
 end
 
 function __backup_directory_changed_files
@@ -213,7 +214,6 @@ Usage:
   backup_directory <target_dir> <repo_name> -d [-e | <file>]
   backup_directory <target_dir> <repo_name> -r [-d | <file>]
   backup_directory <target_dir> <repo_name> -j | -h
-
 
 Options:
   -e, --edit          Open file for editing
