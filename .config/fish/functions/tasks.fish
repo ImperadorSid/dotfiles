@@ -73,7 +73,7 @@ function __tasks_create
   __tasks_inplace_write $new_task_string; or return 5
   __tasks_inplace_write ".next_index += 1"; or return 5
 
-  __tasks_commit_changes "Create task \"[$priority_upper] $capital_task\" with id $index" "Task \"$capital_task\" created\nID: $index\nPriority: $priority_upper"
+  __tasks_commit_changes "Create task \"[$priority_upper] $capital_task\" with id $index" "Task \"$capital_task\" created\nID: \"$index\"\nPriority: \"$priority_upper\"" 'cyan brred green'
 end
 
 function __tasks_print
@@ -133,14 +133,20 @@ function __tasks_edit
   set new_task (jq "$filter.task" $tasks_file)
   set new_priority (jq -r "$filter.priority" $tasks_file)
 
-  set changes
-  test "$old_task" != "$new_task"; and set changes "Name: $old_task -> $new_task"
-  test "$old_priority" != "$new_priority"; and set changes $changes "Priority: "(string upper $old_priority)" -> "(string upper $new_priority)
+  set output_colors 'brred'
+
+  test "$old_task" != "$new_task"
+  and set changes "Name: $old_task -> $new_task"
+  and set output_colors (string join ' ' $output_colors 'cyan cyan')
+
+  test "$old_priority" != "$new_priority"
+  and set -a changes 'Priority: "'(string upper $old_priority)'" -> "'(string upper $new_priority)'"'
+  and set output_colors (string join ' ' $output_colors 'green green')
 
   set version_control_message "Edit task #$id ("(string join ' / ' $changes)")"
-  set output_message "Task #$id edited\n"(string join '\n' $changes)
+  set output_message "Task #\"$id\" edited\n"(string join '\n' $changes)
 
-  __tasks_commit_changes $version_control_message $output_message
+  __tasks_commit_changes $version_control_message $output_message $output_colors
 end
 
 function __tasks_delete
@@ -150,17 +156,19 @@ function __tasks_delete
 
   if test "$key" = 'id'
     set version_control_message "Delete task #$value"
-    set output_message "Task #$value deleted"
+    set output_message "Task #\"$value\" deleted"
+    set output_colors 'brred'
   else
     set affected_tasks (jq "[$filter] | length" $tasks_file)
     set unquoted_priority (echo $value | tr -d \")
 
     set version_control_message "Delete $affected_tasks $unquoted_priority priority task(s)"
-    set output_message "$affected_tasks $unquoted_priority priority task(s) deleted"
+    set output_message "\"$affected_tasks\" \"$unquoted_priority\" priority task(s) deleted"
+    set output_colors 'yellow green'
   end
 
   __tasks_inplace_write "del($filter)"; or return 7
-  __tasks_commit_changes $version_control_message $output_message
+  __tasks_commit_changes $version_control_message $output_message $output_colors
 end
 
 function __tasks_delete_all
@@ -203,9 +211,20 @@ end
 function __tasks_commit_changes
   set commit_message $argv[1]
   set success_message $argv[2]
+  set colors $argv[3]
 
   g -C (dirname $tasks_file) add -A
-  g -C (dirname $tasks_file) commit -qm $commit_message; and echo -e $success_message
+  g -C (dirname $tasks_file) commit -qm $commit_message
+  and __tasks_show_result $success_message $colors
+end
+
+function __tasks_show_result
+  set format_string (echo $argv[1] | sed 's/"/%s/g; s/$/\\\n/')
+  for c in (string split ' ' $argv[2])
+    set -a colors_calls "(set_color $c) (set_color normal)"
+  end
+
+  eval "printf '$format_string' $colors_calls"
 end
 
 function __tasks_unset_variables
