@@ -220,7 +220,7 @@ Usage:
   tasks [-p | -i]
   tasks [-l | -n | -h] [<description>]
   tasks -e
-  tasks -e [-l | -n | -h] <id> [<description]>
+  tasks -e [-l | -n | -h] <id> [<description>]
   tasks -d [<id>...]
   tasks -d [-l | -n | -h]
 

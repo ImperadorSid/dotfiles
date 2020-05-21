@@ -144,7 +144,7 @@ function __backup_directory_restore_changed
 end
 
 function __backup_directory_commit
-  test -d "$repo_path/.git"; and echo 'Commiting changes'; and commit_repo $repo_path
+  test -d "$repo_path/.git"; and echo 'Commiting changes...'; and commit_repo $repo_path
 end
 
 function __backup_directory_changed_files
