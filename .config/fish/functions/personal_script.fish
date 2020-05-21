@@ -1,7 +1,6 @@
 #!/usr/bin/env fish
 
 function personal_script
-  argparse -n 'Personal script' 's/show-shell' -- $argv
   test -n "$argv"; or echo_err 'A script name must be passed as a parameter' 4; or return
 
   set script_name (ls $personal_scripts | grep $argv[1])

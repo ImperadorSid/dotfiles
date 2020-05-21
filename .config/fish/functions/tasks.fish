@@ -4,8 +4,8 @@ function tasks -d "Manage personal tasks"
   __tasks_check_file; or return
   __tasks_check_json_formatting; or return
 
-  set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete'
-  argparse -n 'Tasks' -x 'p,e,d' -x 'p,l,n,h' $options -- $argv
+  set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete' 'i/info'
+  argparse -n 'Tasks' -x 'p,e,d,i' -x 'p,l,n,h,i' $options -- $argv
   test "$status" -eq 0; or return 2
 
   set -q _flag_low; and set -g selected_priority 'low'
@@ -46,6 +46,8 @@ function tasks -d "Manage personal tasks"
     __tasks_print 'low'
     __tasks_print 'normal'
     __tasks_print 'high'
+  else if set -q _flag_info
+    __tasks_help
   else
     if test -z "$argv"
       __tasks_print
@@ -212,5 +214,23 @@ function __tasks_unset_variables
 end
 
 function __tasks_help
+  echo 'Manage user day-to-day tasks
+
+Usage:
+  tasks [-p | -i]
+  tasks [-l | -n | -h] [<description>]
+  tasks -e
+  tasks -e [-l | -n | -h] <id> [<description]>
+  tasks -d [<id>...]
+  tasks -d [-l | -n | -h]
+
+Options:
+  -p, --priority  Show tasks ordered by priority
+  -e, --edit      Edit task
+  -d, --delete    Delete task
+  -l, --low       Set priority as "low"
+  -n, --normal    Set priority as "normal"
+  -h, --high      Set priority as "high"
+  -i, --info      Show this help'
 end
 

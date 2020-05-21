@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 
 function repos -d 'Manage repository downloads and script installations'
-  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open'
-  argparse -n 'Repository Management' -x 'c,e,i,d,O' -x 'f,e,i,O' -x 'o,c,O' -X 2 $options -- $argv
+  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open' 'h/help'
+  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv
   test "$status" -eq 0; or return
 
   set -g repo_file $argv[1]
@@ -13,7 +13,9 @@ function repos -d 'Manage repository downloads and script installations'
 
   set -q _flag_open; and __repos_open
 
-  if set -q _flag_only_open
+  if set -q _flag_help
+    __repos_help
+  else if set -q _flag_only_open
     __repos_open
   else if set -q _flag_create
     __repos_create "$argv[2]" $_flag_f; or set final_status 2
@@ -23,7 +25,7 @@ function repos -d 'Manage repository downloads and script installations'
     __repos_execute "$_flag_i$_flag_d" $_flag_f; or set final_status 4
   end
 
-  __repos_cleanup_env
+  __repos_unset_variables
   return $final_status
 end
 
@@ -300,7 +302,7 @@ function __repos_path_folders
   end
 end
 
-function __repos_cleanup_env
+function __repos_unset_variables
   set -e repo_file
   set -e repo_path
   set -e repo_name
@@ -375,5 +377,26 @@ function __repos_open
 
   cd $destination
   xdg-open $destination &> /dev/null
+end
+
+function __repos_help
+  echo 'Tool for download, installation and post-installation of Git repositories
+
+Usage:
+  repos -c [-f] [-o] <name> [<type>]
+  repos -e [-o] [<repository>]
+  repos -d [-f] [-o] <repository>
+  repos -i [-o] <repository>
+  repos -h | -O
+
+Options:
+  -c, --create          Create repository
+  -e, --edit            Edit repository
+  -d, --only-download   Only download repository
+  -i, --only-install    Only execute installation script
+  -f, --force-clear     Recreate repository folder and clear request cache
+  -o, --open            Change into repository dir and open it in file manager
+  -O, --only-open       Only execute -o, nothing more
+  -h, --help            Show this help'
 end
 

@@ -1,8 +1,13 @@
 #!/usr/bin/env fish
 
 function loading
-  argparse -n 'Loading Spinner' -s -N 1 -x 'a,n,e' 'a/all' 'n/none' 'e/error' -- $argv
+  set options 'a/all' 'n/none' 'e/error' 'h/help'
+  argparse -n 'Loading Spinner' -s -x 'a,n,e,h' $options -- $argv
   test "$status" -eq 0; or return
+
+  set -q _flag_help; and __loading_help; and return
+
+  test -n "$argv"; or echo_err "A command must be given"; or return
 
   set redirection '> /dev/null'
   set -q _flag_all; and set redirection
@@ -19,5 +24,18 @@ function loading
   kill -USR1 $spinner_pid
   wait
   return $command_exit_code
+end
+
+function __loading_help
+  echo 'Loading spinner
+
+Usage:
+  loading [-a | -n | -e | -h] <commmand>
+
+Options:
+  -a, --all     Show all output (stdout/stderr)
+  -n, --none    Hide all output
+  -e, --error   Hide only the error output
+  -h, --help    Show this help'
 end
 

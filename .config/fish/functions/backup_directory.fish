@@ -206,28 +206,21 @@ function __backup_directory_unset_variables
 end
 
 function __backup_directory_help
-  echo 'Backup Directory'
-  echo
-  echo 'Script to backup, restore and get changes of a target folder'
-  echo 'Created by Moisés Carvalho'
-  echo
-  echo 'USAGE'
-  echo '  backup_directory TARGET_DIR REPO_NAME [OPTIONS] FILE'
-  echo
-  echo 'OPTIONS'
-  echo '  -b       Backup all files with changes'
-  echo '    FILE   Backup FILE'
-  echo '    -e     Open FILE before backup'
-  echo '    -n     Do not commit changes after backup'
-  echo
-  echo '  -d       List all files with changes'
-  echo '    -e     Open all files with changes'
-  echo '    FILE   Show diff between backup and actual FILE'
-  echo
-  echo '  -r       Restore all backup tree to TARGET_DIR'
-  echo '    -d     Restore only files with changes'
-  echo '    FILE   Restore FILE'
-  echo
-  echo '  -h       Show this help'
+  echo 'Script to backup, restore and get changes of a target folder
+
+Usage:
+  backup_directory <target_dir> <repo_name> [-n] [(<file> | -e <file>)]
+  backup_directory <target_dir> <repo_name> -d [-e | <file>]
+  backup_directory <target_dir> <repo_name> -r [-d | <file>]
+  backup_directory <target_dir> <repo_name> -j | -h
+
+
+Options:
+  -e, --edit          Open file for editing
+  -d, --delete        Check diff on files
+  -r, --restore       Restore files to <target_dir>
+  -n, --no-commit     Do not commit changes on Git
+  -j, --just-commit   Just commit backup folder
+  -h, --help          Show this help'
 end
 
