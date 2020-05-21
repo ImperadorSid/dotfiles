@@ -240,8 +240,6 @@ function __repos_script
     echo -e '\nRunning installation script...'
     bash $exec_file
     echo -e 'Installation script finished'
-  else
-    echo -e '\nInstall script is empty. Skipping...'
   end
   set_color normal
 
