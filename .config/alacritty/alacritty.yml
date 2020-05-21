@@ -28,39 +28,25 @@ colors:
 
   # Normal colors
   normal:
-    black:   '0x000000'
+    black:   '0x21222c'
     red:     '0xff5555'
     green:   '0x50fa7b'
     yellow:  '0xf1fa8c'
     blue:    '0xbd93f9'
     magenta: '0xff79c6'
     cyan:    '0x8be9fd'
-    white:   '0xbfbfbf'
+    white:   '0xf8f8f2'
 
   # Bright colors
   bright:
-    black:   '0x4d4d4d'
-    red:     '0xff6e67'
-    green:   '0x5af78e'
-    yellow:  '0xf4f99d'
-    blue:    '0xcaa9fa'
-    magenta: '0xff92d0'
-    cyan:    '0x9aedfe'
-    white:   '0xe6e6e6'
-
-  # Dim colors
-  dim:
-    black:   '0x14151b'
-    red:     '0xff2222'
-    green:   '0x1ef956'
-    yellow:  '0xebf85b'
-    blue:    '0x4d5b86'
-    magenta: '0xff46b0'
-    cyan:    '0x59dffc'
-    white:   '0xe6e6d1'
-
-  # Indexed Colors
-  indexed_colors: []
+    black:   '0x6272a4'
+    red:     '0xff6e6e'
+    green:   '0x69ff94'
+    yellow:  '0xffffa5'
+    blue:    '0xd6acff'
+    magenta: '0xff92df'
+    cyan:    '0xa4ffff'
+    white:   '0xffffff'
 
 # Background opacity
 background_opacity: 0.95
