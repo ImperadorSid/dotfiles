@@ -36,7 +36,7 @@ set history=100
 
 " Automatically resolve symbolic links on l or Enter.
 
-set nofollowlinks
+set followlinks
 
 " With this option turned on you can run partially entered commands with
 " unambiguous beginning using :! (e.g. :!Te instead of :!Terminal or :!Te<tab>).
@@ -54,7 +54,7 @@ set undolevels=100
 " If you installed the vim.txt help file set vimhelp.
 " If would rather use a plain text help file set novimhelp.
 
-set novimhelp
+set vimhelp
 
 " If you would like to run an executable file when you
 " press return on the file name set this.
@@ -92,7 +92,7 @@ set smartcase
 
 " Don't highlight search results automatically
 
-set nohlsearch
+set hlsearch
 
 " Use increment searching (search while typing)
 set incsearch
@@ -115,9 +115,10 @@ set statusline="  Hint: %z%= %A %10u:%-7g %15s %20d  "
 
 " :mark mark /full/directory/path [filename]
 
-mark b ~/bin/
-mark h ~/
-
+mark f ~/.config/fish/functions
+mark h ~
+mark r $repositories
+mark s $personal_scripts
 " ------------------------------------------------------------------------------
 
 " :com[mand][!] command_name action
