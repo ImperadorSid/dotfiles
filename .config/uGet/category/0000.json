@@ -1,98 +1,12 @@
 {
 	"info": {
-		"relation": {
-			"group": 0,
-			"priority": 1
-		},
-		"category": {
-			"hosts": [
-			],
-			"schemes": [
-			],
-			"file-exts": [
-			],
-			"active-limit": 3,
-			"finished-limit": 300,
-			"recycled-limit": 300
-		},
 		"common": {
 			"name": "Default",
 			"folder": "\/home\/impsid\/Downloads",
-			"connect-timeout": 15,
-			"transmit-timeout": 30,
-			"retry-delay": 6,
-			"retry-limit": 99,
-			"retry-count": 0,
 			"max-connections": 8,
-			"max-upload-speed": 0,
-			"max-download-speed": 0,
 			"timestamp": 1
 		}
 	},
-	"children": [
-		{
-			"info": {
-				"relation": {
-					"group": 72,
-					"priority": 1
-				},
-				"progress": {
-					"complete": 18896881,
-					"total": 18896881,
-					"elapsed": 18,
-					"uploaded": 0,
-					"percent": 100
-				},
-				"log": {
-					"added-time": 1589900468,
-					"completed-time": 1589900487,
-					"messages": [
-					]
-				},
-				"http": {
-					"referrer": "https:\/\/git-scm.com\/book\/en\/v2",
-					"redirection-limit": 30
-				},
-				"proxy": {
-					"port": 80,
-					"type": 0
-				},
-				"common": {
-					"name": "progit.pdf",
-					"uri": "https:\/\/github-production-release-asset-2e65be.s3.amazonaws.com\/15400220\/fe2ca280-9503-11ea-944b-55374a352fc9?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20200519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200519T150102Z&X-Amz-Expires=300&X-Amz-Signature=1ebde7b70c4be17b91145416772713bd761f44a550f20c67f84bac9c0409ad08&X-Amz-SignedHeaders=host&actor_id=18284740&repo_id=15400220&response-content-disposition=attachment%3B%20filename%3Dprogit.pdf&response-content-type=application%2Foctet-stream",
-					"folder": "\/home\/impsid\/Downloads",
-					"connect-timeout": 15,
-					"transmit-timeout": 30,
-					"retry-delay": 6,
-					"retry-limit": 99,
-					"retry-count": 0,
-					"max-connections": 8,
-					"max-upload-speed": 0,
-					"max-download-speed": 0,
-					"timestamp": 1
-				},
-				"files": {
-					"list": [
-						{
-							"path": "\/home\/impsid\/Downloads\/progit.pdf",
-							"type": 0,
-							"state": 0,
-							"total": 18896881,
-							"complete": 0
-						},
-						{
-							"path": "\/home\/impsid\/Downloads\/progit.pdf.aria2",
-							"type": 3,
-							"state": 0,
-							"total": 0,
-							"complete": 0
-						}
-					]
-				}
-			},
-			"children": [
-			]
-		}
-	]
+	"children": []
 }
 
