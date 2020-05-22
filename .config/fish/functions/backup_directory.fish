@@ -21,8 +21,8 @@ function backup_directory
     end
   end
 
-  $current_directory
   set operation_code $status
+  $current_directory
   __backup_directory_unset_variables
   return $operation_code
 end
@@ -144,11 +144,11 @@ function __backup_directory_restore_changed
 end
 
 function __backup_directory_commit
-  test -d "$repo_path/.git"; and echo 'Commiting changes...'; and commit_repo $repo_path
+  test -f "$repo_path/.git/HEAD"; and echo 'Commiting changes...'; and commit_repo $repo_path
 end
 
 function __backup_directory_changed_files
-  set -g diffs (fd --type file --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
+  set -g diffs (fd --type file -E '.ignore-backup' --ignore-file '.ignore-backup' --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
   set -g diffs_count (count $diffs)
 end
 
@@ -190,7 +190,10 @@ function __backup_directory_check_relative
   set -g relative_path (realpath --relative-base=$target_dir $fd_path)
 
   test (string sub -s 1 -l 1 $relative_path) != '/'
-  or echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3
+  or echo_err "\"$fd_path\" isn't inside of \"$target_dir\"" 3; or return
+
+  test "$relative_path" != '.ignore-backup'
+  or echo_err "The file \".ignore-backup\" cannot be used"
 end
 
 function __backup_directory_unset_variables
