@@ -191,12 +191,8 @@ filextype *.djvu
 
 " Audio
 filetype *.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
-       \ {Play using ffplay}
-       \ ffplay -nodisp %c,
-       \ {Play using MPlayer}
-       \ mplayer %f,
        \ {Play using VLC}
-       \ vlc %f 2> /dev/null
+       \ vlc -q %f 2> /dev/null &
 fileviewer *.mp3 mp3info
 fileviewer *.flac soxi
 
@@ -204,14 +200,8 @@ fileviewer *.flac soxi
 filextype *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
          \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
          \*.as[fx]
-        \ {View using ffplay}
-        \ ffplay -fs %f,
-        \ {View using Dragon}
-        \ dragon %f:p,
-        \ {View using mplayer}
-        \ mplayer %f,
         \ {View using VLC}
-        \ vlc %f 2> /dev/null
+        \ vlc -q %f 2> /dev/null &
 fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
           \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
           \*.as[fx]
@@ -235,15 +225,11 @@ filetype *.[1-8] man ./%c
 fileviewer *.[1-8] man ./%c | col -b
 
 " Images
-filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
-        \ {View in sxiv}
-        \ sxiv %f,
-        \ {View in gpicview}
-        \ gpicview %c,
-        \ {View in shotwell}
-        \ shotwell,
-        \ {View in xviewer}
-        \ xviewer %f 2> /dev/null
+" filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
+"         \ {View in xviewer}
+"         \ xviewer %f 2> /dev/null &,
+"         \ {Edit in GIMP}
+"         \ gimp %f &
 fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
          \ convert -identify %f -verbose /dev/null
 
