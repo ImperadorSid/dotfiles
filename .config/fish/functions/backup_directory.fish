@@ -151,7 +151,7 @@ function __backup_directory_commit
 end
 
 function __backup_directory_changed_files
-  set -g diffs (fd --type file -E '.ignore-backup' --ignore-file '.ignore-backup' --exec diff -q "$target_dir/{}" '{}' | awk '{print $4}')
+  set -g diffs (fd --type file -E '.ignore-backup' --ignore-file '.ignore-backup' --exec diff -q "$target_dir/{}" '{}' 2> /dev/null | awk '{print $4}')
   set -g diffs_count (count $diffs)
 end
 
