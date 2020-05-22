@@ -156,7 +156,7 @@ function __backup_directory_check_changes
   __backup_directory_changed_files
 
   if test "$diffs_count" -eq 0
-    echo 'No files has changed'
+    echo 'No files have been changed'
     return 1
   end
 end
