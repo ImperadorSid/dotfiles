@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 
 function backup_directory
-  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit' 'h/help'
-  argparse -n 'Backup Directory' -N 2 -x 'd,n,j,h' -x 'e,r,j,h' -x 'r,n' $options -- $argv
+  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit' 'h/help' 'i/ignore'
+  argparse -n 'Backup Directory' -N 2 -x 'd,n,j,h' -x 'e,r,j,h,i' -x 'r,n' -x 'i,d' $options -- $argv
   test "$status" -eq 0; or return
 
   set current_directory $PWD
@@ -10,7 +10,9 @@ function backup_directory
   if set -q _flag_help
     __backup_directory_help
   else if __backup_directory_init_variables $argv
-    if set -q _flag_restore
+    if set -q _flag_ignore
+      __backup_directory_ignore_file $_flag_no_commit
+    else if set -q _flag_restore
       __backup_directory_restore $_flag_diff
     else if set -q _flag_diff
       __backup_directory_diff $_flag_edit
@@ -22,8 +24,9 @@ function backup_directory
   end
 
   set operation_code $status
-  $current_directory
   __backup_directory_unset_variables
+
+  $current_directory
   return $operation_code
 end
 
@@ -209,6 +212,13 @@ function __backup_directory_unset_variables
   set -e diffs_count
 end
 
+function __backup_directory_ignore_file
+  mkdir -p $repo_path
+  v $repo_path/.ignore-backup
+
+  test "x$argv" = 'x-n'; or __backup_directory_commit
+end
+
 function __backup_directory_help
   echo 'Script to backup, restore and get changes of a target folder
 
@@ -217,6 +227,7 @@ Usage:
   backup_directory <target_dir> <repo_name> -d [-e | <file>]
   backup_directory <target_dir> <repo_name> -r [-d | <file>]
   backup_directory <target_dir> <repo_name> -j | -h
+  backup_directory <target_dir> <repo_name> -i [-n]
 
 Options:
   -e, --edit          Open file for editing
@@ -224,6 +235,7 @@ Options:
   -r, --restore       Restore files to <target_dir>
   -n, --no-commit     Do not commit changes on Git
   -j, --just-commit   Just commit backup folder
+  -i, --ignore-file   Open .ignore-backup
   -h, --help          Show this help'
 end
 
