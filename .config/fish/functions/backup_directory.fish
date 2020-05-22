@@ -125,7 +125,7 @@ function __backup_directory_restore_all
   end
 
   set copy_code $status
-  __backup_directory_run_writable "$target_dir/.git" rm -rf $target_dir/.git
+  __backup_directory_run_writable "$target_dir/.git" rm -rf $target_dir/.{git,ignore-backup}
   return $copy_code
 end
 
