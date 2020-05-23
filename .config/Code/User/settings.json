@@ -1,4 +1,5 @@
 {
+    "debug.console.fontSize": 16,
     "debug.internalConsoleOptions": "neverOpen",
     "debug.openDebug": "neverOpen",
     "debug.openExplorerOnEnd": true,
@@ -24,6 +25,7 @@
     "liveServer.settings.donotShowInfoMsg": true,
     "liveServer.settings.showOnStatusbar": false,
     "markdown.preview.fontFamily": "Ubuntu",
+    "markdown.preview.fontSize": 16,
     "material-icon-theme.folders.color": "#17917a",
     "python.dataScience.askForKernelRestart": false,
     "python.jediEnabled": true,
@@ -31,6 +33,7 @@
     "search.showLineNumbers": true,
     "search.smartCase": true,
     "terminal.integrated.enableBell": true,
+    "terminal.integrated.fontSize": 16
     "terminal.integrated.scrollback": 1000000,
     "window.menuBarVisibility": "toggle",
     "window.restoreWindows": "none",
