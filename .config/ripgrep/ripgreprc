@@ -1,3 +1,4 @@
 --hidden
+--no-ignore-vcs
 --no-require-git
 --smart-case

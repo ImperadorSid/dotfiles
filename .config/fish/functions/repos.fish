@@ -5,6 +5,9 @@ function repos -d 'Manage repository downloads and script installations'
   argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv
   test "$status" -eq 0; or return
 
+  set current_directory $PWD
+  ~
+
   set -g repo_file $argv[1]
   set -g repo_path "$repositories/$repo_file"
 
@@ -18,15 +21,18 @@ function repos -d 'Manage repository downloads and script installations'
   else if set -q _flag_only_open
     __repos_open
   else if set -q _flag_create
-    __repos_create "$argv[2]" $_flag_f; or set final_status 2
+    __repos_create "$argv[2]" $_flag_f
   else if set -q _flag_edit
-    __repos_edit; or set final_status 3
+    __repos_edit
   else
-    __repos_execute "$_flag_i$_flag_d" $_flag_f; or set final_status 4
+    __repos_execute "$_flag_i$_flag_d" $_flag_f
   end
 
+  set exit_code $status
   __repos_unset_variables
-  return $final_status
+  $current_directory
+  return $exit_code
+
 end
 
 function __repos_execute
@@ -202,11 +208,11 @@ function __repos_dependencies
 
   set -g repo_dependencies (meta '.dependencies[]')
 
-  if not dpkg -l $repo_dependencies &> /dev/null
+  if not dpkg -s $repo_dependencies &> /dev/null
     echo -e '\nInstalling dependencies:'
     printf '  %s... ' (__repos_print_dependencies)
 
-    if a install -y $repo_dependencies &> /dev/null
+    if loading a install -y $repo_dependencies
       echo 'complete'
     else
       echo -e '\r'
