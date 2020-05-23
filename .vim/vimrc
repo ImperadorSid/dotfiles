@@ -6,6 +6,7 @@ set backspace=indent,eol,start
 set clipboard=unnamedplus
 set expandtab
 set foldlevel=4
+set foldmethod=syntax
 set hidden
 set hlsearch
 set ignorecase
