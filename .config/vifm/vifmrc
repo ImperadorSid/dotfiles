@@ -54,7 +54,7 @@ set undolevels=100
 " If you installed the vim.txt help file set vimhelp.
 " If would rather use a plain text help file set novimhelp.
 
-set novimhelp
+set vimhelp
 
 " If you would like to run an executable file when you
 " press return on the file name set this.
@@ -447,3 +447,16 @@ nnoremap <f8> :delete<cr>
 " Block particular shortcut
 "
 " nnoremap <left> <nop>
+
+" :find utility
+set findprg='fd -IHL --ignore-file ~/.config/ignore-locations %A'
+
+" :grep utility
+set grepprg='rg %a'
+
+" View columns
+set viewcolumns='-{name},12{mtime},8{size}'
+
+"Status line options format
+set statusline='%= %A %15u:%-8g'
+
