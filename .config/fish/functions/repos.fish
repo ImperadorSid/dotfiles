@@ -352,7 +352,7 @@ function __repos_create
   end
 
   echo $template | jq '.' > $repo_path
-  echo '#!/usr/bin/env bash' >> $repo_path
+  printf '#!/usr/bin/env bash\n\n' >> $repo_path
 
   __repos_edit
 
