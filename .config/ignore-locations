@@ -8,6 +8,7 @@ Black Desert/
 *[cC]ache*/
 Criterion Games/
 .dartServer/
+.dbus/
 desktop.ini
 EA Games/
 Electronic Arts/
@@ -45,5 +46,6 @@ The Witcher 3/
 .thumbnails/
 Trash/
 Uplay/
+vim82/
 .vscode/
 WB Games/
