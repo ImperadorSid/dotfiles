@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 
 function backup_directory
-  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'j/just-commit' 'h/help' 'i/ignore'
-  argparse -n 'Backup Directory' -N 2 -x 'd,n,j,h' -x 'e,r,j,h,i' -x 'r,n' -x 'i,d' $options -- $argv
+  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'c/just-commit' 'h/help' 'i/ignore'
+  argparse -n 'Backup Directory' -N 2 -x 'd,n,c,h' -x 'e,r,c,h,i' -x 'r,n' -x 'i,d' $options -- $argv
   test "$status" -eq 0; or return
 
   set current_directory $PWD
