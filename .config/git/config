@@ -1,8 +1,6 @@
 [user]
 	name = Moisés Carvalho
 	email = moisescarv27@hotmail.com
-[core]
-	excludesfile = /home/impsid/.config/ignore-locations
 [diff]
 	tool = vimdiff
 [difftool]

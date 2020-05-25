@@ -1,11 +1,17 @@
 Activision/
-anaconda3/
-android-sdk/
+.android/*
+!.android/avd
+.android/avd/*
+!.android/avd/*ini
+!.android/avd/*avd
+.android/avd/*avd/*
+!.android/avd/*avd/*ini
 Animus Control Panel/
 As Minhas Criações Spore/
 Assassin's Creed*/
 Black Desert/
 *[cC]ache*/
+.cinnamon/
 Criterion Games/
 .dartServer/
 .dbus/
@@ -13,9 +19,7 @@ desktop.ini
 EA Games/
 Electronic Arts/
 FeedbackHub/
-flutter/
 GameMakerStudio2/
-generated_completions/
 Ghost Games/
 .git/
 google-chrome/
@@ -23,6 +27,10 @@ google-chrome/
 gvfs-metadata/
 *history*
 .ipynb_checkpoints/
+.local/*/*
+!.local/*/bin
+!.local/bin
+!.local/scripts
 Minhas criações Spore/
 *[mM]inecraft/
 /mnt/Data/Programs/
@@ -44,8 +52,6 @@ Square Enix/
 TelegramDesktop/
 The Witcher 3/
 .thumbnails/
-Trash/
 Uplay/
-vim82/
 .vscode/
 WB Games/
