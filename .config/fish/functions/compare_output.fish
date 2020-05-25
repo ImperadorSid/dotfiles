@@ -40,6 +40,7 @@ function __compare_output_show
 end
 
 function __compare_output_clear
+  echo 'Cache cleared'
   rm $current $previous
 end
 
@@ -53,11 +54,12 @@ function __compare_output_help
 
 Usage:
   compare_output [(-n | -c )] <command>
-  compare_output -h
+  compare_output -h | -o
 
 Options:
   -n, --no-open   Do not open diff after command finish
   -c, --clear     Clear cache files (current.txt and previous.txt)
+  -o, --open      Just open the files 
   -h, --help      Show this help'
 end
 
