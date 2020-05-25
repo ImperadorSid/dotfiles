@@ -4,6 +4,7 @@ set autoindent
 set autoread
 set backspace=indent,eol,start
 set clipboard=unnamedplus
+set cursorline
 set expandtab
 set foldlevel=4
 set foldmethod=syntax
