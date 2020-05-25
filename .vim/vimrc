@@ -47,6 +47,7 @@ nmap <Leader>. :execute 'source' vimrc_path<CR>
 " Buffers
 nmap gl :bnext<CR>
 nmap gL :bprevious<CR>
+nmap ZB :bdelete<CR>
 
 " Useful actions
 nmap <Leader>f :nohlsearch<CR>

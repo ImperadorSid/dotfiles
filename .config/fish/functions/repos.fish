@@ -242,7 +242,7 @@ function __repos_script
   sed -n '/^#!/,$p' $repo_path >> $exec_file
 
   set_color yellow
-  if test (wc -l < $exec_file) -gt 4
+  if test (wc -l < $exec_file) -gt 5
     echo -e '\nRunning installation script...'
     bash $exec_file
     echo -e 'Installation script finished'
