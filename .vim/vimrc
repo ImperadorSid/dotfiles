@@ -50,6 +50,7 @@ nmap gL :bprevious<CR>
 
 " Useful actions
 nmap <Leader>f :nohlsearch<CR>
+nmap <Leader>l :set relativenumber!<CR>
 nmap <Leader>s :set list!<CR>
 nmap <Leader>t :%s/ \+$// <Bar> nohlsearch<CR>
 

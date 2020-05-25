@@ -452,7 +452,7 @@ nnoremap <f8> :delete<cr>
 set findprg='fd -IHL --ignore-file ~/.config/ignore-locations %A'
 
 " :grep utility
-set grepprg='rg %a'
+set grepprg='rg -n'
 
 " View columns
 set viewcolumns='-{name},12{mtime},8{size}'
