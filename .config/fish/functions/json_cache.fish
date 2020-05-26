@@ -88,7 +88,7 @@ function __json_cache_help
   echo 'Request and caches JSON requests
 
 Usage:
-  json_cache [-c | -n | -h] <uri>
+  json_cache [(-c | -n | -h)] <uri>
 
 Options:
   -c, --clear   Clear cache data

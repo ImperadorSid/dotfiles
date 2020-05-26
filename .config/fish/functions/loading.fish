@@ -30,7 +30,7 @@ function __loading_help
   echo 'Loading spinner
 
 Usage:
-  loading [-a | -n | -e | -h] <commmand>
+  loading [(-a | -n | -e | -h)] <commmand>
 
 Options:
   -a, --all     Show all output (stdout/stderr)

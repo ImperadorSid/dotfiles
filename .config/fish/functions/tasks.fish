@@ -236,12 +236,12 @@ function __tasks_help
   echo 'Manage user day-to-day tasks
 
 Usage:
-  tasks [-p | -i]
-  tasks [-l | -n | -h] [<description>]
+  tasks [(-p | -i)]
+  tasks [(-l | -n | -h)] [<description>]
   tasks -e
-  tasks -e [-l | -n | -h] <id> [<description>]
+  tasks -e [(-l | -n | -h)] <id> [<description>]
   tasks -d [<id>...]
-  tasks -d [-l | -n | -h]
+  tasks -d [(-l | -n | -h)]
 
 Options:
   -p, --priority  Show tasks ordered by priority

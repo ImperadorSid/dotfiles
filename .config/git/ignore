@@ -12,6 +12,8 @@ Assassin's Creed*/
 Black Desert/
 *[cC]ache*/
 .cinnamon/
+*/Code/logs/
+*/Code/**/*[sS]torage
 Criterion Games/
 .dartServer/
 .dbus/
@@ -24,7 +26,6 @@ Ghost Games/
 .git/
 google-chrome/
 .gradle/
-gvfs-metadata/
 *history*
 .ipynb_checkpoints/
 .local/*/*
@@ -33,7 +34,7 @@ gvfs-metadata/
 !.local/scripts
 Minhas criações Spore/
 *[mM]inecraft/
-/mnt/Data/Programs/
+*/Data/Programs
 Mutant Blobs Attack/
 My Games/
 Need [fF]or Speed/
@@ -52,6 +53,7 @@ Square Enix/
 TelegramDesktop/
 The Witcher 3/
 .thumbnails/
+Ubisoft/
 Uplay/
 .vscode/
 WB Games/

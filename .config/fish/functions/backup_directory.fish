@@ -1,27 +1,27 @@
 #!/usr/bin/env fish
 
 function backup_directory
-  set options 'd/diff' 'r/restore' 'e/edit' 'n/no-commit' 'c/just-commit' 'h/help' 'i/ignore'
-  argparse -n 'Backup Directory' -N 2 -x 'd,n,c,h' -x 'e,r,c,h,i' -x 'r,n' -x 'i,d' $options -- $argv
-  test "$status" -eq 0; or return
-
+  set options 'd/diff' 'r/restore' 'e/edit' 'c/just-commit' 'h/help' 'i/ignore'
+  argparse -n 'Backup Directory' -N 2 -x 'd,e,c,i,h' -x 'r,e,c,h,i' $options -- $argv; or return
   set current_directory $PWD
 
-  if set -q _flag_help
-    __backup_directory_help
-  else if __backup_directory_init_variables $argv
-    if set -q _flag_ignore
-      __backup_directory_ignore_file $_flag_no_commit
-    else if set -q _flag_restore
-      __backup_directory_restore $_flag_diff
-    else if set -q _flag_diff
-      __backup_directory_diff $_flag_edit
-    else if set -q _flag_just_commit
-      __backup_directory_commit
-    else
-      __backup_directory_backup "$_flag_edit" "$_flag_no_commit"
+  set -q _flag_help
+  and __backup_directory_help
+  or \
+    begin
+      __backup_directory_init_variables $argv
+      and $repo_path
+      and \
+        if set -q _flag_ignore
+          __backup_directory_ignore_file
+        else if set -q _flag_restore
+          __backup_directory_restore $_flag_diff
+        else if set -q _flag_just_commit
+          __backup_directory_commit
+        else
+          __backup_directory_backup $_flag_edit $_flag_diff
+        end
     end
-  end
 
   set operation_code $status
   __backup_directory_unset_variables
@@ -31,29 +31,65 @@ function backup_directory
 end
 
 function __backup_directory_backup
-  if not set -q fd_path
-    $repo_path
-    __backup_directory_backup_changes
+  argparse 'e/edit' 'd/diff' -- $argv
+
+  if set -q fd_path
+    if set -q _flag_edit
+      __backup_directory_backup_edit
+    else if set -q _flag_diff
+      __backup_directory_backup_diff
+    end
   else
-    test "x$argv[1]" = 'x-e'; and __backup_directory_backup_edit
-    __backup_directory_backup_copy "$relative_path"
+    __backup_directory_check_changes; or return
+
+    set -q _flag_diff
+    and __backup_directory_backup_diff_all
+    or __backup_directory_backup_list
   end
 
-  test "x$argv[2]" != 'x-n' -a "$status" -eq 0; and __backup_directory_commit
+  __backup_directory_backup_make
+  and __backup_directory_commit
 end
 
-function __backup_directory_backup_changes
-  __backup_directory_check_changes; or return
-
-  echo 'Updating changes'
-  for d in $diffs
-    __backup_directory_backup_copy "$d"
+function __backup_directory_backup_list
+  echo 'Files with changes'
+  for i in (seq $diffs_count)
+    printf '%3s %s%s%s\n' "$i" (set_color cyan) "$diffs[$i]" (set_color normal)
   end
-  echo
 end
 
 function __backup_directory_backup_edit
-  __backup_directory_run_writable "$fd_path" vim $fd_path
+  __backup_directory_run_writable "$target_dir/$relative_path" vim $target_dir/$relative_path
+end
+
+function __backup_directory_backup_diff
+  test -d "$relative_path"
+  and echo_err "\"$fd_path\" is a directory" 6
+  or __backup_directory_backup_diff_show $relative_path
+end
+
+function __backup_directory_backup_diff_all
+  for d in $diffs
+    __backup_directory_backup_diff_show $d
+  end
+end
+
+function __backup_directory_backup_diff_show
+  __backup_directory_run_writable "$target_dir/$argv" vim -d $target_dir/$argv $argv
+end
+
+function __backup_directory_backup_make
+  __backup_directory_confirmation 'brmagenta' 'Make backup'; or return
+
+  if set -q fd_path
+    __backup_directory_backup_copy $relative_path
+  else
+    echo 'Updating changes'
+    for d in $diffs
+      __backup_directory_backup_copy $d
+    end
+  end
+  echo
 end
 
 function __backup_directory_backup_copy
@@ -66,47 +102,8 @@ function __backup_directory_backup_copy
   cp -r $target_dir/$argv $destination_dir
 end
 
-function __backup_directory_diff
-  $repo_path
-
-  if test "x$argv" = 'x-e'
-    __backup_directory_diff_all
-  else if set -q fd_path
-    __backup_directory_diff_single_file
-  else
-    __backup_directory_diff_show
-  end
-end
-
-function __backup_directory_diff_single_file
-  test -d "$relative_path"
-  and echo_err "\"$fd_path\" is a directory" 6
-  or __backup_directory_diff_file $relative_path
-end
-
-function __backup_directory_diff_all
-  __backup_directory_check_changes; or return
-
-  for d in $diffs
-    __backup_directory_diff_file $d
-  end
-end
-
-function __backup_directory_diff_show
-  __backup_directory_check_changes; or return
-
-  echo 'Files with changes'
-  for i in (seq $diffs_count)
-    printf '%3s %s%s%s\n' "$i" (set_color cyan) "$diffs[$i]" (set_color normal)
-  end
-end
-
-function __backup_directory_diff_file
-  __backup_directory_run_writable "$target_dir/$argv" vim -d $target_dir/$argv $argv
-end
-
 function __backup_directory_restore
-  $repo_path
+  __backup_directory_confirmation 'brblue' 'Are you sure'; or return
 
   if test "x$argv" = 'x-d'
     __backup_directory_restore_changed
@@ -147,7 +144,7 @@ function __backup_directory_restore_changed
 end
 
 function __backup_directory_commit
-  test -f "$repo_path/.git/HEAD"; and echo 'Commiting changes...'; and commit_repo $repo_path
+  test -f ".git/HEAD"; and echo 'Commiting changes...'; and commit_repo
 end
 
 function __backup_directory_changed_files
@@ -171,6 +168,11 @@ function __backup_directory_run_writable
     set command_path (which $argv[2])
     sudo $command_path $argv[3..-1]
   end
+end
+
+function __backup_directory_confirmation
+  read -p "echo_color '$argv[1]' -en '\n$argv[2]? '; echo -n '[y/N] '" choice
+  string match -qi 'y' $choice; or return
 end
 
 function __backup_directory_init_variables
@@ -214,26 +216,24 @@ end
 
 function __backup_directory_ignore_file
   mkdir -p $repo_path
-  v $repo_path/.ignore-backup
+  v .ignore-backup
 
-  test "x$argv" = 'x-n'; or __backup_directory_commit
+  __backup_directory_commit
 end
 
 function __backup_directory_help
   echo 'Script to backup, restore and get changes of a target folder
 
 Usage:
-  backup_directory <target_dir> <repo_name> [-n] [(<file> | -e <file>)]
-  backup_directory <target_dir> <repo_name> -d [-e | <file>]
-  backup_directory <target_dir> <repo_name> -r [-d | <file>]
-  backup_directory <target_dir> <repo_name> -j | -h
-  backup_directory <target_dir> <repo_name> -i [-n]
+  backup_directory <target_dir> <repo_name> [-d] [<file>]
+  backup_directory <target_dir> <repo_name> -e <file>
+  backup_directory <target_dir> <repo_name> -r [(-d | <file>)]
+  backup_directory <target_dir> <repo_name> [(-i | -c | -h)]
 
 Options:
   -e, --edit          Open file for editing
   -d, --delete        Check diff on files
   -r, --restore       Restore files to <target_dir>
-  -n, --no-commit     Do not commit changes on Git
   -j, --just-commit   Just commit backup folder
   -i, --ignore-file   Open .ignore-backup
   -h, --help          Show this help'
