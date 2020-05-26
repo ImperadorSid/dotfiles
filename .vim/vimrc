@@ -89,6 +89,13 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline_powerline_fonts=1
 
+" Vifm
+let g:vifm_embed_split=1
+let g:vifm_embed_cwd=1
+let g:vifm_replace_netrw=1
+
 " Disabled plugins
 let g:loaded_matchparen=1
+let g:loaded_netrw=1
+let g:loaded_netrwPlugin=1
 
