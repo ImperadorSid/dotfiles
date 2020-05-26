@@ -458,9 +458,18 @@ set findprg='fd -IHL --ignore-file ~/.config/git/ignore %A'
 " :grep utility
 set grepprg='rg -n'
 
+" :locate utility
+set locateprg='fd -IHL --ignore-file ~/.config/git/ignore %a /'
+
 " View columns
 set viewcolumns='-{name},12{mtime},8{size}'
 
-"Status line options format
+" Status line options format
 set statusline='%= %A %15u:%-8g'
+
+" Delete confirmations
+set confirm=permdelete
+
+" Show folders "." and ".."
+set dotdirs=
 
