@@ -1,8 +1,7 @@
 #!/usr/bin/env fish
 
 function compare_output
-  argparse -n 'Compare Output' -s -x 'n,c,o,h' 'n/no-open' 'c/clear' 'o/open' 'h/help' -- $argv
-  test "$status" -eq 0; or return
+  argparse -n 'Compare Output' -s -x 'n,c,o,h' 'n/no-open' 'c/clear' 'o/open' 'h/help' -- $argv; or return
 
   set outputs_dir ~/.cache/fish_compare
   set -g current $outputs_dir/current.txt

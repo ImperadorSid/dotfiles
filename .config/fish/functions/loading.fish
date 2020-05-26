@@ -2,8 +2,7 @@
 
 function loading
   set options 'a/all' 'n/none' 'e/error' 'h/help'
-  argparse -n 'Loading Spinner' -s -x 'a,n,e,h' $options -- $argv
-  test "$status" -eq 0; or return
+  argparse -n 'Loading Spinner' -s -x 'a,n,e,h' $options -- $argv; or return
 
   set -q _flag_help; and __loading_help; and return
 

@@ -5,8 +5,7 @@ function tasks -d "Manage personal tasks"
   __tasks_check_json_formatting; or return
 
   set options 'p/priority' 'l/low' 'n/normal' 'h/high' 'e/edit' 'd/delete' 'i/info'
-  argparse -n 'Tasks' -x 'p,e,d,i' -x 'p,l,n,h,i' $options -- $argv
-  test "$status" -eq 0; or return 2
+  argparse -n 'Tasks' -x 'p,e,d,i' -x 'p,l,n,h,i' $options -- $argv; or return 2
 
   set -q _flag_low; and set -g selected_priority 'low'
   set -q _flag_normal; and set -g selected_priority 'normal'

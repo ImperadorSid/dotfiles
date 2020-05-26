@@ -2,8 +2,7 @@
 
 function json_cache -d "Make a cache of JSON files to avoid requisition limits"
   # Parsing arguments
-  argparse -n 'JSON Cache' -x 'f,c,h' -X 1 'f/force' 'c/clear' 'h/help' -- $argv
-  test "$status" -eq 0; or return
+  argparse -n 'JSON Cache' -x 'f,c,h' -X 1 'f/force' 'c/clear' 'h/help' -- $argv; or return
 
   # Set variables
   set -g cache_dir ~/.cache/fish_json

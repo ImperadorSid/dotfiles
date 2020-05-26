@@ -1,8 +1,7 @@
 #!/usr/bin/env fish
 
 function commit_repo
-  argparse -n 'Commit Repository' -x 'n,h' 'n/no-push' 'h/help' -- $argv
-  test "$status" -eq 0; or return
+  argparse -n 'Commit Repository' -x 'n,h' 'n/no-push' 'h/help' -- $argv; or return
 
   set -q _flag_help; and __commit_repo_help; and return
 

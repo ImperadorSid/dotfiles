@@ -2,8 +2,7 @@
 
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open' 'h/help'
-  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv
-  test "$status" -eq 0; or return
+  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv; or return 
 
   set current_directory $PWD
   ~
@@ -102,7 +101,8 @@ function __repos_clone
   else
     printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
     loading g clone -q $repo_address $repo_location
-    test "$status" -eq 0; and echo 'complete'; or echo_err 'Clone failed. Skipping...'
+    and echo 'complete'
+    or echo_err 'Clone failed. Skipping...'
   end
 
   return 0
