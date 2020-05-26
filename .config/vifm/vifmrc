@@ -453,7 +453,7 @@ nnoremap <f8> :delete<cr>
 " nnoremap <left> <nop>
 
 " :find utility
-set findprg='fd -IHL --ignore-file ~/.config/ignore-locations %A'
+set findprg='fd -IHL --ignore-file ~/.config/git/ignore %A'
 
 " :grep utility
 set grepprg='rg -n'
