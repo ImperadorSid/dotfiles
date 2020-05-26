@@ -1,5 +1,6 @@
+--follow
 --hidden
 --ignore-file=/home/impsid/.config/git/ignore
---no-require-git
 --no-ignore
+--no-require-git
 --smart-case
