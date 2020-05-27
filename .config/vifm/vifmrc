@@ -1,25 +1,38 @@
-set vicmd=vim
-set trash
+" Options
+set confirm=permdelete
+set dotdirs=
+set findprg='fd -IHL --ignore-file ~/.config/git/ignore %A'
+set grepprg='rg -n'
 set history=100
-set followlinks
+set ignorecase
+set incsearch
+set locateprg='fd -IHL --ignore-file ~/.config/git/ignore %a /'
+set nohlsearch
+set smartcase
 set sortnumbers
-set undolevels=100
+set statusline="%z %= %A %14d"
+set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
+set syscalls
+set vifminfo=tui,savedirs,registers,chistory,dhistory,fhistory,shistory
 set vimhelp
-set norunexec
-colorscheme dracula
-set timefmt=%m/%d\ %H:%M
 set wildmenu
 set wildstyle=popup
-set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
-set ignorecase
-set smartcase
-set hlsearch
-set incsearch
-set scrolloff=4
-if !has('win')
-    set slowfs=curlftpfs
-endif
-set statusline="  Hint: %z%= %A %10u:%-7g %15s %20d  "
+
+" Commands
+colorscheme dracula
+only
+
+" Custom commands
+command! df df -h %m
+command! diff vim -d %f %F
+command! make !!make %a
+command! mkcd :mkdir %a | cd %a
+command! reload :write | restart
+command! run !! ./%f
+command! vgrep vim "+grep %a"
+command! zip zip -r %f.zip %f
+
+" Marks
 mark c ~/.config
 mark d $dotfiles
 mark D ~/Downloads
@@ -29,77 +42,44 @@ mark l ~/.local
 mark r $repositories
 mark R /
 mark s $personal_scripts
-command! df df -h %m 2> /dev/null
-command! diff vim -d %f %F
-command! zip zip -r %f.zip %f
-command! run !! ./%f
-command! make !!make %a
-command! mkcd :mkdir %a | cd %a
-command! vgrep vim "+grep %a"
-command! reload :write | restart
-filextype *.pdf zathura %c %i &, apvlv %c, xpdf %c
-fileviewer *.pdf pdftotext -nopgbrk %c -
-filextype *.ps,*.eps,*.ps.gz
-        \ {View in zathura}
-        \ zathura %f,
-        \ {View in gv}
-        \ gv %c %i &,
-filextype *.djvu
-        \ {View in zathura}
-        \ zathura %f,
-        \ {View in apvlv}
-        \ apvlv %f,
+
+" File associations
+" Image
+filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
+        \ {View in sxiv}
+        \ sxiv %f,
+        \ {View in gpicview}
+        \ gpicview %c,
+        \ {View in shotwell}
+        \ shotwell,
+fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
+         \ identify %f
+
+" Audio
 filetype *.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
-       \ {Play using VLC}
-       \ vlc -q %f %i &
+       \ {Play using ffplay}
+       \ ffplay -nodisp -autoexit %c,
+       \ {Play using MPlayer}
+       \ mplayer %f,
 fileviewer *.mp3 mp3info
 fileviewer *.flac soxi
+
+" Video
 filextype *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
          \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
          \*.as[fx]
-        \ {View using VLC}
-        \ vlc -q %f %i &
+        \ {View using ffplay}
+        \ ffplay -fs -autoexit %f,
+        \ {View using Dragon}
+        \ dragon %f:p,
+        \ {View using mplayer}
+        \ mplayer %f,
 fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
           \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
           \*.as[fx]
          \ ffprobe -pretty %c 2>&1
-filextype *.html,*.htm
-        \ {Open with Google Chrome}
-        \ google-chrome %f %i &,
-filetype *.html,*.htm links, lynx
-filetype *.o nm %f | less
-filetype *.[1-8] man ./%c
-fileviewer *.[1-8] man ./%c | col -b
-filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
-        \ {View in xviewer}
-        \ xviewer %f %i &,
-        \ {Edit in GIMP}
-        \ gimp %f %i &
-fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
-         \ convert -identify %f -verbose /dev/null
-filextype *.ora
-        \ {Edit in MyPaint}
-        \ mypaint %f,
-filextype *.vym
-        \ {Open with VYM}
-        \ vym %f &,
-filetype *.md5
-       \ {Check MD5 hash sum}
-       \ md5sum -c %f %S,
-filetype *.sha1
-       \ {Check SHA1 hash sum}
-       \ sha1sum -c %f %S,
-filetype *.sha256
-       \ {Check SHA256 hash sum}
-       \ sha256sum -c %f %S,
-filetype *.sha512
-       \ {Check SHA512 hash sum}
-       \ sha512sum -c %f %S,
-filetype *.asc
-       \ {Check signature}
-       \ !!gpg --verify %c,
-filetype *.torrent ktorrent %f &
-fileviewer *.torrent dumptorrent -v %c
+
+" Archive
 filetype *.zip,*.jar,*.war,*.ear,*.oxt,*.apkg
        \ {Mount with fuse-zip}
        \ FUSE_MOUNT|fuse-zip %SOURCE_FILE %DESTINATION_DIR,
@@ -119,55 +99,88 @@ filetype *.rar
        \ {Mount with rar2fs}
        \ FUSE_MOUNT|rar2fs %SOURCE_FILE %DESTINATION_DIR,
 fileviewer *.rar unrar v %c
-filetype *.iso
-       \ {Mount with fuseiso}
-       \ FUSE_MOUNT|fuseiso %SOURCE_FILE %DESTINATION_DIR,
-filetype *.ssh
-       \ {Mount with sshfs}
-       \ FUSE_MOUNT2|sshfs %PARAM %DESTINATION_DIR %FOREGROUND,
-filetype *.ftp
-       \ {Mount with curlftpfs}
-       \ FUSE_MOUNT2|curlftpfs -o ftp_port=-,,disable_eprt %PARAM %DESTINATION_DIR %FOREGROUND,
 filetype *.7z
        \ {Mount with fuse-7z}
        \ FUSE_MOUNT|fuse-7z %SOURCE_FILE %DESTINATION_DIR,
 fileviewer *.7z 7z l %c
+
+" ISO
+filetype *.iso
+       \ {Mount with fuseiso}
+       \ FUSE_MOUNT|fuseiso %SOURCE_FILE %DESTINATION_DIR,
 filextype *.odt,*.doc,*.docx,*.xls,*.xlsx,*.odp,*.pptx libreoffice %f &
+
+" Document
 fileviewer *.doc catdoc %c
-fileviewer *.docx, docx2txt.pl %f -
-filetype *.tudu tudu -f %c
-filextype *.pro qtcreator %f &
+fileviewer *.docx docx2txt.pl %f -
+
+" PDF
+filextype *.pdf zathura %c %i &, apvlv %c, xpdf %c
+fileviewer *.pdf pdftotext -nopgbrk %c -
+
+" HTML
+filextype *.html,*.htm
+        \ {Open with dwb}
+        \ dwb %f %i &,
+        \ {Open with firefox}
+        \ firefox %f &,
+        \ {Open with uzbl}
+        \ uzbl-browser %f %i &,
+filetype *.html,*.htm links, lynx
+
+" Torrent
+filetype *.torrent ktorrent %f &
+fileviewer *.torrent dumptorrent -v %c
+
+" Man page
+filetype *.[1-8] man ./%c
+fileviewer *.[1-8] man ./%c | col -b
+
+" Object
+filetype *.o nm %f | less
+
+" Checksum
+filetype *.md5
+       \ {Check MD5 hash sum}
+       \ md5sum -c %f %S,
+filetype *.sha1
+       \ {Check SHA1 hash sum}
+       \ sha1sum -c %f %S,
+filetype *.sha256
+       \ {Check SHA256 hash sum}
+       \ sha256sum -c %f %S,
+filetype *.sha512
+       \ {Check SHA512 hash sum}
+       \ sha512sum -c %f %S,
+
+" Signature
+filetype *.asc
+       \ {Check signature}
+       \ !!gpg --verify %c,
+
+" Directory
 filextype */
         \ {View in thunar}
         \ Thunar %f &,
-        \ {View in Nemo}
-        \ nemo %f &
-set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,
-    \phistory,fhistory,dirstack,registers,bookmarks,bmarks
-nnoremap s :shell<cr>
-nnoremap S :sort<cr>
-nnoremap w :view<cr>
-vnoremap w :view<cr>gv
-nnoremap o :!vim %f<cr>
-nnoremap gb :file &<cr>l
-nnoremap yd :!echo %d | xclip %i<cr>
-nnoremap yf :!echo %c:p | xclip %i<cr>
-nnoremap I cw<c-a>
-nnoremap cc cw<c-u>
-nnoremap A cw
-nnoremap ,t :!xterm &<cr>
-nnoremap ,c :write | edit $MYVIFMRC | restart<cr>
-nnoremap ,w :set wrap!<cr>
-nnoremap <f3> :!less %f<cr>
-nnoremap <f4> :edit<cr>
-nnoremap <f5> :copy<cr>
-nnoremap <f6> :move<cr>
+
+" Mappings
+nnoremap ,c :write | edit $MYVIFMRC | restart<CR>
+nnoremap ,t :!alacritty &<CR>
+nnoremap ,w :set wrap!<CR>
+nnoremap <f3> :!less %f<CR>
+nnoremap <f4> :edit<CR>
+nnoremap <f5> :copy<CR>
+nnoremap <f6> :move<CR>
 nnoremap <f7> :mkdir<space>
-nnoremap <f8> :delete<cr>
-set findprg='fd -IHL --ignore-file ~/.config/git/ignore %A'
-set grepprg='rg -n'
-set locateprg='fd -IHL --ignore-file ~/.config/git/ignore %a /'
-set viewcolumns='-{name},12{mtime},8{size}'
-set statusline='%= %A %15u:%-8g'
-set confirm=permdelete
-set dotdirs=
+nnoremap <f8> :delete<CR>
+nnoremap A cw
+nnoremap cc cw<c-u>
+nnoremap gb :file &<CR>l
+nnoremap I cw<c-a>
+nnoremap o :!vim %f<CR>
+nnoremap s :shell<CR>
+nnoremap S :sort<CR>
+nnoremap w :view<CR>
+nnoremap yd :!echo %d | xclip %i<CR>
+nnoremap yf :!echo %c:p | xclip %i<CR>
+vnoremap w :view<CR>gv
