@@ -102,16 +102,17 @@ fileviewer *.iso isoinfo -d -i
 
 " Document
 fileviewer *.doc catdoc
-filextype *.odt,*.ods,*.odp,*.doc,*.docx,*.xls,*.xlsx,*.ppt,*.pptx
-          \ libreoffice %f &
 
 " PDF
+filextype *.pdf
+        \ {Open with Google Chrome}
+        \ google-chrome %f %i
 fileviewer *.pdf pdftotext -nopgbrk %c -
 
 " HTML
 filextype *.html,*.htm
         \ {Open with Google Chrome}
-        \ google-chome %f %i
+        \ google-chrome %f %i
 filetype *.html,*.htm links
 fileviewer *.html,*.htm links -dump
 
