@@ -123,6 +123,9 @@ filetype *.deb
         \ apt install ./%c
 fileviewer *.deb dpkg-deb -I
 
+" Windows executables
+fileviewer *.exe,*.msi exiftool
+
 " Man page
 filetype *.[1-8] man ./
 fileviewer *.[1-8] man ./%c | col -b
