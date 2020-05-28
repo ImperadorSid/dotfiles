@@ -2,7 +2,7 @@
 
 function repos -d 'Manage repository downloads and script installations'
   set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open' 'h/help'
-  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv; or return 
+  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv; or return
 
   set current_directory $PWD
   ~
@@ -250,7 +250,6 @@ function __repos_script
   set_color normal
 
   rm $exec_file
-  cd -
 end
 
 function __repos_packages
@@ -271,6 +270,7 @@ function __repos_links
   set first_output true
 
   for i in (seq 0 (math "$links_count - 1"))
+    cd $repo_location
     set destination (meta ".links[$i].destination" | sed -r "s|^~|$HOME|")
     test "$destination" = 'null'; and set destination "$HOME/.local/bin"
 
@@ -279,11 +279,11 @@ function __repos_links
 
     for f in (meta ".links[$i].files[]")
       set f (string replace -r '^~' $HOME $f)
-      set relative_path $repo_location/$f
+      eval "set relative_path $f"
       string match -qr '^/' $f; and set relative_path $f
 
-      ln -sf $relative_path $destination
-      printf '  Link to %s%s%s created\n' (set_color cyan) "$f" (set_color normal)
+      ln -sf (realpath $relative_path) $destination
+      printf '  Link to %s%s%s created\n' (set_color cyan) "$relative_path" (set_color normal)
     end
   end
 end
@@ -294,14 +294,14 @@ function __repos_path_folders
 
   for f in (meta '.path_folders[]')
     set f (string replace -r '^~' $HOME $f)
-    set relative_path $repo_location/$f
+    eval "set relative_path $f"
     string match -qr '^/' $f; and set relative_path $f
 
     if not contains $relative_path $fish_user_paths
       $first_output; and set first_output false; and echo
-      printf 'Adding folder %s%s%s to PATH\n' (set_color green) "$f" (set_color normal)
+      printf 'Adding folder %s%s%s to PATH\n' (set_color green) "$relative_path" (set_color normal)
 
-      set -p fish_user_paths $relative_path
+      set -p fish_user_paths (realpath $relative_path)
     end
   end
 end

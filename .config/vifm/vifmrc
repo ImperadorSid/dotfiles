@@ -29,6 +29,7 @@ command! make !!make %a
 command! mkcd :mkdir %a | cd %a
 command! reload :write | restart
 command! run !! ./%f
+command! tar tar czf %d:t.tar.gz %f
 command! vgrep vim "+grep %a"
 command! zip zip -r %f.zip %f
 
@@ -58,7 +59,6 @@ filetype *.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
        \ {Play using VLC}
        \ vlc %f %i
 fileviewer *.mp3 mp3info -x
-fileviewer *.flac soxi
 
 " Video
 filextype *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
@@ -83,10 +83,10 @@ fileviewer *.zip,*.jar,*.war,*.ear,*.oxt zip -sf %c
 filetype *.tar,*.tar.bz2,*.tbz2,*.tgz,*.tar.gz,*.tar.xz,*.txz
        \ {Mount with archivemount}
        \ FUSE_MOUNT|archivemount %SOURCE_FILE %DESTINATION_DIR,
-fileviewer *.tgz,*.tar.gz tar -tzf %c
-fileviewer *.tar.bz2,*.tbz2 tar -tjf %c
-fileviewer *.tar.txz,*.txz,*.tar.xz tar -Jtf %c
-fileviewer *.tar tar -tf %c
+fileviewer *.tgz,*.tar.gz tar tzf %c
+fileviewer *.tar.bz2,*.tbz2 tar tjf %c
+fileviewer *.tar.txz,*.txz,*.tar.xz tar Jtf %c
+fileviewer *.tar tar tf %c
 filetype *.rar
        \ {Mount with rar2fs}
        \ FUSE_MOUNT|rar2fs %SOURCE_FILE %DESTINATION_DIR,
@@ -100,7 +100,7 @@ fileviewer *.7z 7z l %c
 filetype *.iso
        \ {Mount with fuseiso}
        \ FUSE_MOUNT|fuseiso %SOURCE_FILE %DESTINATION_DIR,
-fileviewer *.iso isoinfo -d -i %f
+fileviewer *.iso isoinfo -d -i %c
 
 " Document
 fileviewer *.doc catdoc %c
@@ -168,12 +168,12 @@ nnoremap <f3> :!less %f<CR>
 nnoremap <f4> :edit<CR>
 nnoremap <f5> :copy<CR>
 nnoremap <f6> :move<CR>
-nnoremap <f7> :mkdir<space>
+nnoremap <f7> :mkdir<Space>
 nnoremap <f8> :delete<CR>
 nnoremap A cw
-nnoremap cc cw<c-u>
+nnoremap cc cw<C-u>
 nnoremap gb :file &<CR>l
-nnoremap I cw<c-a>
+nnoremap I cw<C-a>
 nnoremap o :!vim %f<CR>
 nnoremap s :shell<CR>
 nnoremap S :sort<CR>
