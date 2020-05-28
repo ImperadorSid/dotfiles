@@ -7,7 +7,7 @@ function repos -d 'Manage repository downloads and script installations'
   set current_directory $PWD
   ~
 
-  set -g repo_file $argv[1]
+  set -g repo_file "$argv[1].repo"
   set -g repo_path "$repositories/$repo_file"
 
   alias meta 'repo_metadata $repo_file'
@@ -322,7 +322,6 @@ function __repos_unset_variables
 end
 
 function __repos_create
-  set repo_path $repo_path.repo
   if test -f "$repo_path" -a 'x-f' != "x$argv[2]"
     echo_err 'Repository file already exists'
     return

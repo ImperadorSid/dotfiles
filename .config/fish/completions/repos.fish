@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function __repos_completions_list
-  fd -d 1 -e repo -x fish -c "repo_metadata -c {/}; or exit; echo -e '{/}\tRepository:' (repo_metadata {/} '.repo')" \; . $repositories
+  fd -d 1 -e repo -x fish -c "repo_metadata -c {/}; or exit; echo -e '{/.}\tRepository:' (repo_metadata {/} '.repo')" \; . $repositories
 end
 complete -f -c repos -a '(__repos_completions_list)' -d 'List avaliable repositories scripts'
 complete -f -c repos -s e -l 'edit' -d 'Edit a repo script'
