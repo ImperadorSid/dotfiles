@@ -13,6 +13,8 @@ function loading
   set -q _flag_none; and set redirection '&> /dev/null'
   set -q _flag_error; and set redirection '2> /dev/null'
 
+  test "$argv[1]" = 'sudo'; and  __loading_elevate_privileges
+
   $personal_scripts/load.fish &
   set spinner_pid (jobs -lp)
 
@@ -23,6 +25,13 @@ function loading
   kill -USR1 $spinner_pid
   wait
   return $command_exit_code
+end
+
+function __loading_elevate_privileges
+  printf '\033[s\n\n'
+  echo 'Elevating privileges'
+  sudo date > /dev/null
+  printf '\033[u'
 end
 
 function __loading_help

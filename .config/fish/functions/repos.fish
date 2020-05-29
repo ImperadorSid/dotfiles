@@ -212,7 +212,7 @@ function __repos_dependencies
     echo -e '\nInstalling dependencies:'
     printf '  %s... ' (__repos_print_dependencies)
 
-    if loading a install -y $repo_dependencies
+    if loading sudo apt install -y $repo_dependencies
       echo 'complete'
     else
       echo -e '\r'
@@ -255,12 +255,9 @@ end
 function __repos_packages
   test (meta '.packages | length') -gt 0; or return
 
-  echo -e "\nElevating privileges"
-  sudo date > /dev/null
-
   for p in (meta '.packages[]')
     printf 'Installing package %s%s%s... ' (set_color magenta) $FILE_FULL_NAMES[$p] (set_color normal)
-    loading sudo apt-get install -yq=2 $repo_location/$FILE_FULL_NAMES[$p] > /dev/null
+    loading sudo apt-get install -yq=2 $repo_location/$FILE_FULL_NAMES[$p]
     echo 'done'
   end
 end
