@@ -20,7 +20,7 @@ set -g theme_nerd_fonts yes
 set -g theme_color_scheme dracula
 
 # Alias
-alias a  'apt'
+alias a  'sudo apt'
 alias a2 'aria2c'
 alias b  'bat'
 alias c  'clear; tmux clear-history'
