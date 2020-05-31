@@ -4,7 +4,6 @@
 set -x BROWSER google-chrome
 set -x EDITOR vim
 set -x MAKEFLAGS j 12
-set -x PAGER moar
 set -x RIPGREP_CONFIG_PATH ~/.config/ripgrep/ripgreprc
 
 # Useful locations

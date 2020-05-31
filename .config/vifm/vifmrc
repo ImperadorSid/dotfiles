@@ -48,10 +48,15 @@ mark s ~/.local/scripts
 filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
         \ {View in xviewer}
         \ xviewer %f %i,
+        \ {View in EOG},
+        \ eog %f,
         \ {Edit in GIMP}
         \ gimp %f %i
 fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
          \ identify
+filextype *.xcf
+        \ {Edit in GIMP}
+        \ gimp %f %i
 
 " Audio
 filetype *.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
@@ -120,7 +125,9 @@ fileviewer *.html,*.htm links -dump
 " Packages
 filetype *.deb
         \ {Install with apt}
-        \ apt install ./%c
+        \ apt install ./%c,
+        \ {List contents}
+        \ FUSE_MOUNT|archivemount %SOURCE_FILE %DESTINATION_DIR
 fileviewer *.deb dpkg-deb -I
 
 " Windows executables
@@ -156,6 +163,8 @@ filetype *.asc
 filextype */
         \ {View in Nemo}
         \ nemo -t %b %i,
+        \ {View in Nautilus},
+        \ nautilus %f %i,
         \ {View in VS Code}
         \ code %f %i
 

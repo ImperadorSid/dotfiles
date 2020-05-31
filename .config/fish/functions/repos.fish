@@ -5,13 +5,12 @@ function repos -d 'Manage repository downloads and script installations'
   argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv; or return
 
   set current_directory $PWD
-  ~
-
-  set -g repo_file "$argv[1].repo"
-  set -g repo_path "$repositories/$repo_file"
-
   alias meta 'repo_metadata $repo_file'
   alias meta_quiet 'repo_metadata -n $repo_file'
+
+  ~
+  set -g repo_file "$argv[1].repo"
+  set -g repo_path "$repositories/$repo_file"
 
   set -q _flag_open; and __repos_open
 
@@ -28,8 +27,12 @@ function repos -d 'Manage repository downloads and script installations'
   end
 
   set exit_code $status
+
   __repos_unset_variables
+  functions -e meta meta_quiet
+  
   $current_directory
+
   return $exit_code
 
 end
@@ -46,6 +49,10 @@ function __repos_execute
   else
     echo_err "Repo type \"$repo_type\" is invalid"
   end
+end
+
+function __repos_check_args
+  
 end
 
 function __repos_check_file
@@ -315,7 +322,6 @@ function __repos_unset_variables
   set -e FILE_NAMES
   set -e FILE_EXTENSIONS
 
-  functions -e meta meta_quiet
 end
 
 function __repos_create
