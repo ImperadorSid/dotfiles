@@ -49,7 +49,7 @@ filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
         \ {View in xviewer}
         \ xviewer %f %i,
         \ {View in EOG},
-        \ eog %f,
+        \ eog %f %i,
         \ {Edit in GIMP}
         \ gimp %f %i
 fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
