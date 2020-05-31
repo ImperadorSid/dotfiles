@@ -13,7 +13,6 @@ function repos -d 'Manage repository downloads and script installations'
   set -g repo_path "$repositories/$repo_file"
 
   set -q _flag_open; and __repos_open
-
   if set -q _flag_help
     __repos_help
   else if set -q _flag_only_open
@@ -22,19 +21,35 @@ function repos -d 'Manage repository downloads and script installations'
     __repos_create "$argv[2]" $_flag_f
   else if set -q _flag_edit
     __repos_edit
+  else if test (count $argv) -gt 1
+    __repos_execute_multiple "$_flag_i$_flag_d" "$_flag_f" $argv
   else
-    __repos_execute "$_flag_i$_flag_d" $_flag_f
+    __repos_execute "$_flag_i$_flag_d" "$_flag_f"
   end
 
   set exit_code $status
-
   __repos_unset_variables
   functions -e meta meta_quiet
-  
   $current_directory
-
   return $exit_code
 
+end
+
+function __repos_execute_multiple
+  for r in $argv[3..-1]
+    ~
+    set -g repo_file "$r.repo"
+    set -g repo_path "$repositories/$repo_file"
+
+    __repos_execute "$argv[1]" "$argv[2]"; or set -a failed_repos $r
+
+    __repos_unset_variables
+    echo
+  end
+
+  test -z "$failed_repos"
+  and echo_color 'green' 'All repos was successful installed'
+  or echo_err Repositories (set_color red)(string join ', ' $failed_repos)(set_color normal) failed to execute
 end
 
 function __repos_execute
@@ -49,10 +64,6 @@ function __repos_execute
   else
     echo_err "Repo type \"$repo_type\" is invalid"
   end
-end
-
-function __repos_check_args
-  
 end
 
 function __repos_check_file
@@ -77,8 +88,6 @@ function __repos_clone_release_tag
 
   __repos_download $argv; or return
   test "$argv[1]" = '-d'; or __repos_install; or return
-
-  echo -e '\nDONE'
 end
 
 function __repos_find_location
@@ -260,7 +269,7 @@ function __repos_script
 end
 
 function __repos_packages
-  test (meta '.packages | length') -gt 0; or return
+  test (meta '.packages | length') -eq 0; and return
 
   for p in (meta '.packages[]')
     printf 'Installing package %s%s%s... ' (set_color magenta) $FILE_FULL_NAMES[$p] (set_color normal)
@@ -293,7 +302,7 @@ function __repos_links
 end
 
 function __repos_path_folders
-  test (meta '.path_folders | length') -gt 0; or return
+  test (meta '.path_folders | length') -eq 0; and return
   set first_output true
 
   for f in (meta '.path_folders[]')
