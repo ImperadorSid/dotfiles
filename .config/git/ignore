@@ -33,7 +33,7 @@ google-chrome/
 .local/*/*
 !.local/*/bin
 !.local/bin
-!.local/scripts
+!.local/scripts/*
 !.local/tmux/*
 Minhas criações Spore/
 *minecraft/
