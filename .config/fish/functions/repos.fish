@@ -234,7 +234,7 @@ function __repos_dependencies
     if loading sudo apt install -y $repo_dependencies
       echo 'complete'
     else
-      echo -e '\r'
+      printf '\r'
       echo_err 'Installation failed. Check the APT log for details'
     end
   end
@@ -245,9 +245,7 @@ function __repos_print_dependencies
   for d in $repo_dependencies
     $first_output; and set first_output false; or echo -n ', '
 
-    set_color blue
-    echo -n $d
-    set_color normal
+    printf '%s%s%s' (set_color blue) "$d" (set_color normal)
   end
 end
 
@@ -262,9 +260,9 @@ function __repos_script
 
   set_color yellow
   if test (wc -l < $exec_file) -gt 5
-    echo -e '\nRunning installation script...'
+    printf '\nRunning installation script...'
     bash $exec_file
-    echo -e 'Installation script finished'
+    printf 'Installation script finished'
   end
   set_color normal
 
@@ -372,7 +370,9 @@ function __repos_create
 
   __repos_edit
 
-  echo "Repository \"$repo_file\" ($argv[1]) created"
+  printf 'Repository %s%s%s (%s%s%s) created\n' \
+  (set_color yellow) "$repo_file" (set_color normal) \
+  (set_color cyan) "$argv[1]" (set_color normal)
 end
 
 function __repos_edit
@@ -404,7 +404,7 @@ end
 
 function __repos_index_update_location
   set -g repo_name (meta '.repo')
-  sed -ri "s|^($repo_alias) .*|\1$repo_name|" $repo_scripts/.index
+  sed -ri "s|^($repo_alias) .*|\1 $repo_name|" $repo_scripts/.index
 end
 
 function __repos_index
@@ -415,15 +415,16 @@ function __repos_index
   for f in $files
     not contains $f $index
     and set -a added_repos $f
-    and set -a addition_command "\n$f "(repo_metadata $f.repo '.repo')
+    and set -a addition_command "$f "(repo_metadata $f.repo '.repo')
   end
-  echo -e $addition_command >> .index
+  test -n "$addition_command"
+  and echo -e (string join '\n' $addition_command) >> .index
 
   for i in $index
     not contains $i $files
     and set -a deleted_repos $i
   end
-  set deletion_command '/^$/d;' '/^'$deleted_repos' /d;'
+  set deletion_command '/^'$deleted_repos' /d;'
   sed -i "$deletion_command" .index
 
   if test "x$argv" = 'x-v'
