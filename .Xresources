@@ -1,3 +1,10 @@
+! General
+XTerm.termName: xterm-256color
+
+! Font
+XTerm*faceName: JetBrains Mono Nerd Font
+XTerm*faceSize: 13
+
 ! Color scheme (Dracula)
 *.foreground: #F8F8F2
 *.background: #282A36
@@ -18,6 +25,6 @@
 *.color14: #A4FFFF
 *.color15: #FFFFFF
 
-! Font
-XTerm*faceName: JetBrains Mono Nerd Font
-XTerm*faceSize: 13
+! VT100 configuration
+XTerm.vt100.saveLines: 1048576
+XTerm.vt100.geometry: 132x24
