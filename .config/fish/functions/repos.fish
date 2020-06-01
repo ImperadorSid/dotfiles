@@ -262,7 +262,7 @@ function __repos_script
   if test (wc -l < $exec_file) -gt 5
     printf '\nRunning installation script...'
     bash $exec_file
-    printf 'Installation script finished'
+    echo 'Installation script finished'
   end
   set_color normal
 
