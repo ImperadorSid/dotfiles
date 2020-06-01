@@ -2,6 +2,7 @@
 
 function check_repos
   set current_directory $PWD
+  set have_changed false
   $repositories
 
   for r in *
@@ -11,7 +12,9 @@ function check_repos
     and printf '%s%s%s\n' (set_color green) "$r" (set_color normal)
     and git -C $r status
     and echo
+    and set have_changed true
   end
 
+  $have_changed; or echo_color 'blue' 'All repository are fully synched'
   $current_directory
 end
