@@ -1,22 +1,25 @@
 #!/usr/bin/env fish
 
 function repos -d 'Manage repository downloads and script installations'
-  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open' 'h/help'
-  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' -X 2 $options -- $argv; or return
+  set options 'e/edit' 'c/create' 'i/only-install' 'd/only-download' 'f/force-clear' 'o/open' 'O/only-open' 'r/reindex' 'h/help'
+  argparse -n 'Repository Management' -x 'c,e,i,d,O,h' -x 'f,e,i,O,h' -x 'o,c,O,h' $options -- $argv; or return
 
   set current_directory $PWD
   alias meta 'repo_metadata $repo_file'
   alias meta_quiet 'repo_metadata -n $repo_file'
 
   ~
-  set -g repo_file "$argv[1].repo"
-  set -g repo_path "$repositories/$repo_file"
+  set -g repo_alias "$argv[1]"
+  set -g repo_file "$repo_alias.repo"
+  set -g repo_path "$repo_scripts/$repo_file"
 
   set -q _flag_open; and __repos_open
   if set -q _flag_help
     __repos_help
   else if set -q _flag_only_open
     __repos_open
+  else if set -q _flag_reindex
+    __repos_index '-v'
   else if set -q _flag_create
     __repos_create "$argv[2]" $_flag_f
   else if set -q _flag_edit
@@ -39,7 +42,7 @@ function __repos_execute_multiple
   for r in $argv[3..-1]
     ~
     set -g repo_file "$r.repo"
-    set -g repo_path "$repositories/$repo_file"
+    set -g repo_path "$repo_scripts/$repo_file"
 
     __repos_execute "$argv[1]" "$argv[2]"; or set -a failed_repos $r
 
@@ -94,7 +97,7 @@ function __repos_find_location
   set -g repo_location (meta '.location' | sed -r "s|^~|$HOME|")
 
   test "$repo_location" = 'null'
-  and set -g repo_location $repositories/(string replace -r '(.*)\.repo$' '$1' $repo_file)
+  and set -g repo_location $repo_scripts/(string replace -r '(.*)\.repo$' '$1' $repo_file)
 end
 
 function __repos_download
@@ -320,6 +323,7 @@ function __repos_path_folders
 end
 
 function __repos_unset_variables
+  set -e repo_alias
   set -e repo_file
   set -e repo_path
   set -e repo_name
@@ -327,6 +331,7 @@ function __repos_unset_variables
   set -e repo_location
   set -e repo_type
   set -e repo_dependencies
+
   set -e FILE_FULL_NAMES
   set -e FILE_NAMES
   set -e FILE_EXTENSIONS
@@ -372,9 +377,12 @@ end
 
 function __repos_edit
   if test -z "$repo_file"
-    v $repositories/*.repo
+    v $repo_scripts/*.repo
   else if test -f "$repo_path"
     v -c 'set filetype=sh | call cursor(3,12)' $repo_path
+
+    __repos_index_update_location
+    __repos_index
   else
     echo_err "Repo file \"$repo_file\" doesn't exist"
     return
@@ -387,11 +395,50 @@ function __repos_open
     set destination $repo_location
   else
     echo 'Opening repositories folder...'
-    set destination $repositories
+    set destination $repo_scripts
   end
 
   cd $destination
   xdg-open $destination &> /dev/null
+end
+
+function __repos_index_update_location
+  set -g repo_name (meta '.repo')
+  sed -ri "s|^($repo_alias) .*|\1$repo_name|" $repo_scripts/.index
+end
+
+function __repos_index
+  cd $repo_scripts
+  set files (string replace -r '.repo$' '' (command ls))
+  set index (awk '{print $1}' .index)
+
+  for f in $files
+    not contains $f $index
+    and set -a added_repos $f
+    and set -a addition_command "\n$f "(repo_metadata $f.repo '.repo')
+  end
+  echo -e $addition_command >> .index
+
+  for i in $index
+    not contains $i $files
+    and set -a deleted_repos $i
+  end
+  set deletion_command '/^$/d;' '/^'$deleted_repos' /d;'
+  sed -i "$deletion_command" .index
+
+  if test "x$argv" = 'x-v'
+    count $added_repos > /dev/null
+    and printf 'Index entries %s%s%s added\n' \
+    (set_color cyan) (string join ', ' $added_repos) (set_color normal)
+    and return
+
+    count $deleted_repos > /dev/null
+    and printf 'Index entries %s%s%s deleted\n' \
+    (set_color yellow) (string join ', ' $deleted_repos) (set_color normal)
+    and return
+
+    echo_color 'green' 'Index already updated'
+  end
 end
 
 function __repos_help
@@ -402,7 +449,7 @@ Usage:
   repos -e [-o] [<repository>]
   repos -d [-f] [-o] <repository>
   repos -i [-o] <repository>
-  repos -h | -O
+  repos -O | -r | -h
 
 Options:
   -c, --create          Create repository
@@ -412,6 +459,7 @@ Options:
   -f, --force-clear     Recreate repository folder and clear request cache
   -o, --open            Change into repository dir and open it in file manager
   -O, --only-open       Only execute -o, nothing more
+  -r, --reindex         Update index file
   -h, --help            Show this help'
 end
 

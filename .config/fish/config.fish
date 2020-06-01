@@ -10,8 +10,9 @@ set -x RIPGREP_CONFIG_PATH ~/.config/ripgrep/ripgreprc
 set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/dotfiles
 set -x system_files $repositories/system-files
-set -x tasks_file ~/Documents/Books/Tasks/tasks.json
+set -x repo_scripts $repositories/scripts
 set -x personal_scripts ~/.local/scripts
+set -x tasks_file ~/Documents/Books/Tasks/tasks.json
 
 # Theme options
 set -g theme_display_date no

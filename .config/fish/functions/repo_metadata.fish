@@ -6,9 +6,9 @@ function repo_metadata
 
   set -q _flag_help; and __repo_metadata_help; and return
 
-  test ! -f "$repositories/$argv[1]"; and return 1
+  test ! -f "$repo_scripts/$argv[1]"; and return 1
 
-  set metadata (sed '/^#!/,$d; s/\\\/\\\\\\\\\\\\\\\/g' $repositories/$argv[1])
+  set metadata (sed '/^#!/,$d; s/\\\/\\\\\\\\\\\\\\\/g' $repo_scripts/$argv[1])
 
   if set -q _flag_check
     echo $metadata | jq -e 'has("repo") and has("type")' &> /dev/null
