@@ -196,8 +196,8 @@ end
 function __repos_download_file
   printf '  Downloading %s%s%s... ' (set_color cyan) $argv[1] (set_color normal)
 
-  set aria2_flags (test "x$argv[3]" = 'x-f'; and echo '--alow-overwrite'; or echo '-c')
-  loading a2 $aria2_flags -q --allow-overwrite -d $repo_location -o $argv[1] $argv[2]
+  set aria2_flags (test "x$argv[3]" = 'x-f'; or echo '-c')
+  loading  a2 $aria2_flags --allow-overwrite -d $repo_location -o $argv[1] $argv[2]
 
   if test "$status" -eq 0
     echo 'finished'
