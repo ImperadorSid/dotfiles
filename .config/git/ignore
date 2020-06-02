@@ -1,4 +1,3 @@
-Activision/
 .android/*
 !.android/avd
 .android/avd/*
@@ -7,24 +6,14 @@ Activision/
 .android/avd/*avd/*
 !.android/avd/*avd/*ini
 anaconda3/
-Animus Control Panel/
-As Minhas Criações Spore/
-Assassin's Creed*/
-Black Desert/
 *[cC]ache*/
 .cinnamon/
 */Code/logs/
 */Code/**/*[sS]torage
-Criterion Games/
 .dartServer/
 .dbus/
 desktop.ini
-EA Games/
-Electronic Arts/
-FeedbackHub/
 flutter/
-GameMakerStudio2/
-Ghost Games/
 .git/
 google-chrome/
 .gradle/
@@ -35,30 +24,18 @@ google-chrome/
 !.local/bin
 !.local/scripts/*
 !.local/tmux/*
-Minhas criações Spore/
 *minecraft/
 */Data/Programs
-Mutant Blobs Attack/
-My Games/
-Need [fF]or Speed/
-NFS Most Wanted/
-NMM CLI/
 node_modules/
 .npm/
 /proc
 __pycache__/
 Radeon ReLive/
-Rayman Legends/
 Red Dead Redemption 2/
-Rockstar Games/
-Square Enix/
 snap/
 /sys
 TelegramDesktop/
-The Witcher 3/
 .thumbnails/
-Ubisoft/
-Uplay/
 .vim/pack
 .vscode/
-WB Games/
+
