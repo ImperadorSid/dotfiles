@@ -189,3 +189,4 @@ nnoremap w :view<CR>
 nnoremap yd :!echo %d | xclip %i<CR>
 nnoremap yf :!echo %c:p | xclip %i<CR>
 vnoremap w :view<CR>gv
+
