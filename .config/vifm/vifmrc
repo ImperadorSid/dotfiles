@@ -10,7 +10,7 @@ set locateprg='fd -IHL --ignore-file ~/.config/git/ignore %a /'
 set nohlsearch
 set smartcase
 set sortnumbers
-set statusline="%z %= %A %14d"
+set statusline="%z %= %u:%g %14A %15d"
 set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
 set syscalls
 set vifminfo=tui,savedirs,registers,chistory,dhistory,fhistory,shistory
