@@ -49,5 +49,3 @@ alias ll 'lsd -lA --group-dirs=first'
 alias ls 'lsd -A --group-dirs=first'
 alias tree 'ls --tree -I .git'
 
-# Colorman
-source ~/.local/omf/pkg/colorman/init.fish

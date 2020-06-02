@@ -1,4 +1,3 @@
-package colorman
 package fzf
 package grc
 theme bobthefish
