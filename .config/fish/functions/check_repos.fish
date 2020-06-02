@@ -15,6 +15,6 @@ function check_repos
     and set have_changed true
   end
 
-  $have_changed; or echo_color 'blue' 'All repository are fully synched'
+  $have_changed; or echo 'All repository are fully synched'
   $current_directory
 end
