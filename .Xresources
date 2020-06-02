@@ -26,5 +26,7 @@ XTerm*faceSize: 13
 *.color15: #FFFFFF
 
 ! VT100 configuration
-XTerm.vt100.saveLines: 1048576
 XTerm.vt100.geometry: 132x24
+XTerm.vt100.saveLines: 1048576
+XTerm.vt100.metaSendsEscape: true
+
