@@ -47,5 +47,6 @@ alias fd 'fd -IHL --ignore-file ~/.config/git/ignore'
 alias ip 'ip --color'
 alias ll 'lsd -lA --group-dirs=first'
 alias ls 'lsd -A --group-dirs=first'
+alias snap 'sudo snap'
 alias tree 'ls --tree -I .git'
 
