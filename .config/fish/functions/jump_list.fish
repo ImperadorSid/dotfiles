@@ -6,6 +6,6 @@ function jump_list
   pwd
   commandline -f repaint
 
-  set project (lsd | fzf-tmux -p 70,15 -x 0 -y 16)
+  set project (lsd --no-symlink | fzf-tmux -p 30,30 -x 0 -y 31 --layout=reverse --cycle)
   test -n "$project"; and cd $project
 end
