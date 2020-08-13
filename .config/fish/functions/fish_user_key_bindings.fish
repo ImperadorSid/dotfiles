@@ -6,6 +6,6 @@ function fish_user_key_bindings
   bind -M insert \em 'vf .'
   bind -M insert \e0 'jump_list ~'
   bind -M insert \e1 'jump_list ~/Documents/Programs/Angular'
-  bind -M insert \e2 'jump_list ~/Documents/Programs/NodeJS'
+  bind -M insert \e2 'jump_list ~/Documents/Programs/Node.js'
 end
 
