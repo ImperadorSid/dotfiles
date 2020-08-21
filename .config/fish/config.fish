@@ -3,8 +3,10 @@
 # Environments variables
 set -x BROWSER google-chrome
 set -x EDITOR vim
+
 set -x MAKEFLAGS j 12
 set -x RIPGREP_CONFIG_PATH ~/.config/ripgrep/ripgreprc
+set -x VCERT ~/Documents/Projects/SysISP/vcert.pem
 
 # Useful locations
 set -x repositories ~/Downloads/Linux/System/Repositories

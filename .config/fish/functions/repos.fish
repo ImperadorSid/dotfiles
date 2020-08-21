@@ -119,7 +119,7 @@ function __repos_clone
     printf 'Repository %s%s%s\n' (set_color brred) "$repo_name" (set_color normal)
   else
     printf 'Cloning %s%s%s... ' (set_color brred) "$repo_name" (set_color normal)
-    loading g clone -q $repo_address $repo_location
+    loading g clone -q $repo_address "'$repo_location'"
     and echo 'complete'
     or echo_err 'Clone failed. Skipping...'
   end
