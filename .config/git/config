@@ -7,8 +7,8 @@
 	prompt = false
 [alias]
 	c = commit
-	cl = clone
 	cfg = config
+	cl = clone
 	d = diff
 	l = log
 	ls = ls-tree --name-only
