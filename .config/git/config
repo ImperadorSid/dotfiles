@@ -10,6 +10,7 @@
 	cfg = config
 	cl = clone
 	d = diff
+	i = init
 	l = log
 	ls = ls-tree --name-only
 	p = push
