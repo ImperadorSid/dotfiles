@@ -4,10 +4,6 @@
 set -x BROWSER google-chrome
 set -x EDITOR vim
 
-set -x MAKEFLAGS j 12
-set -x RIPGREP_CONFIG_PATH ~/.config/ripgrep/ripgreprc
-set -x VCERT ~/Documents/Projects/SysISP/vcert.pem
-
 # Useful locations
 set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/dotfiles
@@ -15,6 +11,7 @@ set -x system_files $repositories/system-files
 set -x repo_scripts $repositories/scripts
 set -x personal_scripts ~/.local/scripts
 set -x tasks_file ~/Documents/Books/Tasks/tasks.json
+set -x VCERT ~/Documents/Projects/SysISP/vcert.pem
 
 # Theme options
 set -g theme_display_date no
