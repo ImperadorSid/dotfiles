@@ -5,3 +5,17 @@
 	tool = vimdiff
 [difftool]
 	prompt = false
+[alias]
+	c = commit
+	cl = clone
+	cfg = config
+	d = diff
+	l = log
+	ls = ls-tree --name-only
+	p = push
+	pl = pull
+	r = reset --hard
+	rs = restore
+	rt = remote
+	s = status -s
+	st = status
