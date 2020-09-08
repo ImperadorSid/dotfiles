@@ -107,9 +107,5 @@
   {
     "key": "ctrl+shift+[BracketLeft]",
     "command": "-workbench.action.terminal.toggleTerminal"
-  },
-  {
-    "key": "ctrl+alt+b",
-    "command": "workbench.action.toggleActivityBarVisibility"
   }
 ]
