@@ -6,6 +6,7 @@
 [difftool]
 	prompt = false
 [alias]
+	a = add
 	c = commit
 	cfg = config
 	cl = clone
