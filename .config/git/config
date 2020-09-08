@@ -13,7 +13,7 @@
 	d = diff
 	i = init
 	l = log
-	ls = ls-tree --name-only
+	ls = ls-tree -r --name-only
 	p = push
 	pl = pull
 	r = reset --hard
