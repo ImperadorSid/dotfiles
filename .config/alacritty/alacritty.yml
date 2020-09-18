@@ -53,5 +53,9 @@ colors:
     cyan:    '0xa4ffff'
     white:   '0xffffff'
 
+# Keybindings
+key_bindings:
+  - { key: Back, chars: "\x08"  }
+
 # Background opacity
 background_opacity: 0.95
