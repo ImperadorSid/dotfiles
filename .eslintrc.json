@@ -20,7 +20,7 @@
         "max-len": [
             "error",
             {
-                "ignoreComments": "true"
+                "ignoreComments": true
             }
         ],
         "no-unused-vars": [
