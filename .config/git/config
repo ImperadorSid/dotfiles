@@ -7,8 +7,10 @@
 	prompt = false
 [alias]
 	a = add
+	b = branch
 	c = commit
 	cfg = config
+	ch = checkout
 	cl = clone
 	d = diff
 	i = init
