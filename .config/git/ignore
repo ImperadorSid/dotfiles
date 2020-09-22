@@ -17,10 +17,13 @@ Black Desert/
 .cinnamon/
 */Code/logs/
 */Code/**/*[sS]torage
+.config/GIMP/
 Criterion Games/
 .dartServer/
 .dbus/
 desktop.ini
+devlogs/
+discord*/
 EA Games/
 Electronic Arts/
 FeedbackHub/
@@ -32,6 +35,7 @@ google-chrome/
 .gradle/
 *history*
 .ipynb_checkpoints/
+Insomnia*/
 .local/*/*
 !.local/*/bin
 !.local/bin
@@ -47,14 +51,17 @@ NFS Most Wanted/
 NMM CLI/
 node_modules/
 .npm/
+OnScreen Control/
 /proc
 __pycache__/
 Radeon ReLive/
 Rayman Legends/
 Red Dead Redemption 2/
+**/Repositories/scripts/vim/
 Rockstar Games/
 ROMs/
 .rustup/
+[sS]creenshot*
 Square Enix/
 snap/
 /sys
