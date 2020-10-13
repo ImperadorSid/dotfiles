@@ -41,7 +41,6 @@
     "terminal.integrated.fontSize": 16,
     "terminal.integrated.scrollback": 1000000,
     "typescript.preferences.quoteStyle": "single",
-    "typescript.suggest.paths": false,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "window.menuBarVisibility": "toggle",
     "window.restoreWindows": "none",
@@ -51,7 +50,8 @@
     "workbench.editor.tabCloseButton": "off",
     "workbench.iconTheme": "material-icon-theme",
     "workbench.startupEditor": "none",
-    "zenMode.centerLayout": false,
-    "zenMode.hideLineNumbers": false
+    "zenMode.centerLayout": true,
+    "zenMode.hideLineNumbers": false,
+    "tabnine.experimentalAutoImports": true
 }
 
