@@ -37,6 +37,7 @@
     "python.pythonPath": "~/.local/anaconda3/bin/python",
     "search.showLineNumbers": true,
     "search.smartCase": true,
+    "tabnine.experimentalAutoImports": true,
     "terminal.integrated.enableBell": true,
     "terminal.integrated.fontSize": 16,
     "terminal.integrated.scrollback": 1000000,
@@ -51,7 +52,6 @@
     "workbench.iconTheme": "material-icon-theme",
     "workbench.startupEditor": "none",
     "zenMode.centerLayout": true,
-    "zenMode.hideLineNumbers": false,
-    "tabnine.experimentalAutoImports": true
+    "zenMode.hideLineNumbers": false
 }
 
