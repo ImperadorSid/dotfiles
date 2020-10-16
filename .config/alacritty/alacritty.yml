@@ -14,10 +14,10 @@ font:
   # Normal (roman) font face
   normal:
     # Font family
-    family: JetBrainsMono Nerd Font
+    family: CaskaydiaCove Nerd Font
 
   # Point size
-  size: 13.0
+  size: 14.0
 
 # Colors (Dracula)
 colors:
