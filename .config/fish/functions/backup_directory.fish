@@ -148,7 +148,8 @@ function __backup_directory_commit
 end
 
 function __backup_directory_changed_files
-  set -g diffs (rsync -rin --checksum --exclude-from=$HOME/.ignore-backup  . ~ | grep '^>fc' | cut -d ' ' -f2-)
+  test -f '.ignore-backup'; and set ignore_file '--exclude-from=.ignore-backup'
+  set -g diffs (rsync -rin --checksum $ignore_file . $target_dir | grep '^>fc' | cut -d ' ' -f 2-)
   set -g diffs_count (count $diffs)
 end
 
