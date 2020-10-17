@@ -1,9 +1,5 @@
 #!/usr/bin/env fish
 
-# Environments variables
-set -x BROWSER google-chrome
-set -x EDITOR vim
-
 # Useful locations
 set -x repositories ~/Downloads/Linux/System/Repositories
 set -x dotfiles $repositories/dotfiles
@@ -11,14 +7,8 @@ set -x system_files $repositories/system-files
 set -x repo_scripts $repositories/scripts
 set -x personal_scripts ~/.local/scripts
 set -x tasks_file ~/Documents/Books/Tasks/tasks.json
-set -x VCERT ~/Documents/Projects/SysISP/vcert.pem
 
-# Theme options
-set -g theme_display_date no
-set -g theme_nerd_fonts yes
-set -g theme_color_scheme dracula
-
-# Alias
+# Shortcuts
 alias a  'sudo apt'
 alias a2 'aria2c'
 alias b  'bat'
@@ -40,7 +30,7 @@ alias vf 'vifm'
 alias x  'xclip -selection clipboard'
 alias y  'yarn'
 
-# Alias (make flags always enabled)
+# Alias
 alias bdl 'backup_directory ~/Downloads/Linux installers'
 alias bdot 'backup_directory ~ dotfiles'
 alias bsys 'backup_directory / system-files'
