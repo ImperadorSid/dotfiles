@@ -1,5 +1,11 @@
 #!/usr/bin/env fish
 
+# Default browser
+set -x BROWSER google-chrome
+
+# Default text editor
+set -x EDITOR vim
+
 # Make
 set -x MAKEFLAGS j 12
 
