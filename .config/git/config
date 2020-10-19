@@ -12,6 +12,7 @@
 	cfg = config
 	ch = checkout
 	cl = clone
+	cn = clean
 	d = diff
 	i = init
 	l = log
