@@ -26,3 +26,4 @@
 	ss = stash
 	st = status
 	f = fetch
+	rv = revert
