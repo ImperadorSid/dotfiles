@@ -22,5 +22,6 @@
 	rs = restore
 	rt = remote
 	s = status -s
+	ss = stash
 	st = status
 	f = fetch
