@@ -2,7 +2,7 @@
 XTerm.termName: xterm-256color
 
 ! Font
-XTerm*faceName: JetBrains Mono Nerd Font
+XTerm*faceName: CaskaydiaCove Nerd Font
 XTerm*faceSize: 13
 
 ! Color scheme (Dracula)
