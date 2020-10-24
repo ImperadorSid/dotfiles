@@ -16,6 +16,7 @@
     "editor.multiCursorModifier": "alt",
     "editor.smoothScrolling": true,
     "editor.tabSize": 2,
+    "explorer.autoReveal": false,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "explorer.openEditors.visible": 0,
