@@ -47,6 +47,7 @@
     "typescript.updateImportsOnFileMove.enabled": "always",
     "window.menuBarVisibility": "toggle",
     "window.restoreWindows": "none",
+    "window.zoomLevel": 0,
     "workbench.colorTheme": "Dracula",
     "workbench.commandPalette.preserveInput": true,
     "workbench.editor.highlightModifiedTabs": true,

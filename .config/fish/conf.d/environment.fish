@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 
 # Default browser
-# set -x BROWSER google-chrome
-set -x BROWSER microsoft-edge
+set -x BROWSER google-chrome
+# set -x BROWSER microsoft-edge
 
 # Default text editor
 set -x EDITOR vim
