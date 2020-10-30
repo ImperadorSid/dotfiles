@@ -7,6 +7,9 @@ set -x BROWSER google-chrome
 # Default text editor
 set -x EDITOR vim
 
+# Android SDK
+set -x ANDROID_SDK_ROOT ~/.local/android-sdk
+
 # Make
 set -x MAKEFLAGS j 12
 
