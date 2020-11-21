@@ -1,4 +1,5 @@
 {
+  "colorize.languages": ["typescript"],
   "debug.console.fontSize": 16,
   "debug.internalConsoleOptions": "neverOpen",
   "debug.openDebug": "neverOpen",
@@ -38,7 +39,6 @@
   "material-icon-theme.folders.color": "#367bf0",
   "search.showLineNumbers": true,
   "search.smartCase": true,
-  "tabnine.experimentalAutoImports": true,
   "terminal.integrated.enableBell": true,
   "terminal.integrated.fontSize": 16,
   "terminal.integrated.scrollback": 1000000,
