@@ -1,5 +1,5 @@
 {
-  "colorize.languages": ["typescript"],
+  "colorize.languages": ["typescript", "html"],
   "debug.console.fontSize": 16,
   "debug.internalConsoleOptions": "neverOpen",
   "debug.openDebug": "neverOpen",
