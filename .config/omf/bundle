@@ -1,3 +1,5 @@
+package foreign-env
 package fzf
 package grc
+package nvm
 theme bobthefish
