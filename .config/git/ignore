@@ -1,77 +1,26 @@
-Activision/
-.android/*
-!.android/avd
-.android/avd/*
-!.android/avd/*ini
-!.android/avd/*avd
-.android/avd/*avd/*
-!.android/avd/*avd/*ini
-anaconda3/
-Animus Control Panel/
-As Minhas Criações Spore/
-Assassin's Creed*/
-Black Desert/
-*[cC]ache*/
-.cargo/
-!.cargo/bin
-.cinnamon/
-*/Code/logs/
-*/Code/**/*[sS]torage
-.config/GIMP/
-Criterion Games/
-.dartServer/
-.dbus/
-desktop.ini
-devlogs/
-discord*/
-EA Games/
-Electronic Arts/
-FeedbackHub/
-flutter/
-GameMakerStudio2/
-Ghost Games/
+.anaconda3/
+*android/
+build/
+*cache/
+.config/*
+!.config/fish/
+!.config/git/
+.dart*/
+dist/
+Documents/
+Downloads/Windows/
 .git/
-google-chrome/
 .gradle/
-*history*
-.ipynb_checkpoints/
-Insomnia*/
-.local/*/*
-!.local/*/bin
-!.local/bin
-!.local/scripts/*
-!.local/tmux/*
-Minhas criações Spore/
-*minecraft/
-*/Data/Programs
-Mutant Blobs Attack/
-My Games/
-Need [fF]or Speed/
-NFS Most Wanted/
-NMM CLI/
+ios/
+.local/
+*.lock
+Music/
 node_modules/
-.npm/
-OnScreen Control/
-/proc
-__pycache__/
-Radeon ReLive/
-Rayman Legends/
-Red Dead Redemption 2/
-**/Repositories/scripts/vim/
-Rockstar Games/
-ROMs/
-.rustup/
-[sS]creenshot*
-Square Enix/
+.nvm/
+Pictures/
 snap/
-/sys
-TelegramDesktop/
-The Witcher 3/
-.thumbnails/
-Ubisoft/
-Uplay/
-.vim/pack
+*.spec.ts
+.var/
+Videos/
+.vim/vim-plug/
 .vscode/
-WB Games/
-.yarn/
-!.yarn/bin
